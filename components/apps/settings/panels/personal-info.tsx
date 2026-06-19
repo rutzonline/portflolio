@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 interface Device {
   name: string;
   model: string;
-  type: "macbook" | "iphone" | "apple-tv" | "ipad";
+  type: "macbook" | "iphone" | "apple-tv";
 }
 
 const devices: Device[] = [
@@ -50,20 +50,7 @@ function DeviceIcon({ type }: { type: Device["type"] }) {
           <rect x="16" y="7" width="16" height="34" rx="2" fill="url(#iphone-screen)" />
         </svg>
       );
-    case "ipad":
-      return (
-        <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
-          <defs>
-            <linearGradient id="ipad-screen" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#3b82f6" />
-              <stop offset="50%" stopColor="#8b5cf6" />
-              <stop offset="100%" stopColor="#ec4899" />
-            </linearGradient>
-          </defs>
-          <rect x="12" y="4" width="24" height="40" rx="3" fill="#1f2937" />
-          <rect x="14" y="7" width="20" height="34" rx="1.5" fill="url(#ipad-screen)" />
-        </svg>
-      );
+    
     case "apple-tv":
       return (
         <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
