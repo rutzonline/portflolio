@@ -1,4 +1,4 @@
-import type { SidebarItem } from "./finder-app";
+import type { SidebarItem } from "./sidebar-types";
 
 interface IndexEntry {
   name: string;

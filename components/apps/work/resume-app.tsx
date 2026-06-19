@@ -6,7 +6,8 @@ import { useWindowFocus } from "@/lib/window-focus-context";
 import { useRecents } from "@/lib/recents-context";
 import { cn } from "@/lib/utils";
 import { FinderNav, FinderSidebarMobileNav } from "../finder/nav";
-import type { SidebarItem } from "../finder/finder-app";
+import type { SidebarItem } from "../finder/sidebar-types";
+import { getSearchSectionForSidebar, STATIC_SIDEBAR_PANELS } from "../finder/sidebar-types";
 import { APPS } from "@/lib/app-config";
 import {
   HOME_DIR,
@@ -56,7 +57,7 @@ interface FileItem {
 // Sidebar items
 
 // Sidebar items that show a static info panel instead of files
-const STATIC_PANEL_ITEMS = new Set<SidebarItem>(["skills", "education", "tools", "certifications", "contact", "faqs"]);
+const STATIC_PANEL_ITEMS = STATIC_SIDEBAR_PANELS;
 
 const SIDEBAR_ITEMS: { id: SidebarItem; label: string; icon: string }[] = [
   { id: "documents", label: "Work", icon: "document" },
@@ -691,7 +692,7 @@ export function ResumeApp({
     return searchEngine.search({
       query: searchQuery,
       scope: searchScope,
-      section: searchScope === "current" ? (selectedSidebar ?? "recents") : undefined,
+      section: getSearchSectionForSidebar(searchScope, selectedSidebar),
     });
   }, [searchQuery, searchScope, selectedSidebar, searchActive, searchIndexSize, files, searchEngine]);
 

@@ -41,7 +41,8 @@ interface FileItem {
 }
 
 // Sidebar items
-export type SidebarItem = "recents" | "applications" | "desktop" | "documents" | "downloads" | "projects" | "trash" | "skills" | "education" | "tools" | "certifications" | "contact" | "faqs";
+import type { SidebarItem } from "./sidebar-types";
+export type { SidebarItem } from "./sidebar-types";
 
 const SIDEBAR_ITEMS: { id: SidebarItem; label: string; icon: string }[] = [
   { id: "recents", label: "Recents", icon: "clock" },
