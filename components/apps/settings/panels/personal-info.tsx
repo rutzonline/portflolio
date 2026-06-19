@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 interface Device {
   name: string;
   model: string;
-  type: "macbook" | "iphone" | "apple-tv";
+  type: "macbook" | "iphone" | "apple-tv" | "ipad";
 }
 
 const devices: Device[] = [
