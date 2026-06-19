@@ -1,7 +1,5 @@
-"use client";
-
-import { AppShellPage } from "@/lib/desktop/app-shell-page";
+import { redirect } from "next/navigation";
 
 export default function MusicPage() {
-  return <AppShellPage appId="music" />;
+  redirect("/desk");
 }

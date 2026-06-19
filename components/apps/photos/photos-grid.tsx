@@ -2,7 +2,7 @@
 
 import { useMemo, useLayoutEffect, useRef, useState } from "react";
 import { Photo, TimeFilter, PhotosView, Collection } from "@/types/photos";
-import { ChevronLeft, Heart } from "lucide-react";
+import { ChevronLeft, Heart, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { toZonedTime } from "date-fns-tz";
@@ -15,6 +15,11 @@ function preloadImage(url: string) {
   if (typeof window === "undefined") return;
   const img = new window.Image();
   img.src = getViewerUrl(url);
+}
+
+function isVideo(url: string): boolean {
+  const lower = url.toLowerCase();
+  return lower.endsWith(".mp4") || lower.endsWith(".mov");
 }
 
 interface PhotosGridProps {
@@ -193,8 +198,10 @@ export function PhotosGrid({
                       : "grid-cols-4 desktop:grid-cols-5"
                   )}
                 >
-                  {groupPhotos.map((photo) => (
-                    <button
+                  {groupPhotos.map((photo) => {
+  console.log("url:", photo.url, "| thumbnail:", getThumbnailUrl(photo.url));
+  return (
+    <button
                       key={photo.id}
                       type="button"
                       className={cn(
@@ -224,14 +231,32 @@ export function PhotosGrid({
                       }}
                     >
                       <div className="relative w-full h-full overflow-hidden bg-muted group rounded-sm pointer-events-none">
-                        <Image
-                          src={getThumbnailUrl(photo.url)}
-                          alt=""
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 33vw, 16vw"
-                          unoptimized
-                        />
+                        {isVideo(photo.url) ? (
+                          <video
+                            src={photo.url}
+                            className="w-full h-full object-cover"
+                            preload="metadata"
+                            muted
+                            playsInline
+                          />
+                        ) : (
+                          <Image
+                            src={getThumbnailUrl(photo.url)}
+                            alt=""
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 33vw, 16vw"
+                            unoptimized
+                          />
+                        )}
+                        {/* Play button overlay for videos */}
+                        {isVideo(photo.url) && (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="bg-black/50 rounded-full p-1.5 backdrop-blur-sm">
+                              <Play className="w-4 h-4 text-white fill-white" />
+                            </div>
+                          </div>
+                        )}
                         {/* Favorite heart button */}
                         <div
                           role="button"
@@ -265,7 +290,8 @@ export function PhotosGrid({
                         </div>
                       </div>
                     </button>
-                  ))}
+                  );
+        })}
                 </div>
               </div>
             ))

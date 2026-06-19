@@ -3,13 +3,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { useMusic } from "@/lib/music/use-music";
-import { useAudio } from "@/lib/music/audio-context";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { loadMusicState, saveMusicState } from "@/lib/sidebar-persistence";
 import { MusicView } from "./types";
 import { Sidebar } from "./sidebar";
 import { Nav } from "./nav";
-import { NowPlayingBar } from "./now-playing-bar";
 import { ChevronLeft } from "lucide-react";
 import {
   HomeView,
@@ -17,14 +15,15 @@ import {
   ArtistsView,
   AlbumsView,
   SongsView,
-  PlaylistView,
+  BeyondDeskView,
+  NewslettersView,
 } from "./content-views";
+
 
 interface AppProps {
   isDesktop?: boolean;
 }
 
-// Load initial state once outside component to avoid multiple calls
 const getInitialState = () => {
   const saved = loadMusicState();
   return {
@@ -36,7 +35,6 @@ const getInitialState = () => {
 
 export default function App({ isDesktop = false }: AppProps) {
   const { playlists, albums, artists, songs } = useMusic();
-  const { playbackState, pause, resume, next, previous } = useAudio();
 
   const [initialState] = useState(getInitialState);
   const [activeView, setActiveView] = useState<MusicView>(initialState.view);
@@ -50,18 +48,15 @@ export default function App({ isDesktop = false }: AppProps) {
   const windowFocus = useWindowFocus();
   const inShell = !!(isDesktop && windowFocus);
 
-  // Mobile layout is determined by shell context, not viewport width
   useEffect(() => {
     setIsMobileView(!isDesktop);
     setIsLayoutInitialized(true);
   }, [isDesktop]);
 
-  // Persist sidebar/view state
   useEffect(() => {
     saveMusicState(activeView, selectedPlaylistId);
   }, [activeView, selectedPlaylistId]);
 
-  // Handle view selection
   const handleViewSelect = useCallback((view: MusicView, playlistId?: string) => {
     setActiveView(view);
     if (view === "playlist" && playlistId) {
@@ -72,69 +67,25 @@ export default function App({ isDesktop = false }: AppProps) {
     setShowContent(true);
   }, []);
 
-  // Handle back to sidebar on mobile
   const handleBack = useCallback(() => {
     setShowContent(false);
   }, []);
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Skip if not focused in shell mode
-      if (inShell && windowFocus && !windowFocus.isFocused) return;
-
-      // Don't handle if typing in an input
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement
-      ) {
-        return;
-      }
-
-      switch (e.code) {
-        case "Space":
-          e.preventDefault();
-          if (playbackState.isPlaying) {
-            pause();
-          } else {
-            resume();
-          }
-          break;
-        case "ArrowRight":
-          if (e.metaKey || e.ctrlKey) {
-            e.preventDefault();
-            next();
-          }
-          break;
-        case "ArrowLeft":
-          if (e.metaKey || e.ctrlKey) {
-            e.preventDefault();
-            previous();
-          }
-          break;
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [inShell, windowFocus, playbackState.isPlaying, pause, resume, next, previous]);
-
-  // Get selected playlist
-  const selectedPlaylist = selectedPlaylistId
-    ? playlists.find((p) => p.id === selectedPlaylistId)
-    : null;
-
-  // Get title and subtitle for mobile header
+  // Mobile header labels
   const mobileHeader = (() => {
     switch (activeView) {
       case "browse":
-        return { title: "Browse", subtitle: "Top Charts" };
+        return { title: "Cool Websites", subtitle: null };
       case "artists":
-        return { title: "Artists", subtitle: `${artists.length} artists` };
+        return { title: "brands getting it right", subtitle: null };
       case "albums":
-        return { title: "Albums", subtitle: `${albums.length} albums` };
+        return { title: "campaigns & content", subtitle: null };
+      case "beyond-desk":
+        return { title: "Things Keeping Me Sane", subtitle: null };
       case "songs":
-        return { title: "Songs", subtitle: `${songs.length} songs` };
+        return { title: "Products & Packaging", subtitle: null };
+      case "newsletters":
+        return { title: "Newsletters & Blogs", subtitle: null };
       default:
         return { title: "", subtitle: null };
     }
@@ -144,8 +95,6 @@ export default function App({ isDesktop = false }: AppProps) {
     return <div className="h-full bg-background" />;
   }
 
-  // Mobile: show either sidebar or content
-  // Desktop: show both side by side
   const showSidebar = !isMobileView || !showContent;
   const showMainContent = !isMobileView || showContent;
 
@@ -163,25 +112,17 @@ export default function App({ isDesktop = false }: AppProps) {
       case "browse":
         return <BrowseView isMobileView={isMobileView} />;
       case "artists":
-        return (
-          <ArtistsView
-            artists={artists}
-            isMobileView={isMobileView}
-          />
-        );
+        return <ArtistsView artists={artists} isMobileView={isMobileView} />;
       case "albums":
         return <AlbumsView albums={albums} isMobileView={isMobileView} />;
       case "songs":
+        return <SongsView songs={songs} isMobileView={isMobileView} />;
+      case "beyond-desk":
+        return <BeyondDeskView isMobileView={isMobileView} />;
+      case "newsletters":
+        return <NewslettersView isMobileView={isMobileView} />;
+      default:
         return (
-          <SongsView
-            songs={songs}
-            isMobileView={isMobileView}
-          />
-        );
-      case "playlist":
-        return selectedPlaylist ? (
-          <PlaylistView playlist={selectedPlaylist} isMobileView={isMobileView} />
-        ) : (
           <HomeView
             playlists={playlists}
             songs={songs}
@@ -189,15 +130,13 @@ export default function App({ isDesktop = false }: AppProps) {
             isMobileView={isMobileView}
           />
         );
-      default:
-        return null;
     }
   };
 
   return (
     <div
       ref={containerRef}
-      data-app="music"
+      data-app="desk"
       tabIndex={-1}
       onMouseDown={() => containerRef.current?.focus()}
       className="music-app h-full flex flex-col bg-background text-foreground outline-none overflow-hidden"
@@ -237,7 +176,7 @@ export default function App({ isDesktop = false }: AppProps) {
             showMainContent ? "block" : "hidden"
           )}
         >
-          {/* Mobile content header with back button */}
+          {/* Mobile content header */}
           {isMobileView && (
             <div className="px-4 py-3 flex items-center gap-3 sticky top-0 z-[1] select-none bg-background">
               <button
@@ -246,7 +185,7 @@ export default function App({ isDesktop = false }: AppProps) {
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              {activeView !== "playlist" && activeView !== "home" && activeView !== "browse" && (
+              {activeView !== "home" && activeView !== "browse" && (
                 <div>
                   <h1 className="text-lg font-semibold">{mobileHeader.title}</h1>
                   {mobileHeader.subtitle && (
@@ -256,19 +195,18 @@ export default function App({ isDesktop = false }: AppProps) {
               )}
             </div>
           )}
-          {/* Draggable header area for content - absolute so it doesn't affect layout */}
+
+          {/* Draggable header area for desktop window */}
           {!isMobileView && (
             <div
               className="absolute top-0 left-0 right-0 h-12 z-10 select-none"
               onMouseDown={inShell && windowFocus ? windowFocus.onDragStart : undefined}
             />
           )}
+
           {renderContent()}
         </div>
       </main>
-
-      {/* Now Playing Bar */}
-      <NowPlayingBar isMobileView={isMobileView} />
     </div>
   );
 }

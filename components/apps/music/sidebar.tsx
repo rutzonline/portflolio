@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MusicView, Playlist } from "./types";
-import { Home, Compass, User, Disc3, Music, ListMusic } from "lucide-react";
+import { Home, Compass, User, Disc3, Music, ListMusic, BookOpen, Coffee } from "lucide-react";
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -51,13 +51,6 @@ export function Sidebar({
                 onClick={() => onViewSelect("home")}
                 isMobileView={isMobileView}
               />
-              <SidebarItem
-                icon={<Compass className="w-4 h-4" />}
-                label="Browse"
-                isActive={activeView === "browse"}
-                onClick={() => onViewSelect("browse")}
-                isMobileView={isMobileView}
-              />
             </div>
 
             {/* Library Section */}
@@ -66,24 +59,52 @@ export function Sidebar({
                 Library
               </p>
               <SidebarItem
+                icon={<Compass className="w-4 h-4" />}
+                label="Cool Websites"
+                isActive={activeView === "browse"}
+                onClick={() => onViewSelect("browse")}
+                isMobileView={isMobileView}
+              />
+              <SidebarItem
                 icon={<User className="w-4 h-4" />}
-                label="Artists"
+                label="brands getting it right"
                 isActive={activeView === "artists"}
                 onClick={() => onViewSelect("artists")}
                 isMobileView={isMobileView}
               />
               <SidebarItem
                 icon={<Disc3 className="w-4 h-4" />}
-                label="Albums"
+                label="campaigns & content"
                 isActive={activeView === "albums"}
                 onClick={() => onViewSelect("albums")}
                 isMobileView={isMobileView}
               />
               <SidebarItem
                 icon={<Music className="w-4 h-4" />}
-                label="Songs"
+                label="Products & Packaging"
                 isActive={activeView === "songs"}
                 onClick={() => onViewSelect("songs")}
+                isMobileView={isMobileView}
+              />
+              <SidebarItem
+                icon={<BookOpen className="w-4 h-4" />}
+                label="Newsletters & Blogs"
+                isActive={activeView === "newsletters"}
+                onClick={() => onViewSelect("newsletters")}
+                isMobileView={isMobileView}
+              />
+            </div>
+
+            {/* beyond the desk */}
+            <div className="mb-4">
+              <p className="text-xs text-muted-foreground px-3 py-1 font-semibold uppercase tracking-wide">
+                beyond the desk
+              </p>
+              <SidebarItem
+                icon={<Coffee className="w-4 h-4" />}
+                label="Things Keeping Me Sane"
+                isActive={activeView === "beyond-desk"}
+                onClick={() => onViewSelect("beyond-desk")}
                 isMobileView={isMobileView}
               />
             </div>

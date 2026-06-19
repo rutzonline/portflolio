@@ -8,6 +8,7 @@ export interface CalendarEvent {
   isAllDay: boolean;
   calendarId: string;
   location?: string;
+  url?: string;
 }
 
 export interface Calendar {

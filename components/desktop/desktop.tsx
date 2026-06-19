@@ -2,7 +2,7 @@
 
 import { useCallback, useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
-import { WindowManagerProvider, useWindowManager, DESKTOP_DEFAULT_FOCUSED_APP, getAppIdFromWindowId } from "@/lib/window-context";
+import { WindowManagerProvider, useWindowManager, getAppIdFromWindowId } from "@/lib/window-context";
 import { useSystemSettings } from "@/lib/system-settings-context";
 import { RecentsProvider, useRecents } from "@/lib/recents-context";
 import { FileMenuProvider } from "@/lib/file-menu-context";
@@ -22,6 +22,16 @@ import {
   getLocalTextFileContent,
   isSupportedTextEditPath,
 } from "@/lib/file-route-utils";
+import { markIntroShown, hasDismissedNowPlaying, markNowPlayingDismissed } from "@/lib/onboarding";
+import {
+  getIntroDocumentContent,
+  INTRO_DOC_PATH,
+  isIntroDocPath,
+  enforceIntroAppendOnly,
+} from "@/lib/intro-doc";
+import { DesktopIcons } from "./desktop-icons";
+import { PhotoTrail } from "./photo-trail";
+import { DesktopStickyNote } from "./desktop-sticky-note";
 import { DOCK_HEIGHT, MENU_BAR_HEIGHT } from "@/lib/use-window-behavior";
 import { LockScreen } from "./lock-screen";
 import { SleepOverlay } from "./sleep-overlay";
@@ -38,16 +48,18 @@ import { fetchGitHubFileContent } from "@/lib/github-client";
 import type { MessagesNotificationPayload } from "@/types/messages/notification";
 import type { MessagesConversationSelectRequest } from "@/types/messages/selection";
 import { getAppById } from "@/lib/app-config";
+import { useAudio } from "@/lib/music/audio-context";
 
 const SettingsApp = dynamic(() => import("@/components/apps/settings/settings-app").then(m => ({ default: m.SettingsApp })));
-const ITermApp = dynamic(() => import("@/components/apps/iterm/iterm-app").then(m => ({ default: m.ITermApp })));
 const FinderApp = dynamic(() => import("@/components/apps/finder/finder-app").then(m => ({ default: m.FinderApp })));
 const PhotosApp = dynamic(() => import("@/components/apps/photos/photos-app").then(m => ({ default: m.PhotosApp })));
 const CalendarApp = dynamic(() => import("@/components/apps/calendar/calendar-app").then(m => ({ default: m.CalendarApp })));
 const WeatherApp = dynamic(() => import("@/components/apps/weather/weather-app").then(m => ({ default: m.WeatherApp })));
 const MusicApp = dynamic(() => import("@/components/apps/music/music-app").then(m => ({ default: m.MusicApp })));
+const ResumeApp = dynamic(() => import("@/components/apps/work/resume-app").then(m => ({ default: m.ResumeApp })));
 const TextEditWindow = dynamic(() => import("@/components/apps/textedit").then(m => ({ default: m.TextEditWindow })));
 const PreviewWindow = dynamic(() => import("@/components/apps/preview").then(m => ({ default: m.PreviewWindow })));
+const NowPlayingWindow = dynamic(() => import("@/components/apps/music/now-playing-window").then(m => ({ default: m.NowPlayingWindow })));
 
 type DesktopMode = "active" | "locked" | "sleeping" | "shuttingDown" | "restarting";
 
@@ -194,7 +206,10 @@ function DesktopContent({
     getWindowsByApp,
   } = useWindowManager();
   const { focusMode, currentOS } = useSystemSettings();
-  const { touchRecent } = useRecents();
+  const { touchRecent, addRecent } = useRecents();
+  const { playbackState: nowPlayingState } = useAudio();
+  const nowPlayingOpenedRef = useRef(false);
+  const prevNowPlayingOpenRef = useRef(false);
 
   // Debounce touchRecent to avoid excessive re-renders
   const touchTimers = useRef<Record<string, NodeJS.Timeout>>({});
@@ -211,7 +226,37 @@ function DesktopContent({
     const timers = touchTimers.current;
     return () => Object.values(timers).forEach(clearTimeout);
   }, []);
-  const [mode, setMode] = useState<DesktopMode>("active");
+  const [mode, setMode] = useState<DesktopMode>("locked");
+
+  // Open Now Playing window the first time a track starts playing (unless user dismissed it)
+  useEffect(() => {
+    if (mode !== "active") return;
+    if (hasDismissedNowPlaying()) return;
+
+    if (nowPlayingState.isPlaying && nowPlayingState.currentTrack) {
+      if (!nowPlayingOpenedRef.current) {
+        nowPlayingOpenedRef.current = true;
+        const win = getWindow("now-playing");
+        if (!win?.isOpen) {
+          openWindow("now-playing");
+        } else if (win.isMinimized) {
+          restoreWindow("now-playing");
+        }
+      }
+    } else if (!nowPlayingState.currentTrack) {
+      nowPlayingOpenedRef.current = false;
+    }
+  }, [mode, nowPlayingState.isPlaying, nowPlayingState.currentTrack, getWindow, openWindow, restoreWindow]);
+
+  useEffect(() => {
+    const win = getWindow("now-playing");
+    const isOpen = win?.isOpen ?? false;
+    if (prevNowPlayingOpenRef.current && !isOpen && nowPlayingState.currentTrack) {
+      markNowPlayingDismissed();
+    }
+    prevNowPlayingOpenRef.current = isOpen;
+  }, [getWindow, state.windows, nowPlayingState.currentTrack]);
+
   const [settingsPanel, setSettingsPanel] = useState<SettingsPanel | undefined>(undefined);
   const [settingsCategory, setSettingsCategory] = useState<SettingsCategory | undefined>(undefined);
   const [restoreDefaultOnUnlock, setRestoreDefaultOnUnlock] = useState(false);
@@ -312,6 +357,7 @@ function DesktopContent({
   const [urlPreviewProcessed, setUrlPreviewProcessed] = useState(!initialPreviewFile);
 
   useEffect(() => {
+    if (mode !== "active") return;
     if (finderRouteProcessed || initialAppId !== "finder") return;
 
     if (finderWindows.some((w) => w.isOpen)) {
@@ -322,7 +368,7 @@ function DesktopContent({
 
     openDedicatedFinderWindow("recents", getDefaultFinderWindowPlacement());
     setFinderRouteProcessed(true);
-  }, [finderRouteProcessed, initialAppId, finderWindows, focusFinderApp, openDedicatedFinderWindow]);
+  }, [mode, finderRouteProcessed, initialAppId, finderWindows, focusFinderApp, openDedicatedFinderWindow]);
 
   // Memoize the check for existing window to avoid effect re-runs
   const existingTextEditWindow = initialTextEditFile
@@ -332,6 +378,7 @@ function DesktopContent({
 
   // Open TextEdit file from URL on mount (only once)
   useEffect(() => {
+    if (mode !== "active") return;
     if (urlFileProcessed || !initialTextEditFile) return;
 
     const previewMetadata = getPreviewMetadataFromPath(initialTextEditFile);
@@ -390,7 +437,7 @@ function DesktopContent({
         setUrlFileProcessed(true);
       });
     }
-  }, [initialTextEditFile, urlFileProcessed, existingWindowId, openMultiWindow, handleInvalidFileRoute]);
+  }, [mode, initialTextEditFile, urlFileProcessed, existingWindowId, openMultiWindow, handleInvalidFileRoute]);
 
   // Open Preview file from URL on mount (only once)
   const existingPreviewWindow = initialPreviewFile
@@ -399,6 +446,7 @@ function DesktopContent({
   const existingPreviewWindowId = existingPreviewWindow?.id;
 
   useEffect(() => {
+    if (mode !== "active") return;
     if (urlPreviewProcessed || !initialPreviewFile) return;
 
     if (existingPreviewWindowId) {
@@ -434,10 +482,12 @@ function DesktopContent({
     } else {
       handleInvalidFileRoute(() => setUrlPreviewProcessed(true));
     }
-  }, [initialPreviewFile, urlPreviewProcessed, existingPreviewWindowId, openMultiWindow, handleInvalidFileRoute]);
+  }, [mode, initialPreviewFile, urlPreviewProcessed, existingPreviewWindowId, openMultiWindow, handleInvalidFileRoute]);
 
-  // Update URL when focus changes
+  // Update URL when focus changes (only on unlocked desktop — avoids /resume on load)
   useEffect(() => {
+    if (mode !== "active") return;
+
     const focusedWindowId = state.focusedWindowId;
     if (!focusedWindowId) {
       setUrl("/");
@@ -456,27 +506,67 @@ function DesktopContent({
     if (nextUrl) {
       setUrl(nextUrl);
     }
-  }, [state.focusedWindowId, state.windows, getNotesSlugForRouting]);
+  }, [mode, state.focusedWindowId, state.windows, getNotesSlugForRouting]);
 
   const isActive = mode === "active";
 
   // Handler for opening text files in TextEdit
   const handleOpenTextFile = useCallback(
     (filePath: string, content: string) => {
-      // Check for cached (edited) content first - preserve user edits
-      const cachedContent = getTextEditContent(filePath);
-      const contentToUse = cachedContent !== undefined ? cachedContent : content;
+      let contentToUse: string;
 
-      // Only cache if no cached version exists (don't overwrite edits)
-      if (cachedContent === undefined) {
-        cacheTextEditContent(filePath, content);
+      if (isIntroDocPath(filePath)) {
+        contentToUse = getIntroDocumentContent();
+      } else {
+        const cachedContent = getTextEditContent(filePath);
+        contentToUse = cachedContent !== undefined ? cachedContent : content;
+        if (cachedContent === undefined) {
+          cacheTextEditContent(filePath, content);
+        }
       }
 
-      // Open multi-window (will focus existing if same file already open)
       openMultiWindow("textedit", filePath, { filePath, content: contentToUse });
     },
     [openMultiWindow]
   );
+
+  const focusIntroWindow = useCallback(() => {
+    const introWindow = getWindowsByApp("textedit").find(
+      (w) => w.instanceId === INTRO_DOC_PATH && w.isOpen
+    );
+    if (introWindow) {
+      focusMultiWindow(introWindow.id);
+    }
+  }, [getWindowsByApp, focusMultiWindow]);
+
+  const openIntroWindow = useCallback(
+    (options?: { addToRecents?: boolean }) => {
+      const content = getIntroDocumentContent();
+      cacheTextEditContent(INTRO_DOC_PATH, content);
+      const existing = textEditWindows.find((w) => w.instanceId === INTRO_DOC_PATH);
+      if (existing?.isOpen) {
+        focusMultiWindow(existing.id);
+        return;
+      }
+      if (options?.addToRecents) {
+        addRecent({ path: INTRO_DOC_PATH, name: "intro.txt", type: "file" });
+      }
+      const placement = getCenteredTextEditPlacement();
+      openMultiWindow(
+        "textedit",
+        INTRO_DOC_PATH,
+        { filePath: INTRO_DOC_PATH, content },
+        placement.size,
+        placement.position
+      );
+      window.setTimeout(focusIntroWindow, 0);
+    },
+    [openMultiWindow, focusMultiWindow, textEditWindows, addRecent, focusIntroWindow]
+  );
+
+  const handleOpenIntro = useCallback(() => {
+    openIntroWindow();
+  }, [openIntroWindow]);
 
   // Handler for opening preview files (images and PDFs) in Preview
   const handleOpenPreviewFile = useCallback(
@@ -558,13 +648,20 @@ function DesktopContent({
   }, [getWindow, restoreWindow, focusWindow, openWindow, getNotesSlugForRouting, focusTopDocumentWindow, documentAppWindows, openDocumentAppPicker]);
 
   useEffect(() => {
+    if (mode !== "active") return;
     if (documentAppRouteProcessed) return;
 
     if (initialDocumentRouteAppId && !(initialDocumentRouteAppId === "textedit" ? initialTextEditFile : initialPreviewFile)) {
       handleOpenApp(initialDocumentRouteAppId);
       setDocumentAppRouteProcessed(true);
     }
-  }, [documentAppRouteProcessed, initialDocumentRouteAppId, initialTextEditFile, initialPreviewFile, handleOpenApp]);
+  }, [mode, documentAppRouteProcessed, initialDocumentRouteAppId, initialTextEditFile, initialPreviewFile, handleOpenApp]);
+
+  function getCenteredTextEditPlacement() {
+    const texteditApp = getAppById("textedit");
+    const size = texteditApp?.defaultSize ?? { width: 700, height: 500 };
+    return getCenteredFinderWindowPlacement(size);
+  }
 
   // Menu bar handlers
   const handleOpenSettings = useCallback(() => {
@@ -616,18 +713,15 @@ function DesktopContent({
 
   const handleUnlock = useCallback(() => {
     setMode("active");
+    markIntroShown();
+
     if (restoreDefaultOnUnlock) {
       restoreDesktopDefault();
       setRestoreDefaultOnUnlock(false);
-      const nextUrl = getShellUrlForApp(DESKTOP_DEFAULT_FOCUSED_APP, {
-        context: "desktop",
-        noteSlug: getNotesSlugForRouting(),
-      });
-      if (nextUrl) {
-        setUrl(nextUrl);
-      }
     }
-  }, [restoreDefaultOnUnlock, restoreDesktopDefault, getNotesSlugForRouting]);
+
+    openIntroWindow({ addToRecents: true });
+  }, [restoreDefaultOnUnlock, restoreDesktopDefault, openIntroWindow]);
 
   const handleMessagesUnreadBadgeChange = useCallback((count: number) => {
     const safeCount = Math.max(0, Math.floor(count));
@@ -721,6 +815,7 @@ function DesktopContent({
         priority
         quality={75}
       />
+      {isActive && (
       <MenuBar
         onOpenSettings={handleOpenSettings}
         onOpenWifiSettings={handleOpenWifiSettings}
@@ -732,6 +827,7 @@ function DesktopContent({
         onLogout={handleLogout}
         onOpenMessagesConversation={handleOpenMessagesConversation}
       />
+      )}
 
       {isActive && (
         <>
@@ -754,10 +850,6 @@ function DesktopContent({
             <SettingsApp inShell={true} initialPanel={settingsPanel} initialCategory={settingsCategory} />
           </Window>
 
-          <Window appId="iterm">
-            <ITermApp inShell={true} onOpenTextFile={handleOpenTextFile} />
-          </Window>
-
           <Window appId="photos">
             <PhotosApp inShell={true} />
           </Window>
@@ -770,8 +862,21 @@ function DesktopContent({
             <WeatherApp inShell={true} />
           </Window>
 
-          <Window appId="music">
+          <Window appId="desk">
             <MusicApp />
+          </Window>
+
+          <Window appId="now-playing">
+            <NowPlayingWindow />
+          </Window>
+
+          <Window appId="resume">
+            <ResumeApp
+              inShell={true}
+              onOpenApp={handleOpenApp}
+              onOpenTextFile={handleOpenTextFile}
+              onOpenPreviewFile={handleOpenPreviewFile}
+            />
           </Window>
 
           {visibleFinderWindows.map((windowState) => {
@@ -826,13 +931,20 @@ function DesktopContent({
                   onMove={(pos) => moveMultiWindow(windowState.id, pos)}
                   onResize={(size, pos) => resizeMultiWindow(windowState.id, size, pos)}
                   onContentChange={(newContent) => {
-                    // Update metadata and save to localStorage
-                    updateWindowMetadata(windowState.id, { content: newContent });
+                    const prior = (windowState.metadata?.content as string) ?? "";
+                    const safeContent = isIntroDocPath(filePath)
+                      ? enforceIntroAppendOnly(newContent, prior)
+                      : newContent;
+                    updateWindowMetadata(windowState.id, { content: safeContent });
                     if (filePath) {
-                      saveTextEditContent(filePath, newContent);
-                      debouncedTouchRecent(filePath);
+                      saveTextEditContent(filePath, safeContent);
+                      if (!isIntroDocPath(filePath)) {
+                        debouncedTouchRecent(filePath);
+                      }
                     }
                   }}
+                  onOpenApp={isIntroDocPath(filePath) ? handleOpenApp : undefined}
+                  onOpenTrash={isIntroDocPath(filePath) ? handleTrashClick : undefined}
                 />
               );
             })}
@@ -871,6 +983,9 @@ function DesktopContent({
               );
             })}
 
+          <DesktopIcons onOpenIntro={handleOpenIntro} />
+          <PhotoTrail />
+          <DesktopStickyNote />
           <Dock
             onTrashClick={handleTrashClick}
             onFinderClick={handleFinderDockClick}

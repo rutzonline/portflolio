@@ -13,7 +13,9 @@ import {
   CloudRain,
   CloudSnow,
   CloudLightning,
+  Moon,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useClickOutside } from "@/lib/hooks/use-click-outside";
 import { useWindowManager } from "@/lib/window-context";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -28,6 +30,7 @@ import {
   getWeatherIconName,
   getWeatherScene,
 } from "@/lib/weather";
+import { DEFAULT_WEATHER_CITY } from "@/lib/weather-defaults";
 import { cn } from "@/lib/utils";
 import type { CalendarEvent } from "@/components/apps/calendar/types";
 import type { Conversation } from "@/types/messages";
@@ -44,6 +47,32 @@ const clickableCardClass =
   "bg-muted rounded-md p-3 mb-1.5 transition-colors cursor-pointer";
 const weatherCardClass = "h-[134px] rounded-md p-3 mb-1.5";
 const clickableWeatherCardClass = `${weatherCardClass} transition-colors cursor-pointer`;
+
+function NotificationCenterThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="w-8 h-8 shrink-0" aria-hidden />;
+  }
+
+  const isDark = resolvedTheme === "dark";
+
+  return (
+    <button
+      type="button"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+    >
+      {isDark ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+    </button>
+  );
+}
 
 // WMO weather code → icon + description
 function getWeatherInfo(code: number): {
@@ -358,7 +387,7 @@ function PhotosWidget({
           >
             <Image
               src={getThumbnailUrl(photo.url)}
-              alt={photo.filename}
+              alt={photo.filename || "photo"}
               fill
               className="object-cover"
               unoptimized
@@ -410,7 +439,7 @@ function WeatherWidget({
         )}
         {!loading && weather && (
           <>
-            <p className="text-sm font-medium">San Francisco</p>
+            <p className="text-sm font-medium">{DEFAULT_WEATHER_CITY.name}</p>
             <p className="text-4xl font-light mt-0.5">{Math.round(weather.temp)}°</p>
             <div className="flex items-center gap-1.5 mt-3">
               <div className={iconClassName}>{weatherInfo?.icon}</div>
@@ -455,8 +484,8 @@ export function NotificationCenter({
       try {
         const res = await fetch(
           buildOpenMeteoForecastUrl({
-            latitude: 37.78,
-            longitude: -122.42,
+            latitude: DEFAULT_WEATHER_CITY.latitude,
+            longitude: DEFAULT_WEATHER_CITY.longitude,
             currentFields: ["temperature_2m", "weather_code"],
             dailyFields: ["temperature_2m_max", "temperature_2m_min"],
             forecastDays: 1,
@@ -500,11 +529,14 @@ export function NotificationCenter({
     >
       <ScrollArea className="h-full">
         {/* Date Header */}
-        <div className="px-1 pt-1 pb-2">
-          <p className="text-xs font-semibold uppercase text-muted-foreground">
-            {weekday}
-          </p>
-          <p className="text-2xl font-bold">{monthDay}</p>
+        <div className="px-1 pt-1 pb-2 flex items-start justify-between gap-2">
+          <div>
+            <p className="text-xs font-semibold uppercase text-muted-foreground">
+              {weekday}
+            </p>
+            <p className="text-2xl font-bold">{monthDay}</p>
+          </div>
+          <NotificationCenterThemeToggle />
         </div>
         <CalendarWidget onActivate={onClose} refreshKey={openRefreshKey} />
         <MessagesWidget

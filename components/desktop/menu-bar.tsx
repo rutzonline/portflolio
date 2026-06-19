@@ -15,6 +15,7 @@ import { AppMenu } from "./app-menu";
 import { FileMenu } from "./file-menu";
 import { AboutDialog } from "./about-dialog";
 import { useFileMenuActions } from "@/lib/file-menu-context";
+import { NowPlayingMenuItem } from "./now-playing-menu-item";
 
 type OpenMenu = "apple" | "appMenu" | "fileMenu" | "battery" | "wifi" | "controlCenter" | "notificationCenter" | null;
 
@@ -63,10 +64,11 @@ export function MenuBar({
       const month = now.toLocaleDateString("en-US", { month: "short" });
       const day = now.getDate();
       const time = now.toLocaleTimeString("en-US", {
-        hour: "numeric",
+        hour: "2-digit",
         minute: "2-digit",
+        hour12: false,
       });
-      setCurrentTime(`${weekday} ${month} ${day} ${time}`);
+      setCurrentTime(`${weekday}, ${month} ${day} ${time}`);
     };
 
     updateTime();
@@ -173,6 +175,8 @@ export function MenuBar({
         >
           <FontAwesomeIcon icon={faWifi} className="w-4 h-4 text-black dark:text-white" />
         </button>
+
+        <NowPlayingMenuItem />
 
         {/* Control Center */}
         <button

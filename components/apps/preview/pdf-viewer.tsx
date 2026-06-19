@@ -2,11 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { getPdfProxyUrl } from "@/lib/preview-utils";
+import {
+  buildPdfViewerHash,
+  getPdfProxyUrl,
+  getPdfViewerZoomForPreview,
+} from "@/lib/preview-utils";
 
 interface PdfViewerProps {
   fileUrl: string;
   fileName: string;
+  filePath?: string;
   focusOverlayActive?: boolean;
   onRequestFocus?: () => void;
   errorContentClassName?: string;
@@ -15,6 +20,7 @@ interface PdfViewerProps {
 export function PdfViewer({
   fileUrl,
   fileName,
+  filePath,
   focusOverlayActive = false,
   onRequestFocus,
   errorContentClassName,
@@ -24,7 +30,14 @@ export function PdfViewer({
   const [pdfAttempt, setPdfAttempt] = useState(0);
 
   const pdfProxyUrl = useMemo(() => getPdfProxyUrl(fileUrl), [fileUrl]);
-  const pdfSrc = useMemo(() => `${pdfProxyUrl}&attempt=${pdfAttempt}`, [pdfProxyUrl, pdfAttempt]);
+  const pdfViewerHash = useMemo(
+    () => buildPdfViewerHash(getPdfViewerZoomForPreview(filePath, fileUrl)),
+    [filePath, fileUrl]
+  );
+  const pdfSrc = useMemo(() => {
+    const base = `${pdfProxyUrl}&attempt=${pdfAttempt}`;
+    return `${base}#${pdfViewerHash}`;
+  }, [pdfProxyUrl, pdfAttempt, pdfViewerHash]);
 
   useEffect(() => {
     setPdfLoading(true);

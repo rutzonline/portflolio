@@ -18,6 +18,11 @@ import {
 } from "./utils";
 import { CalendarEvent, Calendar } from "./types";
 
+function getProvidedEventsForDay(events: CalendarEvent[], day: Date): CalendarEvent[] {
+  const dayStr = format(day, "yyyy-MM-dd");
+  return events.filter((event) => dayStr >= event.startDate && dayStr <= event.endDate);
+}
+
 interface MonthViewProps {
   currentDate: Date;
   events: CalendarEvent[];
@@ -25,6 +30,10 @@ interface MonthViewProps {
   onCreateEvent: (date: Date, startTime: string, endTime: string) => void;
   onDateClick?: (date: Date) => void;
   onMonthChange?: (date: Date) => void;
+  /** When true, only render passed events (no sample/holiday merge). */
+  eventsOnly?: boolean;
+  /** Consumption log pill styling + click opens url. */
+  variant?: "default" | "consumption";
 }
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -55,6 +64,8 @@ export function MonthView({
   onCreateEvent,
   onDateClick,
   onMonthChange,
+  eventsOnly = false,
+  variant = "default",
 }: MonthViewProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [visibleMonth, setVisibleMonth] = useState(currentDate);
@@ -226,7 +237,9 @@ export function MonthView({
               }}
             >
               {days.map((day, dayIdx) => {
-                const dayEvents = getEventsForDay(events, day);
+                const dayEvents = eventsOnly
+                  ? getProvidedEventsForDay(events, day)
+                  : getEventsForDay(events, day);
                 const dayIsToday = isToday(day);
                 const isFirstOfMonth = day.getDate() === 1;
                 const monthOfDay = getMonth(day);
@@ -239,8 +252,8 @@ export function MonthView({
                       "border-b border-r border-border p-1 cursor-pointer can-hover:hover:bg-muted/30 transition-colors overflow-hidden"
                     )}
                     style={{ height: WEEK_HEIGHT }}
-                    onDoubleClick={() => handleDoubleClick(day)}
-                    onClick={() => onDateClick?.(day)}
+                    onDoubleClick={variant === "consumption" ? undefined : () => handleDoubleClick(day)}
+                    onClick={variant === "consumption" ? undefined : () => onDateClick?.(day)}
                   >
                     {/* Day number */}
                     <div className="flex justify-end mb-1">
@@ -282,10 +295,30 @@ export function MonthView({
 
                     {/* Events */}
                     <div className="space-y-0.5 overflow-hidden">
-                      {dayEvents.slice(0, 3).map((event) => {
+                      {(variant === "consumption" ? dayEvents.slice(0, 1) : dayEvents.slice(0, 3)).map((event) => {
                         const color = getCalendarColor(event.calendarId);
                         const dateStr = format(day, "yyyy-MM-dd");
                         const isStart = event.startDate === dateStr;
+
+                        if (variant === "consumption") {
+                          return (
+                            <button
+                              key={event.id}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (event.url) {
+                                  window.open(event.url, "_blank", "noopener,noreferrer");
+                                }
+                              }}
+                              className="w-full text-left text-[11px] font-medium leading-tight px-1.5 py-[3px] truncate rounded-[4px] text-white can-hover:hover:brightness-110 transition-[filter]"
+                              style={{ backgroundColor: color }}
+                              title={event.title}
+                            >
+                              {event.title}
+                            </button>
+                          );
+                        }
 
                         return (
                           <div
@@ -313,7 +346,12 @@ export function MonthView({
                           </div>
                         );
                       })}
-                      {dayEvents.length > 3 && (
+                      {variant === "consumption" && dayEvents.length > 1 && (
+                        <div className="text-[10px] text-muted-foreground pl-1">
+                          +{dayEvents.length - 1} more
+                        </div>
+                      )}
+                      {variant !== "consumption" && dayEvents.length > 3 && (
                         <div className="text-xs text-muted-foreground pl-1">
                           +{dayEvents.length - 3} more
                         </div>

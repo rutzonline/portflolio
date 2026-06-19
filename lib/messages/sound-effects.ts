@@ -8,7 +8,7 @@ class SoundEffectPlayer {
   private reactionSound: HTMLAudioElement | null = null;
   private enabled: boolean = true;
   private isMobile: boolean = false;
-  private volume: number = 0.5;
+  private volume: number = 0.85;
 
   private constructor() {
     if (typeof window !== "undefined") {
@@ -20,7 +20,7 @@ class SoundEffectPlayer {
 
       // Get volume from localStorage
       const storedVolume = localStorage.getItem("soundVolume");
-      this.volume = storedVolume !== null ? parseFloat(storedVolume) : 0.5;
+      this.volume = storedVolume !== null ? parseFloat(storedVolume) : 0.85;
 
       this.sentSound = new Audio("/messages/sound-effects/sent.m4a");
       this.receivedSound = new Audio("/messages/sound-effects/received.m4a");

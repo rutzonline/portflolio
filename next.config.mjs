@@ -50,6 +50,8 @@ const nextConfig = {
     ];
 
     return [
+      // App route only — do not redirect /music/* assets (track.mp3, cover.jpg, etc.)
+      { source: "/music", destination: "/desk", permanent: true },
       // Legacy note slugs redirect to /notes/*
       ...legacyNoteSlugs.map((slug) => ({
         source: `/${slug}`,

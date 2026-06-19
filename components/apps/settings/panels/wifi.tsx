@@ -12,11 +12,11 @@ function WifiSignal({ className }: { className?: string }) {
 }
 
 const knownNetworks = [
-  { name: "basecase", connected: true },
+  { name: "rutuja's wifi", connected: true },
 ];
 
 const personalHotspots = [
-  { name: "alana's iphone" },
+  { name: "rutuja's iphone" },
 ];
 
 const otherNetworks = [

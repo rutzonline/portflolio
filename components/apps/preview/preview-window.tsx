@@ -293,6 +293,7 @@ export function PreviewWindow({
         <PdfViewer
           fileUrl={fileUrl}
           fileName={fileName}
+          filePath={filePath}
           focusOverlayActive={!isFocused}
           onRequestFocus={onFocus}
         />

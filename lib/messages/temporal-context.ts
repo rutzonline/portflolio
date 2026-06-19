@@ -36,7 +36,11 @@ export function formatRelativeTime(timestamp: string): string {
 
   const month = messageTime.toLocaleString("en-US", { month: "short" });
   const day = messageTime.getDate();
-  const time = messageTime.toLocaleString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+  const time = messageTime.toLocaleString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
   return `${month} ${day}, ${time}`;
 }
 

@@ -25,7 +25,10 @@ export type MusicView =
   | "artists"
   | "albums"
   | "songs"
-  | "playlist";
+  | "playlist"
+  | "beyond-desk"
+  | "newsletters"
+  ;
 
 // iTunes Chart types
 export interface ChartAlbum {

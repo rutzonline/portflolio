@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useSystemSettings } from "@/lib/system-settings-context";
 import { getWallpaperPath } from "@/lib/os-versions";
+import { getHeadshotSrc } from "@/config/site";
 
 interface LockScreenProps {
   onUnlock: () => void;
@@ -18,17 +19,15 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
   useEffect(() => {
     const updateDateTime = () => {
       const now = new Date();
-      // Time in format "6:24" (no leading zero, no AM/PM)
-      const hours = now.getHours();
+      const hours = now.getHours().toString().padStart(2, "0");
       const minutes = now.getMinutes().toString().padStart(2, "0");
-      const displayHours = hours % 12 || 12;
-      setCurrentTime(`${displayHours}:${minutes}`);
+      setCurrentTime(`${hours}:${minutes}`);
 
       // Date in format "Wed Jan 7"
       const weekday = now.toLocaleDateString("en-US", { weekday: "short" });
       const month = now.toLocaleDateString("en-US", { month: "short" });
       const day = now.getDate();
-      setCurrentDate(`${weekday} ${month} ${day}`);
+      setCurrentDate(`${weekday}, ${month} ${day}`);
     };
 
     updateDateTime();
@@ -64,16 +63,10 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
 
       {/* Date and Time - positioned near top */}
       <div className="mt-24 text-center relative z-10">
-        <div
-          className="text-2xl font-medium text-white/80 tracking-wide"
-          style={{ textShadow: "0 0 20px rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.2)" }}
-        >
+        <div className="text-2xl font-medium text-white/90 tracking-wide">
           {currentDate}
         </div>
-        <div
-          className="text-[120px] text-white/70 leading-none tracking-tight"
-          style={{ fontWeight: 500, textShadow: "0 0 40px rgba(255,255,255,0.4), 0 0 80px rgba(255,255,255,0.2), 0 4px 8px rgba(0,0,0,0.3)" }}
-        >
+        <div className="text-[120px] font-medium text-white leading-none tracking-tight">
           {currentTime}
         </div>
       </div>
@@ -86,17 +79,18 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
         {/* Avatar with shadow */}
         <div className="w-16 h-16 rounded-full overflow-hidden shadow-xl">
           <Image
-            src="/headshot.jpg"
-            alt="Alana Goyal"
+            src={getHeadshotSrc()}
+            alt="rutuja rochkari"
             width={64}
             height={64}
             className="object-cover w-full h-full"
+            unoptimized
           />
         </div>
 
         {/* Name */}
         <div className="mt-2 text-sm font-medium text-white drop-shadow-md">
-          Alana Goyal
+          rutuja rochkari
         </div>
 
         {/* Touch ID prompt */}

@@ -22,4 +22,6 @@ export interface AppConfig {
   mobile?: AppMobilePolicy;
   multiWindow?: boolean; // defaults to false - allows multiple windows per app
   cascadeOffset?: number; // offset for cascading new windows (default 30)
+  /** Multiplier for dock icon art size (default 1). Use when PNG padding differs from other apps. */
+  dockIconScale?: number;
 }

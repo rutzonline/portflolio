@@ -9,12 +9,17 @@ import {
   isSameMonth,
   format,
 } from "./utils";
+import type { CalendarEvent, Calendar } from "./types";
 
 interface YearViewProps {
   currentDate: Date;
   onMonthClick?: (date: Date) => void;
   onDateClick?: (date: Date) => void;
   onYearChange?: (date: Date) => void;
+  /** Heatmap dots for consumption mode */
+  events?: CalendarEvent[];
+  calendars?: Calendar[];
+  eventsOnly?: boolean;
 }
 
 const WEEKDAY_LETTERS = ["S", "M", "T", "W", "T", "F", "S"];
@@ -23,11 +28,19 @@ const WEEKDAY_LETTERS = ["S", "M", "T", "W", "T", "F", "S"];
 const YEARS_BEFORE = 10;
 const YEARS_AFTER = 10;
 
+function countEventsOnDay(events: CalendarEvent[], day: Date): CalendarEvent[] {
+  const dayStr = format(day, "yyyy-MM-dd");
+  return events.filter((e) => dayStr >= e.startDate && dayStr <= e.endDate);
+}
+
 export function YearView({
   currentDate,
   onMonthClick,
   onDateClick,
   onYearChange,
+  events = [],
+  calendars = [],
+  eventsOnly = false,
 }: YearViewProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const yearRefs = useRef<Map<number, HTMLDivElement>>(new Map());
@@ -136,6 +149,8 @@ export function YearView({
                     monthDate={monthDate}
                     onMonthClick={onMonthClick}
                     onDateClick={onDateClick}
+                    events={eventsOnly ? events : []}
+                    calendars={calendars}
                   />
                 ))}
               </div>
@@ -151,9 +166,13 @@ interface MiniMonthProps {
   monthDate: Date;
   onMonthClick?: (date: Date) => void;
   onDateClick?: (date: Date) => void;
+  events: CalendarEvent[];
+  calendars: Calendar[];
 }
 
-function MiniMonth({ monthDate, onMonthClick, onDateClick }: MiniMonthProps) {
+function MiniMonth({ monthDate, onMonthClick, onDateClick, events, calendars }: MiniMonthProps) {
+  const getColor = (calendarId: string) =>
+    calendars.find((c) => c.id === calendarId)?.color ?? "#34C759";
   const days = getMonthViewDays(monthDate);
   const weeks: Date[][] = [];
 
@@ -191,11 +210,15 @@ function MiniMonth({ monthDate, onMonthClick, onDateClick }: MiniMonthProps) {
               const isCurrentMonth = isSameMonth(day, monthDate);
               const dayIsToday = isToday(day);
 
+              const dayEvents = countEventsOnDay(events, day);
+              const heatColor =
+                dayEvents.length > 0 ? getColor(dayEvents[0].calendarId) : undefined;
+
               return (
                 <button
                   key={dayIdx}
                   className={cn(
-                    "text-[10px] desktop:text-xs aspect-square flex items-center justify-center rounded-full transition-colors",
+                    "text-[10px] desktop:text-xs aspect-square flex flex-col items-center justify-center rounded-full transition-colors relative",
                     !isCurrentMonth && "text-muted-foreground/50",
                     isCurrentMonth && "can-hover:hover:bg-muted",
                     dayIsToday && "bg-red-500 text-white can-hover:hover:bg-red-600"
@@ -203,7 +226,18 @@ function MiniMonth({ monthDate, onMonthClick, onDateClick }: MiniMonthProps) {
                   onClick={() => onDateClick?.(day)}
                   disabled={!isCurrentMonth}
                 >
-                  {format(day, "d")}
+                  <span>{format(day, "d")}</span>
+                  {heatColor && isCurrentMonth && !dayIsToday && (
+                    <span className="flex gap-[2px] mt-[1px]">
+                      {dayEvents.slice(0, 3).map((ev) => (
+                        <span
+                          key={ev.id}
+                          className="w-1 h-1 rounded-full"
+                          style={{ backgroundColor: getColor(ev.calendarId) }}
+                        />
+                      ))}
+                    </span>
+                  )}
                 </button>
               );
             })}

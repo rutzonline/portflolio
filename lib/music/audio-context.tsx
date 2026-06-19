@@ -30,6 +30,33 @@ const AudioContext = createContext<AudioContextValue | null>(null);
 
 const STORAGE_KEY = "music-playback-state";
 
+function isPlayablePreviewUrl(url: string | null | undefined): boolean {
+  if (!url?.trim()) return false;
+  return url.startsWith("/") || url.startsWith("http://") || url.startsWith("https://");
+}
+
+function migrateLegacyMediaUrl(url: string | null | undefined): string | null {
+  if (!url) return url ?? null;
+  if (url === "/music/track.mp3") return "/now-playing-media/track.mp3";
+  if (url === "/music/cover.jpg") return "/now-playing-media/cover.jpg";
+  return url;
+}
+
+function sanitizePersistedTrack(track: PlaylistTrack | null | undefined): PlaylistTrack | null {
+  if (!track) return null;
+  const previewUrl = migrateLegacyMediaUrl(track.previewUrl);
+  if (!isPlayablePreviewUrl(previewUrl)) return null;
+  return {
+    ...track,
+    previewUrl,
+    albumArt: migrateLegacyMediaUrl(track.albumArt) ?? track.albumArt,
+  };
+}
+
+function ignorePlaybackRejection(): void {
+  // Autoplay / missing source rejections are expected; avoid console.error (Next dev overlay).
+}
+
 // Persist playback state including queue for next/previous to work after refresh
 interface PersistedState {
   volume: number;
@@ -48,12 +75,13 @@ function loadStoredState(): Partial<PlaybackState> {
     const stored = sessionStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed: PersistedState = JSON.parse(stored);
+      const currentTrack = sanitizePersistedTrack(parsed.currentTrack);
       return {
-        volume: parsed.volume ?? 0.7,
+        volume: parsed.volume ?? 1,
         isShuffle: parsed.isShuffle ?? false,
         repeatMode: parsed.repeatMode ?? "off",
-        currentTrack: parsed.currentTrack ?? null,
-        progress: parsed.progress ?? 0,
+        currentTrack,
+        progress: currentTrack ? (parsed.progress ?? 0) : 0,
         queue: parsed.queue ?? [],
         originalQueue: parsed.originalQueue ?? [],
         queueIndex: parsed.queueIndex ?? -1,
@@ -91,7 +119,7 @@ const defaultState: PlaybackState = {
   originalQueue: [],
   queueIndex: -1,
   progress: 0,
-  volume: 0.7,
+  volume: 1,
   isShuffle: false,
   repeatMode: "off",
   duration: 0,
@@ -174,7 +202,10 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       // Handle playback errors
       const handleError = () => {
         const errorMessage = audio.error?.message || "Failed to load audio";
-        console.error("Audio error:", errorMessage);
+
+        audio.removeAttribute("src");
+        audio.load();
+
         setPlaybackState((prev) => ({
           ...prev,
           isPlaying: false,
@@ -186,8 +217,8 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       audio.addEventListener("error", handleError);
 
       // Restore track from persisted state (but don't auto-play)
-      if (initialState.currentTrack?.previewUrl) {
-        audio.src = initialState.currentTrack.previewUrl;
+      if (isPlayablePreviewUrl(initialState.currentTrack?.previewUrl)) {
+        audio.src = initialState.currentTrack!.previewUrl!;
       }
 
       audioRef.current = audio;
@@ -289,8 +320,8 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       const nextIndex = queueIndex + 1;
       if (nextIndex < queue.length) {
         const nextTrack = queue[nextIndex];
-        if (nextTrack.previewUrl) {
-          audio.src = nextTrack.previewUrl;
+        if (isPlayablePreviewUrl(nextTrack.previewUrl)) {
+          audio.src = nextTrack.previewUrl!;
           audio.play().catch(() => {});
           setPlaybackState((prev) => ({
             ...prev,
@@ -307,8 +338,8 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         }
       } else if (repeatMode === "all" && queue.length > 0) {
         const firstTrack = queue[0];
-        if (firstTrack.previewUrl) {
-          audio.src = firstTrack.previewUrl;
+        if (isPlayablePreviewUrl(firstTrack.previewUrl)) {
+          audio.src = firstTrack.previewUrl!;
           audio.play().catch(() => {});
           setPlaybackState((prev) => ({
             ...prev,
@@ -336,13 +367,12 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     const audio = audioRef.current;
     if (!audio) return;
 
-    if (!track.previewUrl) {
-      console.warn("No preview URL for track:", track.name);
+    if (!isPlayablePreviewUrl(track.previewUrl)) {
       return;
     }
 
-    audio.src = track.previewUrl;
-    audio.play().catch(console.error);
+    audio.src = track.previewUrl!;
+    audio.play().catch(ignorePlaybackRejection);
 
     setPlaybackState((prev) => {
       // If shuffle is on, create shuffled queue with selected track first
@@ -381,7 +411,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
 
   const resume = useCallback(() => {
     if (audioRef.current && playbackState.currentTrack) {
-      audioRef.current.play().catch(console.error);
+      audioRef.current.play().catch(ignorePlaybackRejection);
       setPlaybackState((prev) => ({ ...prev, isPlaying: true, error: null }));
     }
   }, [playbackState.currentTrack]);
@@ -417,11 +447,11 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     }
 
     const nextTrack = queue[nextIndex];
-    if (nextTrack && nextTrack.previewUrl && audioRef.current) {
-      audioRef.current.src = nextTrack.previewUrl;
+    if (nextTrack && isPlayablePreviewUrl(nextTrack.previewUrl) && audioRef.current) {
+      audioRef.current.src = nextTrack.previewUrl!;
       // Only auto-play if we were already playing
       if (isPlaying) {
-        audioRef.current.play().catch(console.error);
+        audioRef.current.play().catch(ignorePlaybackRejection);
       }
       setPlaybackState((prev) => ({
         ...prev,
@@ -447,11 +477,11 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     const prevIndex = queueIndex - 1;
     if (prevIndex >= 0) {
       const prevTrack = queue[prevIndex];
-      if (prevTrack && prevTrack.previewUrl) {
-        audio.src = prevTrack.previewUrl;
+      if (prevTrack && isPlayablePreviewUrl(prevTrack.previewUrl)) {
+        audio.src = prevTrack.previewUrl!;
         // Only auto-play if we were already playing
         if (isPlaying) {
-          audio.play().catch(console.error);
+          audio.play().catch(ignorePlaybackRejection);
         }
         setPlaybackState((prev) => ({
           ...prev,

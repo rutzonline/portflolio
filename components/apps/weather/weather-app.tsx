@@ -18,6 +18,7 @@ import { WindowNavShell, WindowNavSpacer } from "@/components/window-nav-shell";
 import { WindowControls } from "@/components/window-controls";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { WeatherSceneEffects } from "@/components/apps/weather/weather-scene-effects";
+import { DEFAULT_WEATHER_CITY } from "@/lib/weather-defaults";
 import {
   buildOpenMeteoForecastUrl,
   getWeatherDescription,
@@ -164,7 +165,10 @@ function serializeWeatherDataForCache(weatherByCity: Record<string, CityWeather>
   return cache;
 }
 
+const DEFAULT_CITY_ID = DEFAULT_WEATHER_CITY.id;
+
 const DEFAULT_CITIES: CityConfig[] = [
+  { ...DEFAULT_WEATHER_CITY },
   { id: "san-francisco", name: "San Francisco", latitude: 37.78, longitude: -122.42 },
   { id: "seattle", name: "Seattle", latitude: 47.61, longitude: -122.33 },
   { id: "los-angeles", name: "Los Angeles", latitude: 34.05, longitude: -118.24 },
@@ -602,7 +606,7 @@ export function WeatherApp({ isMobile = false, inShell = false }: WeatherAppProp
     () => restoreWeatherDataFromCache(loadWeatherDataCache())
   );
   const [selectedCityId, setSelectedCityId] = useState(
-    () => loadWeatherSelectedCity() ?? DEFAULT_CITIES[0]?.id ?? "san-francisco"
+    () => loadWeatherSelectedCity() ?? DEFAULT_CITY_ID
   );
   const [failed, setFailed] = useState(false);
   const [containerWidth, setContainerWidth] = useState(1200);

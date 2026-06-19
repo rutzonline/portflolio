@@ -4,7 +4,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Nav } from "./nav";
 import { Conversation, Message, Reaction, REACTION_TEXT } from "@/types/messages";
 import { v4 as uuidv4 } from "uuid";
-import { initialConversations } from "@/data/messages/initial-conversations";
+import {
+  initialConversations,
+  MESSAGES_DEFAULT_CONVERSATION_ID,
+  MESSAGES_SEED_VERSION,
+} from "@/data/messages/initial-conversations";
 import { MessageQueue } from "@/lib/messages/message-queue";
 import { soundEffects, shouldMuteIncomingSound } from "@/lib/messages/sound-effects";
 import { extractMessageData } from "@/lib/messages/content";
@@ -27,6 +31,7 @@ interface AppProps {
 
 const STORAGE_KEY = "dialogueConversations";
 const DELETED_INITIAL_KEY = "dialogueDeletedInitialConversations";
+const SEED_VERSION_KEY = "dialogueSeedVersion";
 
 function formatNotificationBody(content: string): string {
   return content.trim().replace(/\s+/g, " ");
@@ -46,6 +51,10 @@ function compareConversations(a: Conversation, b: Conversation): number {
 
 function getDefaultConversationId(conversations: Conversation[]): string | null {
   if (conversations.length === 0) return null;
+
+  const preferred = conversations.find((c) => c.id === MESSAGES_DEFAULT_CONVERSATION_ID);
+  if (preferred) return preferred.id;
+
   const sorted = [...conversations].sort(compareConversations);
   return sorted[0]?.id ?? null;
 }
@@ -211,6 +220,12 @@ export default function App({
 
   // Get conversations from local storage
   useEffect(() => {
+    const storedSeedVersion = localStorage.getItem(SEED_VERSION_KEY);
+    if (storedSeedVersion !== String(MESSAGES_SEED_VERSION)) {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.setItem(SEED_VERSION_KEY, String(MESSAGES_SEED_VERSION));
+    }
+
     const saved = localStorage.getItem(STORAGE_KEY);
     const deletedInitialRaw = localStorage.getItem(DELETED_INITIAL_KEY);
     const urlParams = new URLSearchParams(window.location.search);
@@ -565,9 +580,9 @@ export default function App({
       const timestamp = new Date().toLocaleString("en-US", {
         month: "short",
         day: "numeric",
-        hour: "numeric",
+        hour: "2-digit",
         minute: "2-digit",
-        hour12: true,
+        hour12: false,
       });
 
       removed.forEach((name) => {

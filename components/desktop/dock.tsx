@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import Image from "next/image";
 import { APPS, getAppById } from "@/lib/app-config";
 import { useWindowManager } from "@/lib/window-context";
 import { cn } from "@/lib/utils";
-import { CalendarDockIcon } from "@/components/apps/calendar/calendar-dock-icon";
+import { motion, useMotionValue } from "framer-motion";
+import { DockIcon, getDockSlotHeight } from "./dock-icon";
 
 interface DockProps {
   onTrashClick?: () => void;
@@ -15,7 +15,7 @@ interface DockProps {
 
 function DockTooltip({ label }: { label: string }) {
   return (
-    <div className="absolute -top-10 left-1/2 -translate-x-1/2 pointer-events-none">
+    <div className="relative pointer-events-none">
       <svg
         viewBox="0 0 100 44"
         className="h-9 min-w-16"
@@ -54,12 +54,7 @@ const getDefaultDockApps = () => {
   return APPS.filter((app) => app.showOnDockByDefault !== false).map((app) => app.id);
 };
 
-function formatBadgeCount(count: number): string {
-  if (count > 99) return "99+";
-  return String(count);
-}
-
-const DOCK_SCALE_STORAGE_KEY = "desktopDockDesiredScale";
+const DOCK_SCALE_STORAGE_KEY = "desktopDockDesiredScale_v4";
 const DOCK_MIN_DESIRED_SCALE = 0.7;
 const DOCK_MAX_DESIRED_SCALE = 1.6;
 const DOCK_DEFAULT_SCALE = 1;
@@ -462,16 +457,40 @@ export function Dock({
     };
   }, [endDockResize]);
 
+  const mouseX = useMotionValue(Number.POSITIVE_INFINITY);
+  const baseIconSize = metrics.icon;
+  const maxIconSize = Math.round(metrics.icon * 2);
+  const magnificationEnabled = !isResizingDock;
+
+  const badgeMetrics = useMemo(
+    () => ({
+      height: metrics.badgeHeight,
+      minWidth: metrics.badgeMinWidth,
+      paddingX: metrics.badgePaddingX,
+      fontSize: metrics.badgeFontSize,
+    }),
+    [metrics.badgeHeight, metrics.badgeMinWidth, metrics.badgePaddingX, metrics.badgeFontSize]
+  );
+
+  const dockSlotHeight = getDockSlotHeight(baseIconSize, metrics.dot);
+  const dockBarHeight = dockSlotHeight + metrics.padY * 2;
+
   return (
-    <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-[60]">
-      <div
+    <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-[60] overflow-visible">
+      <motion.div
+        onPointerMove={(e) => {
+          if (!isResizingDock) mouseX.set(e.clientX);
+        }}
+        onPointerLeave={() => mouseX.set(Number.POSITIVE_INFINITY)}
         className={cn(
-          "flex items-end bg-white/30 dark:bg-black/30 backdrop-blur-2xl rounded-2xl border border-white/10 dark:border-white/10 shadow-lg w-max",
-          isResizingDock ? "transition-none" : "transition-all duration-300"
+          "flex items-end overflow-visible bg-white/30 dark:bg-black/30 backdrop-blur-2xl rounded-2xl border border-white/10 dark:border-white/10 shadow-lg",
+          isResizingDock && "transition-none"
         )}
         style={{
           gap: `${metrics.gap}px`,
           padding: `${metrics.padY}px ${metrics.padX}px`,
+          height: dockBarHeight,
+          minHeight: dockBarHeight,
         }}
       >
         {appsToRender.map((app) => {
@@ -480,64 +499,31 @@ export function Dock({
           const badgeCount = appBadges[app.id] ?? 0;
 
           return (
-            <button
+            <DockIcon
               key={app.id}
+              mouseX={mouseX}
+              baseSize={baseIconSize}
+              maxSize={maxIconSize}
+              appId={app.id}
+              name={app.name}
+              iconSrc={app.icon}
+              isOpen={isOpen}
+              showOpenDot={app.id === "finder"}
+              badgeCount={badgeCount}
+              animState={animState}
+              magnificationEnabled={magnificationEnabled}
               onClick={() => handleAppClick(app.id)}
               onMouseEnter={() => setHoveredApp(app.id)}
               onMouseLeave={() => setHoveredApp(null)}
-              className={cn(
-                "group relative flex flex-col items-center outline-none transition-all duration-300 flex-shrink-0",
-                animState === "entering" && "animate-dock-enter",
-                animState === "exiting" && "animate-dock-exit",
-                animState === "stable" && "can-hover:hover:scale-110 active:scale-95"
-              )}
-            >
-              {hoveredApp === app.id && animState === "stable" && !isResizingDock && (
-                <DockTooltip label={app.name} />
-              )}
-              <div
-                className="relative flex items-center justify-center"
-                style={{ width: `${metrics.icon}px`, height: `${metrics.icon}px` }}
-              >
-                {app.id === "calendar" ? (
-                  <CalendarDockIcon size={Math.round(metrics.icon * 0.79)} />
-                ) : (
-                  <Image
-                    src={app.icon}
-                    alt={app.name}
-                    width={metrics.icon}
-                    height={metrics.icon}
-                    className="object-contain [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.35))] pointer-events-none"
-                    draggable={false}
-                    unoptimized
-                  />
-                )}
-                {badgeCount > 0 && (
-                  <div
-                    className="absolute -top-1 -right-1 rounded-full bg-red-500 text-white font-semibold leading-none flex items-center justify-center shadow-[0_1px_3px_rgba(0,0,0,0.45)]"
-                    style={{
-                      minWidth: `${metrics.badgeMinWidth}px`,
-                      height: `${metrics.badgeHeight}px`,
-                      paddingLeft: `${metrics.badgePaddingX}px`,
-                      paddingRight: `${metrics.badgePaddingX}px`,
-                      fontSize: `${metrics.badgeFontSize}px`,
-                    }}
-                  >
-                    {formatBadgeCount(badgeCount)}
-                  </div>
-                )}
-              </div>
-              <div
-                className={cn(
-                  "rounded-full mt-1 transition-opacity",
-                  // Finder always shows dot (can be closed but not quit)
-                  isOpen || app.id === "finder"
-                    ? "bg-black/60 dark:bg-white/60 opacity-100"
-                    : "opacity-0"
-                )}
-                style={{ width: `${metrics.dot}px`, height: `${metrics.dot}px` }}
-              />
-            </button>
+              tooltip={
+                hoveredApp === app.id && animState === "stable" && !isResizingDock ? (
+                  <DockTooltip label={app.name} />
+                ) : undefined
+              }
+              dotSize={metrics.dot}
+              badgeMetrics={badgeMetrics}
+              dockArtScale={app.dockIconScale}
+            />
           );
         })}
         {/* Resize handle before Trash */}
@@ -575,32 +561,29 @@ export function Dock({
           />
         </button>
 
-        {/* Trash icon */}
-        <button
+        <DockIcon
+          key="trash"
+          mouseX={mouseX}
+          baseSize={baseIconSize}
+          maxSize={maxIconSize}
+          appId="trash"
+          name="Trash"
+          iconSrc="/trash.png"
+          isOpen={false}
+          showOpenDot={false}
+          badgeCount={0}
+          animState="stable"
+          magnificationEnabled={magnificationEnabled}
           onClick={handleTrashClick}
           onMouseEnter={() => setHoveredApp("trash")}
           onMouseLeave={() => setHoveredApp(null)}
-          className="group relative flex flex-col items-center transition-transform hover:scale-110 active:scale-95 outline-none flex-shrink-0"
-        >
-          {hoveredApp === "trash" && !isResizingDock && <DockTooltip label="Trash" />}
-          <div
-            className="relative flex items-center justify-center"
-            style={{ width: `${metrics.icon}px`, height: `${metrics.icon}px` }}
-          >
-            <Image
-              src="/trash.png"
-              alt="Trash"
-              width={metrics.icon}
-              height={metrics.icon}
-              className="object-contain [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.35))] pointer-events-none"
-              draggable={false}
-              unoptimized
-            />
-          </div>
-          {/* Trash doesn't show open indicator */}
-          <div className="rounded-full mt-1 opacity-0" style={{ width: `${metrics.dot}px`, height: `${metrics.dot}px` }} />
-        </button>
-      </div>
+          tooltip={
+            hoveredApp === "trash" && !isResizingDock ? <DockTooltip label="Trash" /> : undefined
+          }
+          dotSize={metrics.dot}
+          badgeMetrics={badgeMetrics}
+        />
+      </motion.div>
     </div>
   );
 }

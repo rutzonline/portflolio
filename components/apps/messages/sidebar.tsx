@@ -60,7 +60,7 @@ export function Sidebar({
       const date = parseISO(timestamp);
 
       if (isToday(date)) {
-        return format(date, "h:mm a"); // e.g. "12:40 AM"
+        return format(date, "HH:mm");
       }
 
       if (isYesterday(date)) {

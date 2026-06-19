@@ -1,8 +1,13 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { WindowControls } from "@/components/window-controls";
+import {
+  stickyNoteShellClass,
+  STICKY_NOTE_TITLE_BAR_CLASS,
+  STICKY_NOTE_TITLE_CLASS,
+} from "@/components/desktop/sticky-note-styles";
 import {
   useWindowBehavior,
   Position,
@@ -13,6 +18,10 @@ import {
   EDGE_SIZE,
 } from "@/lib/use-window-behavior";
 import { MAXIMIZED_Z_INDEX, useWindowManager } from "@/lib/window-context";
+import { isIntroDocPath } from "@/lib/intro-doc";
+import type { IntroReadmeTabId } from "@/lib/intro-doc-baseline";
+import { IntroReadmeCarousel } from "./intro-readme-carousel";
+import { IntroReadmePolaroid } from "./intro-readme-polaroid";
 
 interface TextEditWindowProps {
   windowId: string; // Unique window identifier for multi-window support
@@ -30,6 +39,8 @@ interface TextEditWindowProps {
   onMove: (position: Position) => void;
   onResize: (size: Size, position?: Position) => void;
   onContentChange: (content: string) => void;
+  onOpenApp?: (appId: string) => void;
+  onOpenTrash?: () => void;
 }
 
 export function TextEditWindow({
@@ -48,12 +59,16 @@ export function TextEditWindow({
   onMove,
   onResize,
   onContentChange,
+  onOpenApp,
+  onOpenTrash,
 }: TextEditWindowProps) {
   // windowId is used for identification in multi-window scenarios
   void windowId;
   const windowRef = useRef<HTMLDivElement>(null);
   const fileName = filePath?.split("/").pop() || "Untitled";
   const { isMenuOpenRef } = useWindowManager();
+  const isIntroDoc = isIntroDocPath(filePath);
+  const [activeReadmeTab, setActiveReadmeTab] = useState<IntroReadmeTabId>("about");
 
   const { isInteracting, handleDragStart, handleResizeStart } = useWindowBehavior({
     position,
@@ -104,9 +119,13 @@ export function TextEditWindow({
       };
 
   return (
+    <>
     <div
       ref={windowRef}
-      className={cn("fixed", !isFocused && !isMaximized && "opacity-95")}
+      className={cn(
+        "fixed",
+        !isFocused && !isMaximized && !isIntroDoc && "opacity-95"
+      )}
       style={windowStyle}
       onMouseDownCapture={(e) => {
         // Don't focus or propagate if menu is open
@@ -128,40 +147,65 @@ export function TextEditWindow({
       {/* Window chrome */}
       <div
         className={cn(
-          "absolute inset-0 bg-white dark:bg-zinc-900 overflow-hidden shadow-2xl border border-black/10 dark:border-white/10 flex flex-col",
+          "absolute inset-0 flex flex-col",
+          isIntroDoc
+            ? stickyNoteShellClass(true)
+            : "bg-white dark:bg-zinc-900 shadow-2xl border border-black/10 dark:border-white/10 overflow-hidden",
           isMaximized ? "rounded-none" : "rounded-xl",
           !isFocused && "[&_*]:!cursor-default"
         )}
       >
         {/* Title bar */}
         <div
-          className="px-4 py-2 flex min-w-0 items-center justify-between select-none bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700 cursor-default"
+          className={cn(
+            "flex min-w-0 items-center select-none cursor-default shrink-0",
+            isIntroDoc
+              ? STICKY_NOTE_TITLE_BAR_CLASS
+              : "gap-2 px-4 py-2 justify-between bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700"
+          )}
           onMouseDown={handleDragStart}
         >
           <WindowControls
             inShell={true}
-            className="p-2 window-controls"
+            className={cn("window-controls shrink-0", isIntroDoc ? "" : "p-2")}
             onClose={onClose}
             onMinimize={onMinimize}
             onToggleMaximize={onToggleMaximize}
             isMaximized={isMaximized}
             closeLabel="Close window"
           />
-          <div className="flex-1 min-w-0 px-2 text-center">
-            <span className="block truncate text-zinc-500 dark:text-zinc-400 text-sm">{fileName}</span>
-          </div>
-          <div className="w-[68px] shrink-0" />
+          {isIntroDoc ? (
+            <span className={STICKY_NOTE_TITLE_CLASS}>readme</span>
+          ) : (
+            <>
+              <div className="flex-1 min-w-0 px-2 text-center">
+                <span className="block truncate text-zinc-500 dark:text-zinc-400 text-sm">
+                  {fileName}
+                </span>
+              </div>
+              <div className="w-[68px] shrink-0" />
+            </>
+          )}
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-h-0">
-          <textarea
-            value={content}
-            onChange={(e) => onContentChange(e.target.value)}
-            className="w-full h-full bg-transparent resize-none outline-none font-mono text-sm leading-relaxed p-4 overflow-auto text-zinc-900 dark:text-white"
-            spellCheck={false}
+        {isIntroDoc ? (
+          <IntroReadmeCarousel
+            isFocused={isFocused}
+            onActiveTabChange={setActiveReadmeTab}
+            onOpenApp={onOpenApp}
+            onOpenTrash={onOpenTrash}
           />
-        </div>
+        ) : (
+          <div className="flex-1 min-h-0 flex flex-col">
+            <textarea
+              value={content}
+              onChange={(e) => onContentChange(e.target.value)}
+              className="w-full flex-1 min-h-0 bg-transparent resize-none outline-none leading-relaxed overflow-auto font-mono text-sm p-4 text-zinc-900 dark:text-white"
+              spellCheck={false}
+            />
+          </div>
+        )}
       </div>
 
       {/* Resize handles */}
@@ -210,5 +254,15 @@ export function TextEditWindow({
         </>
       )}
     </div>
+
+    {isIntroDoc && !isMaximized && activeReadmeTab === "about" && (
+      <IntroReadmePolaroid
+        position={position}
+        zIndex={zIndex}
+        isFocused={isFocused}
+        onFocus={onFocus}
+      />
+    )}
+    </>
   );
 }

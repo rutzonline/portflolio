@@ -151,7 +151,14 @@ export function PreviewApp({
 
   const renderContent = () => {
     if (fileType === "pdf") {
-      return <PdfViewer fileUrl={fileUrl} fileName={fileName} errorContentClassName="px-4" />;
+      return (
+        <PdfViewer
+          fileUrl={fileUrl}
+          fileName={fileName}
+          filePath={filePath}
+          errorContentClassName="px-4"
+        />
+      );
     }
 
     if (imageError) {

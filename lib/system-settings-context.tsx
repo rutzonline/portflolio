@@ -74,7 +74,7 @@ export function SystemSettingsProvider({ children }: { children: React.ReactNode
 
   // Load all settings synchronously from localStorage to prevent flash on hydration
   const [brightness, setBrightnessState] = useState(initial.brightness);
-  const [volume, setVolumeState] = useState(50);
+  const [volume, setVolumeState] = useState(85);
   const [wifiEnabled, setWifiEnabledState] = useState(initial.wifiEnabled);
   const [bluetoothEnabled, setBluetoothEnabledState] = useState(initial.bluetoothEnabled);
   const [airdropMode, setAirdropModeState] = useState<AirdropMode>(initial.airdropMode);

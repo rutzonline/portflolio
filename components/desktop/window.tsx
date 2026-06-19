@@ -119,7 +119,9 @@ export function Window({
   // so children (e.g. Messages and its MessageQueue) are never unmounted.
   const isHiddenMinimized = windowState.isMinimized && keepMountedWhenMinimized;
 
-  const { position, size, isMaximized, zIndex } = windowState;
+  const { position: rawPosition, size: rawSize, isMaximized, zIndex } = windowState;
+const position = rawPosition ?? { x: 160, y: 70 };
+const size = rawSize ?? { width: 800, height: 550 };
 
   const windowStyle: React.CSSProperties = isHiddenMinimized
     ? { width: 0, height: 0, overflow: "hidden" }

@@ -29,12 +29,12 @@ export function getOptimizedImageUrl(
  * Get thumbnail URL for grid display
  */
 export function getThumbnailUrl(url: string): string {
-  return getOptimizedImageUrl(url, 400, 75);
+  return url;
 }
 
 /**
  * Get viewer URL for full photo display
  */
 export function getViewerUrl(url: string): string {
-  return getOptimizedImageUrl(url, 1600, 85);
+  return url;
 }

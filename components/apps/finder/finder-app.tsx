@@ -13,6 +13,7 @@ import {
   getLocalTextFileContent,
   PROJECTS_DIR,
 } from "@/lib/file-route-utils";
+import { DESKTOP_FINDER_PATH } from "@/lib/desktop-folder";
 import { getFinderVisibleApps } from "@/lib/app-availability";
 import { getFileModifiedDate } from "@/lib/file-storage";
 import { loadFinderPath, saveFinderPath } from "@/lib/sidebar-persistence";
@@ -29,7 +30,7 @@ import {
 import { useRouter } from "next/navigation";
 import { FinderSearchEngine, type EntryInput } from "./search-engine";
 
-const USERNAME = HOME_DIR.split("/").pop() ?? "alanagoyal";
+const USERNAME = HOME_DIR.split("/").pop() ?? "rutujarochkari";
 
 interface FileItem {
   name: string;
@@ -40,7 +41,7 @@ interface FileItem {
 }
 
 // Sidebar items
-export type SidebarItem = "recents" | "applications" | "desktop" | "documents" | "downloads" | "projects" | "trash";
+export type SidebarItem = "recents" | "applications" | "desktop" | "documents" | "downloads" | "projects" | "trash" | "skills" | "education" | "tools" | "certifications";
 
 const SIDEBAR_ITEMS: { id: SidebarItem; label: string; icon: string }[] = [
   { id: "recents", label: "Recents", icon: "clock" },
@@ -365,6 +366,23 @@ export function FinderApp({
           type: item.type,
           path: `${PROJECTS_DIR}/${repo}/${item.path}`,
         })));
+        setLoading(false);
+        return;
+      }
+
+      // Desktop — PDFs from public/desktop/ (auto-discovered)
+      if (path === DESKTOP_FINDER_PATH) {
+        try {
+          const res = await fetch("/api/finder/desktop-files");
+          if (res.ok) {
+            const data = await res.json();
+            setFiles(data.files ?? []);
+          } else {
+            setFiles([]);
+          }
+        } catch {
+          setFiles([]);
+        }
         setLoading(false);
         return;
       }

@@ -4,13 +4,16 @@ import { useState, useEffect } from "react";
 import { format } from "date-fns";
 
 interface CalendarDockIconProps {
+  /** Artboard size — same as other dock icons (`getDockIconVisualSize`). */
   size?: number;
 }
+
+/** `size` is the full dock slot size. The tile renders at 79% of that, centered. */
+const DOCK_TILE_RATIO = 0.79;
 
 export function CalendarDockIcon({ size = 48 }: CalendarDockIconProps) {
   const [date, setDate] = useState(new Date());
 
-  // Update date at midnight
   useEffect(() => {
     const now = new Date();
     const tomorrow = new Date(now);
@@ -20,10 +23,8 @@ export function CalendarDockIcon({ size = 48 }: CalendarDockIconProps) {
 
     let intervalId: ReturnType<typeof setInterval> | null = null;
 
-    // Update immediately, then at midnight
     const timeout = setTimeout(() => {
       setDate(new Date());
-      // Set interval for subsequent days
       intervalId = setInterval(() => {
         setDate(new Date());
       }, 24 * 60 * 60 * 1000);
@@ -37,32 +38,33 @@ export function CalendarDockIcon({ size = 48 }: CalendarDockIconProps) {
     };
   }, []);
 
-  const dayOfWeek = format(date, "EEE"); // Short day name (e.g., "Fri")
+  const dayOfWeek = format(date, "EEE");
   const dayNumber = format(date, "d");
-
-  // Scale border radius with size (roughly 22% of size, matching macOS icons)
-  const borderRadius = Math.round(size * 0.22);
+  const tileSize = Math.round(size * DOCK_TILE_RATIO);
 
   return (
     <div
-      className="relative overflow-hidden shadow-md bg-white flex flex-col items-center justify-center"
-      style={{ width: size, height: size, paddingTop: size * 0.04, borderRadius }}
+      className="flex items-center justify-center"
+      style={{ width: size, height: size }}
+      aria-hidden
     >
-      {/* Day name in red */}
-      <span
-        className="text-[#FF3B30] font-medium leading-none"
-        style={{ fontSize: size * 0.22 }}
+      <div
+        className="flex flex-col items-center justify-center overflow-hidden rounded-[22%] bg-white"
+        style={{ width: tileSize, height: tileSize }}
       >
-        {dayOfWeek}
-      </span>
-
-      {/* Date number in black */}
-      <span
-        className="text-[#1c1c1e] font-normal leading-none"
-        style={{ fontSize: size * 0.56, marginTop: -size * 0.04 }}
-      >
-        {dayNumber}
-      </span>
+        <span
+          className="text-[#FF3B30] font-medium leading-none"
+          style={{ fontSize: tileSize * 0.2 }}
+        >
+          {dayOfWeek}
+        </span>
+        <span
+          className="text-[#1c1c1e] font-normal leading-none"
+          style={{ fontSize: tileSize * 0.5, marginTop: -tileSize * 0.02 }}
+        >
+          {dayNumber}
+        </span>
+      </div>
     </div>
   );
 }

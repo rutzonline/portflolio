@@ -20,7 +20,8 @@ export function useShellIsMobile(initialIsMobile?: boolean): boolean | null {
     ];
 
     const syncIsMobile = () => {
-      setIsMobile(detectMobileClientFromWindow());
+      // Portfolio mobile layout: full-screen app grid below 768px width
+      setIsMobile(window.innerWidth < 768);
     };
 
     syncIsMobile();

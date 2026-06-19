@@ -15,6 +15,7 @@ import {
   Size,
 } from "@/types/window";
 import { APPS, getAppById } from "./app-config";
+import { getNowPlayingDefaultPosition } from "./window-placement";
 import { clearAppState, clearAllAppState } from "./sidebar-persistence";
 
 const STORAGE_KEY = "desktop-window-state";
@@ -55,13 +56,18 @@ function getDefaultWindowState(appId: string): WindowState {
   if (!app) {
     throw new Error(`Unknown app: ${appId}`);
   }
+  const position =
+    appId === "now-playing"
+      ? getNowPlayingDefaultPosition(app.defaultSize)
+      : app.defaultPosition;
+
   return {
     id: appId,
     appId,
     isOpen: false,
     isMinimized: false,
     isMaximized: false,
-    position: app.defaultPosition,
+    position,
     size: app.defaultSize,
     zIndex: 0,
   };
@@ -73,16 +79,24 @@ function getDefaultWindowState(appId: string): WindowState {
 
 // Desktop default configuration (shown after logout/restart/shutdown)
 // Windows listed in z-index order (first = back, last = front)
+/** After logout/restart: clean desktop (intro.txt opens on unlock). */
 const DESKTOP_DEFAULT_CONFIG = {
-  windows: [
-    { appId: "messages", position: { x: 500, y: 60 } },
-    { appId: "notes", position: { x: 150, y: 40 }, size: { width: 1000, height: 700 } },
-  ],
-  focusedAppId: "notes",
+  windows: [] as const,
+  focusedAppId: null as string | null,
 } as const;
 
-// Export for use in desktop.tsx URL handling
 export const DESKTOP_DEFAULT_FOCUSED_APP = DESKTOP_DEFAULT_CONFIG.focusedAppId;
+
+/** Highest z-index among open, non-minimized windows. */
+export function getMaxOpenWindowZIndex(state: WindowManagerState): number {
+  let max = 0;
+  for (const win of Object.values(state.windows)) {
+    if (win.isOpen && !win.isMinimized) {
+      max = Math.max(max, win.zIndex);
+    }
+  }
+  return max;
+}
 
 // Export helper for parsing multi-window IDs
 export { getAppIdFromWindowId };
@@ -110,7 +124,7 @@ function getBaseState(): WindowManagerState {
 /**
  * Desktop default state: multiple apps open in windowed mode
  * Used after logout/restart/shutdown to show a "fresh desktop" view
- * Notes in front (left of center), Messages behind (right, peeking out)
+ * Empty desktop — intro.txt opens from the lock screen unlock handler.
  */
 function getDesktopDefaultState(): WindowManagerState {
   const state = getBaseState();
@@ -127,7 +141,7 @@ function getDesktopDefaultState(): WindowManagerState {
   });
 
   state.focusedWindowId = focusedAppId;
-  state.nextZIndex = windows.length + 1;
+  state.nextZIndex = Math.max(state.nextZIndex, windows.length + 1);
   return state;
 }
 
@@ -205,9 +219,35 @@ function loadStateFromStorage(): WindowManagerState | null {
             mergedWindows[app.id] = getDefaultWindowState(app.id);
           }
         });
+        // Migrate legacy "work" app id → "resume"
+        let focusedWindowId = parsed.focusedWindowId as string | null;
+        for (const [windowId, win] of Object.entries(mergedWindows)) {
+          const w = win as WindowState;
+          if (w.appId === "work" || windowId === "work") {
+            const migrated: WindowState = { ...w, id: "resume", appId: "resume" };
+            delete mergedWindows[windowId];
+            mergedWindows.resume = migrated;
+          }
+        }
+        if (focusedWindowId === "work") {
+          focusedWindowId = "resume";
+        }
+
+        const nowPlaying = mergedWindows["now-playing"];
+        const nowPlayingApp = getAppById("now-playing");
+        if (nowPlaying && nowPlayingApp && nowPlaying.position.x <= 500) {
+          mergedWindows["now-playing"] = {
+            ...nowPlaying,
+            position: getNowPlayingDefaultPosition(
+              nowPlaying.size ?? nowPlayingApp.defaultSize
+            ),
+          };
+        }
+
         return {
           ...parsed,
           windows: mergedWindows,
+          focusedWindowId,
           // Ensure nextInstanceNumber exists (migration from old state)
           nextInstanceNumber: parsed.nextInstanceNumber || {},
         };
@@ -901,6 +941,14 @@ export function WindowManagerProvider({
             return withFocusedApp(savedState, initialAppId);
           }
         }
+      }
+      // Home route: keep windows but don't auto-focus (avoids /resume in the URL on load)
+      if (
+        !initialAppId &&
+        typeof window !== "undefined" &&
+        (window.location.pathname === "/" || window.location.pathname === "")
+      ) {
+        return { ...savedState, focusedWindowId: null };
       }
       return savedState;
     } else {

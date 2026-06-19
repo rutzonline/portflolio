@@ -1,8 +1,9 @@
 import { Message, Conversation, Reaction } from "@/types/messages";
 import { MessageBubble } from "./message-bubble";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { soundEffects, shouldMuteIncomingSound } from "@/lib/messages/sound-effects";
+import { expandMultilineMessages } from "@/lib/messages/display-messages";
 import { loadMessagesConversation } from "@/lib/sidebar-persistence";
 
 // Tracks whether the component has been mounted in this page session.
@@ -44,7 +45,12 @@ export function MessageList({
   const messageListRef = useRef<HTMLDivElement>(null);
   const [wasAtBottom, setWasAtBottom] = useState(true);
 
-  const lastUserMessageIndex = messages.findLastIndex(
+  const displayMessages = useMemo(
+    () => expandMultilineMessages(messages),
+    [messages]
+  );
+
+  const lastUserMessageIndex = displayMessages.findLastIndex(
     (msg) => msg.sender === "me"
   );
 
@@ -150,16 +156,16 @@ export function MessageList({
     // Skip the first render cycle per conversation (mount, switch, restore)
     if (!conversationReadyRef.current) {
       conversationReadyRef.current = true;
-      prevMessageCountRef.current = messages.length;
+      prevMessageCountRef.current = displayMessages.length;
       return;
     }
 
-    const isNewMessage = messages.length > prevMessageCountRef.current;
-    prevMessageCountRef.current = messages.length;
+    const isNewMessage = displayMessages.length > prevMessageCountRef.current;
+    prevMessageCountRef.current = displayMessages.length;
 
-    if (!isNewMessage || messages.length === 0) return;
+    if (!isNewMessage || displayMessages.length === 0) return;
 
-    const lastMessage = messages[messages.length - 1];
+    const lastMessage = displayMessages[displayMessages.length - 1];
 
     // Play focused-conversation sound only when this Messages window is focused.
     // When unfocused/minimized, unread sound is handled by MessageQueue.
@@ -171,13 +177,13 @@ export function MessageList({
     ) {
       soundEffects.playReceivedSound();
     }
-  }, [messages, conversation?.hideAlerts, focusModeActive, isWindowFocused]);
+  }, [displayMessages, conversation?.hideAlerts, focusModeActive, isWindowFocused]);
 
   return (
     <div ref={messageListRef} className="flex-1 flex flex-col-reverse relative">
       {/* Messages layer */}
       <div className="flex-1 relative">
-        {messages.map((message, index) => (
+        {displayMessages.map((message, index) => (
           <div
             key={message.id}
             data-message-id={message.id}
@@ -202,10 +208,10 @@ export function MessageList({
                   messageInputRef?.current?.focus();
                   onReactionComplete?.();
                 }}
-                justSent={message.id === justSentMessageId}
+                justSent={message.id === justSentMessageId || message.id.startsWith(`${justSentMessageId}~`)}
                 isMobileView={isMobileView}
-                hideSenderName={index > 0 && messages[index - 1]?.sender === message.sender}
-                hideTail={index < messages.length - 1 && messages[index + 1]?.sender === message.sender && message.sender !== "system"}
+                hideSenderName={index > 0 && displayMessages[index - 1]?.sender === message.sender}
+                hideTail={index < displayMessages.length - 1 && displayMessages[index + 1]?.sender === message.sender && message.sender !== "system"}
               />
             </div>
           </div>

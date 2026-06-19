@@ -23,6 +23,8 @@ import { cn } from "@/lib/utils";
 import { useSystemSettings, FocusMode } from "@/lib/system-settings-context";
 import { useClickOutside } from "@/lib/hooks/use-click-outside";
 import { useAudio } from "@/lib/music/audio-context";
+import { useWindowManager } from "@/lib/window-context";
+import { clearNowPlayingDismissed } from "@/lib/onboarding";
 import { DEFAULT_TRACK } from "@/components/apps/music/data";
 
 // AirDrop icon (concentric arcs)
@@ -164,7 +166,7 @@ export function WifiMenu({ isOpen, onClose, onOpenWifiSettings }: WifiMenuProps)
             <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-500">
               <Smartphone className="w-3 h-3 text-white" />
             </div>
-            <span className="text-xs flex-1">alana&apos;s iphone</span>
+            <span className="text-xs flex-1">rutuja&apos;s iphone</span>
             <div className="flex items-center gap-1 text-muted-foreground can-hover:group-hover:text-white/70">
               <div className="flex items-end gap-px h-2.5">
                 <div className="w-0.5 h-1 bg-current rounded-full" />
@@ -256,6 +258,17 @@ export function ControlCenterMenu({ isOpen, onClose }: ControlCenterMenuProps) {
   const [showFocusMenu, setShowFocusMenu] = useState(false);
   const { brightness, setBrightness, volume, setVolume, wifiEnabled, setWifiEnabled, bluetoothEnabled, setBluetoothEnabled, airdropMode, setAirdropMode, focusMode, setFocusMode } = useSystemSettings();
   const { playbackState, pause, resume, play, next, previous } = useAudio();
+  const { openWindow, restoreWindow, getWindow } = useWindowManager();
+
+  const openNowPlayingWindow = () => {
+    clearNowPlayingDismissed();
+    const win = getWindow("now-playing");
+    if (!win?.isOpen) {
+      openWindow("now-playing");
+    } else if (win.isMinimized) {
+      restoreWindow("now-playing");
+    }
+  };
 
   // Use current track or default track
   const displayTrack = playbackState.currentTrack || DEFAULT_TRACK;
@@ -385,9 +398,10 @@ export function ControlCenterMenu({ isOpen, onClose }: ControlCenterMenuProps) {
                     pause();
                   } else if (hasCurrentTrack) {
                     resume();
+                    openNowPlayingWindow();
                   } else {
-                    // No current track - play the default track
                     play(DEFAULT_TRACK, [DEFAULT_TRACK]);
+                    openNowPlayingWindow();
                   }
                 }}
                 className="p-0.5 rounded text-foreground hover:text-foreground/80 transition-colors"

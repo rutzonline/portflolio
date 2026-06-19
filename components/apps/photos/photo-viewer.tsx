@@ -18,6 +18,11 @@ function preloadImage(url: string) {
   img.src = getViewerUrl(url);
 }
 
+function isVideo(url: string): boolean {
+  const lower = url.toLowerCase();
+  return lower.endsWith(".mp4") || lower.endsWith(".mov");
+}
+
 interface PhotoViewerProps {
   photo: Photo;
   photos: Photo[]; // All photos for prefetching
@@ -153,22 +158,33 @@ export function PhotoViewer({
         </button>
       </div>
 
-      {/* Photo with swipe support */}
+      {/* Photo/Video with swipe support */}
       <div
         {...swipeHandlers}
         className="flex-1 flex items-center justify-center min-h-0 bg-muted/30"
       >
         <div className="relative w-full h-full">
-          <Image
-            key={photo.id}
-            src={getViewerUrl(photo.url)}
-            alt=""
-            fill
-            className="object-contain"
-            sizes="(max-width: 768px) 100vw, 80vw"
-            priority
-            unoptimized
-          />
+          {isVideo(photo.url) ? (
+            <video
+              key={photo.id}
+              src={photo.url}
+              controls
+              playsInline
+              autoPlay
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <Image
+              key={photo.id}
+              src={getViewerUrl(photo.url)}
+              alt=""
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 80vw"
+              priority
+              unoptimized
+            />
+          )}
         </div>
       </div>
     </div>

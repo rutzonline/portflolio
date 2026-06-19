@@ -1,0 +1,1 @@
+# Edit lib/intro-doc-baseline.ts (INTRO_README_TABS) — three tabs: about | the site | sitemap

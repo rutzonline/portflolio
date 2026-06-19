@@ -39,6 +39,10 @@ const STORAGE_KEYS = {
   CALENDAR_VIEW: "calendar-view",
   CALENDAR_DATE: "calendar-date",
   CALENDAR_SCROLL: "calendar-scroll",
+  CALENDAR_APP_MODE: "calendar-app-mode",
+  CONSUMPTION_SUBVIEW: "consumption-subview",
+  CONSUMPTION_MONTH: "consumption-month",
+  CONSUMPTION_CALENDAR_VIEW: "consumption-calendar-view",
   MUSIC_STATE: "music-state",
   NOTES_SELECTED: "notes-selected-slug",
   MESSAGES_CONVERSATION: "messages-conversation",
@@ -130,7 +134,7 @@ export const finderSidebarPersistence = createSidebarPersistence<FinderSidebarIt
   FINDER_SIDEBAR_ITEMS
 );
 
-// Path persistence for full navigation path (e.g., /Users/alanagoyal/Projects/repo/folder)
+// Path persistence for full navigation path (e.g., /Users/rutujarochkari/Projects/repo/folder)
 export function loadFinderPath(): string | null {
   if (typeof window === "undefined") return null;
   try {
@@ -297,8 +301,105 @@ export function clearCalendarState(): void {
     sessionStorage.removeItem(STORAGE_KEYS.CALENDAR_VIEW);
     sessionStorage.removeItem(STORAGE_KEYS.CALENDAR_DATE);
     sessionStorage.removeItem(STORAGE_KEYS.CALENDAR_SCROLL);
+    sessionStorage.removeItem(STORAGE_KEYS.CALENDAR_APP_MODE);
+    sessionStorage.removeItem(STORAGE_KEYS.CONSUMPTION_SUBVIEW);
+    sessionStorage.removeItem(STORAGE_KEYS.CONSUMPTION_MONTH);
   } catch {
     // Ignore storage errors
+  }
+}
+
+export type CalendarAppMode = "consumption" | "booking";
+export type ConsumptionSubview = "calendar" | "list";
+export type ConsumptionCalendarView = "month" | "week" | "year";
+
+const CALENDAR_APP_MODES: readonly CalendarAppMode[] = ["consumption", "booking"];
+const CONSUMPTION_SUBVIEWS: readonly ConsumptionSubview[] = ["calendar", "list"];
+const CONSUMPTION_CALENDAR_VIEWS: readonly ConsumptionCalendarView[] = ["month", "week", "year"];
+
+export function loadCalendarAppMode(): CalendarAppMode {
+  if (typeof window === "undefined") return "consumption";
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEYS.CALENDAR_APP_MODE);
+    if (raw === "scheduling") return "consumption";
+    return CALENDAR_APP_MODES.includes(raw as CalendarAppMode) ? (raw as CalendarAppMode) : "consumption";
+  } catch {
+    return "consumption";
+  }
+}
+
+export function saveCalendarAppMode(mode: CalendarAppMode): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(STORAGE_KEYS.CALENDAR_APP_MODE, mode);
+  } catch {
+    // ignore
+  }
+}
+
+export function loadConsumptionSubview(): ConsumptionSubview {
+  if (typeof window === "undefined") return "calendar";
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEYS.CONSUMPTION_SUBVIEW);
+    return CONSUMPTION_SUBVIEWS.includes(raw as ConsumptionSubview)
+      ? (raw as ConsumptionSubview)
+      : "calendar";
+  } catch {
+    return "calendar";
+  }
+}
+
+export function saveConsumptionSubview(subview: ConsumptionSubview): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(STORAGE_KEYS.CONSUMPTION_SUBVIEW, subview);
+  } catch {
+    // ignore
+  }
+}
+
+export function loadConsumptionCalendarView(): ConsumptionCalendarView {
+  if (typeof window === "undefined") return "month";
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEYS.CONSUMPTION_CALENDAR_VIEW);
+    return CONSUMPTION_CALENDAR_VIEWS.includes(raw as ConsumptionCalendarView)
+      ? (raw as ConsumptionCalendarView)
+      : "month";
+  } catch {
+    return "month";
+  }
+}
+
+export function saveConsumptionCalendarView(view: ConsumptionCalendarView): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(STORAGE_KEYS.CONSUMPTION_CALENDAR_VIEW, view);
+  } catch {
+    // ignore
+  }
+}
+
+export function loadConsumptionMonth(): string {
+  if (typeof window === "undefined") {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  }
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEYS.CONSUMPTION_MONTH);
+    if (raw && /^\d{4}-\d{2}$/.test(raw)) return raw;
+  } catch {
+    // ignore
+  }
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+}
+
+export function saveConsumptionMonth(month: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(STORAGE_KEYS.CONSUMPTION_MONTH, month);
+  } catch {
+    // ignore
   }
 }
 
@@ -307,7 +408,6 @@ export function clearCalendarState(): void {
 // ============================================================================
 
 import type { MusicView } from "@/components/apps/music/types";
-import { clearItermStorage } from "@/components/apps/iterm/terminal";
 import { clearNotesSelectedSlugMemory } from "@/lib/notes/selection-state";
 
 // Valid views for validation - must match MusicView type
@@ -318,6 +418,8 @@ const MUSIC_VIEWS: readonly MusicView[] = [
   "albums",
   "songs",
   "playlist",
+  "beyond-desk",
+  "newsletters",
 ];
 
 interface MusicState {
@@ -673,7 +775,7 @@ export function clearAppState(appId: string): void {
     case "calendar":
       clearCalendarState();
       break;
-    case "music":
+    case "desk":
       clearMusicState();
       break;
     case "notes":
@@ -684,9 +786,6 @@ export function clearAppState(appId: string): void {
       break;
     case "weather":
       clearWeatherState();
-      break;
-    case "iterm":
-      clearItermStorage();
       break;
   }
 }
@@ -700,5 +799,4 @@ export function clearAllAppState(): void {
   clearNotesState();
   clearMessagesState();
   clearWeatherState();
-  clearItermStorage();
 }

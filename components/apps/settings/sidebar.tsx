@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { SettingsCategory, SettingsPanel } from "./settings-app";
 import { SidebarNav } from "./sidebar-nav";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getHeadshotSrc } from "@/config/site";
 
 interface SidebarProps {
   selectedCategory: SettingsCategory;
@@ -59,7 +60,7 @@ const connectivityItems = [
   { id: "battery", name: "Battery", icon: <Battery className="w-5 h-5 text-white" />, iconBg: "bg-green-500", type: "static" as const },
 ];
 
-const appleAccountKeywords = ["alana", "goyal", "apple", "account", "personal", "information", "name", "birthday"];
+const appleAccountKeywords = ["rutuja", "rochkari", "apple", "account", "personal", "information", "name", "birthday"];
 
 export function Sidebar({
   selectedCategory,
@@ -143,14 +144,15 @@ export function Sidebar({
                     className="w-full flex items-center gap-3 p-3 rounded-xl bg-background mb-4"
                   >
                     <Image
-                      src="/headshot.jpg"
-                      alt="Alana Goyal"
+                      src={getHeadshotSrc()}
+                      alt="Rutuja Rochkari"
                       width={56}
                       height={56}
-                      className="rounded-full"
+                      className="rounded-full object-cover"
+                      unoptimized
                     />
                     <div className="text-left flex-1">
-                      <div className="font-semibold text-lg">Alana Goyal</div>
+                      <div className="font-semibold text-lg">Rutuja Rochkari</div>
                       <div className="text-sm text-muted-foreground">
                         Apple Account, iCloud+, and more
                       </div>
@@ -302,14 +304,15 @@ export function Sidebar({
                     )}
                   >
                     <Image
-                      src="/headshot.jpg"
-                      alt="Alana Goyal"
+                      src={getHeadshotSrc()}
+                      alt="rutuja rochkari"
                       width={48}
                       height={48}
-                      className="rounded-full"
+                      className="rounded-full object-cover"
+                      unoptimized
                     />
                     <div className="text-left">
-                      <div className="font-medium text-xs">Alana Goyal</div>
+                      <div className="font-medium text-xs">rutuja rochkari</div>
                       <div className="text-[10px] text-muted-foreground">Apple Account</div>
                     </div>
                   </button>

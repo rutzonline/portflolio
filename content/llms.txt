@@ -1,0 +1,30 @@
+# Website
+
+This is the personal website and portfolio of Rutuja.
+
+AI-native marketing and growth generalist with 2+ years of experience building multi-channel 0-1 growth engines across D2C, Fintech, and SaaS in India. Comfortable across the full stack of growth , from email and CRM to performance marketing, offline activations, and vibe coding lightweight tools and AI workflows.
+
+## About
+
+Rutuja has a background in digital marketing and communications (FLAME University, BBA, 2023) with a minor spanning theatre, dance, and design. She has worked at The State Plate (a D2C regional Indian food startup funded by Peyush Bansal on Shark Tank India), Hopstack (a warehouse management SaaS), and Liquide (a SEBI-registered fintech platform).
+
+
+## Work Experience
+
+- **The State Plate (2023–2024)** – Growth Marketing. Grew a regional D2C app from 150 to 7,000 downloads with zero paid spend. Redesigned email sequences to take open rates from 8% to 35.8% across 75,000 subscribers. Built a 45k+ Instagram audience with 5M+ organic views.
+- **Liquide (2022–2023)** – Growth & PMM. Led the 0-1 launch of LiMO (AI advisory chatbot) via 50+ LinkedIn creators. Built the Instagram presence from scratch to 10k+ followers and drove 100+ qualified leads through targeted content funnels.
+- **Hopstack (2021–2022)** – Product Marketing. Managed GTM and content foundations for a B2B warehouse management SaaS. Established SEO groundwork and managed multi-channel newsletter operations on LinkedIn and beehiiv.
+- **Freelance Strategy (2021–present)** – Strategy & Creative Direction for F&B brands. Focused on translating product value into user-first narratives through visual storytelling.
+
+
+## Skills & Stack
+
+- **Growth:** Content, ASO, Meta/Google Ads, Lifecycle Marketing, Retention Loops, Email Marketing
+- **Tools:** Mixpanel, Figma, Canva, Notion, Cursor, n8n/Zapier.
+
+## Contact
+
+- Website: https://rutzonline.com
+- LinkedIn: https://linkedin.com/in/rutuja-rochkari
+- Twitter/X: https://x.com/rutzonline
+- Email: rutujarochkari7@gmail.com

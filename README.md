@@ -1,4 +1,4 @@
-# [alanagoyal.com](https://alanagoyal.com)
+# [rutujarochkari.com](https://rutujarochkari.com)
 
 i'm obsessed with re-creating apple products. this is a macos-inspired personal website featuring a full desktop environment with multiple apps.
 
@@ -95,21 +95,25 @@ responsive mobile interface with:
 the app uses next.js app router with a route group for the desktop environment. on desktop screens, all apps render in windows on a shared desktop. on mobile, apps display fullscreen with navigation.
 
 **notes** use a session-based architecture:
+
 - **public notes**: managed by the site owner, visible to everyone
 - **private notes**: each browser session gets a unique id (stored in localstorage) linking to notes you create
 
 **messages** are client-side only:
+
 - conversations stored in localstorage
 - ai responses generated via braintrust proxy (openai-compatible)
 - no server-side message storage
 
 **photos** use supabase storage:
+
 - images stored in supabase storage bucket
 - metadata (filename, timestamp, collections) in database
 - favorites are per-browser (stored in localstorage)
 - upload via api with ai auto-categorization (openai gpt-4o-mini)
 
 the app is built with:
+
 - **next.js** with app router
 - **typescript** for type safety
 - **supabase** for notes database
@@ -184,7 +188,7 @@ when you share a photo, the shortcut uploads it to supabase storage and ai autom
 
 ## clone the repo
 
-`git clone https://github.com/alanagoyal/alanagoyal`
+`git clone https://github.com/rutujarochkari/rutujarochkari`
 
 ## set up the database
 
@@ -193,7 +197,7 @@ this project uses [supabase](https://supabase.com) as a backend. to set up the d
 1. create a [new project](https://database.new) and enter your project details
 2. wait for the database to launch
 3. navigate to the sql editor in the dashboard
-4. paste the sql from the [migration file](https://github.com/alanagoyal/alanagoyal/blob/main/supabase/migrations/20240710180237_initial.sql) into the sql editor and press run
+4. paste the sql from the [migration file](https://github.com/rutujarochkari/rutujarochkari/blob/main/supabase/migrations/20240710180237_initial.sql) into the sql editor and press run
 
 alternatively, use the supabase cli to run migrations locally:
 ```bash
@@ -363,4 +367,4 @@ you can also manually add images:
 
 ## license
 
-licensed under the [mit license](https://github.com/alanagoyal/alanagoyal/blob/main/LICENSE.md).
+licensed under the [mit license](https://github.com/rutujarochkari/rutujarochkari/blob/main/LICENSE.md).

@@ -1,115 +1,112 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlaylistTrack } from "../types";
-import { useAudio } from "@/lib/music/audio-context";
-import { Play, Pause } from "lucide-react";
-import { formatDuration } from "@/lib/music/utils";
+import { createClient } from "@/utils/supabase/client";
+import { ExternalLink } from "lucide-react";
 
-interface SongsViewProps {
-  songs: PlaylistTrack[];
+interface Product {
+  id: string;
+  name: string;
+  brand: string;
+  description: string;
+  image_url: string;
+  url: string;
+}
+
+interface ProductsViewProps {
+  songs: unknown[];
   isMobileView: boolean;
 }
 
-export function SongsView({ songs, isMobileView }: SongsViewProps) {
-  const { playbackState, play, pause, resume } = useAudio();
+export function SongsView({ isMobileView }: ProductsViewProps) {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleTrackPlay = (track: PlaylistTrack) => {
-    if (playbackState.currentTrack?.id === track.id && playbackState.isPlaying) {
-      pause();
-    } else if (playbackState.currentTrack?.id === track.id) {
-      resume();
-    } else {
-      play(track, songs);
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from("products")
+          .select("*")
+          .order("created_at", { ascending: true });
+        if (error) throw error;
+        setProducts(data || []);
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+      } finally {
+        setLoading(false);
+      }
     }
-  };
+    fetchProducts();
+  }, []);
 
   return (
     <ScrollArea className="h-full" bottomMargin="0">
       <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
-        <div>
-          {/* Title only on desktop - mobile shows it in nav header */}
-          {!isMobileView && (
-            <h2 className="text-lg font-semibold mb-4">Songs</h2>
-          )}
+        {!isMobileView && (
+          <h2 className="text-lg font-semibold mb-6">Products & Packaging</h2>
+        )}
 
-          {/* Header row for desktop */}
-          {!isMobileView && (
-            <div className="flex items-center gap-3 px-2 py-2 border-b border-border text-xs text-muted-foreground uppercase tracking-wide">
-              <span className="w-5 text-center">#</span>
-              <span className="w-10" /> {/* Album art space */}
-              <span className="flex-1">Title</span>
-              <span className="w-[150px]">Album</span>
-              <span className="w-12 text-right">Time</span>
-            </div>
-          )}
-
-          <div className="space-y-1 mt-1">
-            {songs.map((track, index) => {
-              const isCurrentTrack = playbackState.currentTrack?.id === track.id;
-              const isPlaying = isCurrentTrack && playbackState.isPlaying;
-
-              return (
-                <div
-                  key={track.id}
-                  onClick={() => handleTrackPlay(track)}
-                  className={cn(
-                    "flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors group overflow-hidden",
-                    isCurrentTrack ? "bg-red-500/10" : "can-hover:hover:bg-muted"
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "w-5 text-center text-sm",
-                      isCurrentTrack ? "text-red-500" : "text-muted-foreground"
-                    )}
-                  >
-                    {isPlaying ? (
-                      <Pause className="w-4 h-4 mx-auto" />
-                    ) : (
-                      <span className="can-hover:group-hover:hidden">{index + 1}</span>
-                    )}
-                    {!isPlaying && (
-                      <Play className="w-4 h-4 mx-auto hidden can-hover:group-hover:block" />
-                    )}
-                  </span>
-                  <div className="relative w-10 h-10 rounded overflow-hidden bg-muted flex-shrink-0">
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="rounded-lg overflow-hidden border border-border/40">
+                <div className="aspect-[4/3] bg-muted animate-pulse" />
+                <div className="h-16 bg-muted/60 animate-pulse" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl">
+            {products.map((product) => (
+              <a
+                key={product.id}
+                href={product.url || undefined}
+                target={product.url ? "_blank" : undefined}
+                rel="noopener noreferrer"
+                className="group flex flex-col rounded-lg overflow-hidden bg-muted/40 border border-border/40 hover:border-border hover:bg-muted/70 transition-all min-w-0"
+              >
+                <div className="relative aspect-[4/3] bg-muted">
+                  {product.image_url ? (
                     <Image
-                      src={track.albumArt}
-                      alt={track.album}
+                      src={product.image_url}
+                      alt={product.name}
                       fill
-                      className="object-cover"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
                       unoptimized
                     />
-                  </div>
-                  <div className="w-0 flex-grow overflow-hidden">
-                    <p
-                      className={cn(
-                        "text-sm font-medium truncate",
-                        isCurrentTrack && "text-red-500"
-                      )}
-                    >
-                      {track.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {track.artist}
-                    </p>
-                  </div>
-                  {!isMobileView && (
-                    <span className="text-xs text-muted-foreground truncate w-[150px]">
-                      {track.album}
-                    </span>
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-lg font-bold text-muted-foreground">
+                      {product.name.charAt(0)}
+                    </div>
                   )}
-                  <span className="text-xs text-muted-foreground w-12 text-right flex-shrink-0">
-                    {formatDuration(track.duration)}
-                  </span>
+                  {product.url && (
+                    <ExternalLink
+                      className="absolute top-2 right-2 w-3.5 h-3.5 text-white/80 opacity-0 group-hover:opacity-100 transition-opacity drop-shadow"
+                    />
+                  )}
                 </div>
-              );
-            })}
+                <div className="p-3 min-w-0">
+                  <p className="text-sm font-medium leading-snug line-clamp-2">
+                    {product.name}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                    {product.brand}
+                  </p>
+                  {!isMobileView && product.description ? (
+                    <p className="text-[11px] text-muted-foreground/70 mt-1 line-clamp-2 leading-snug">
+                      {product.description}
+                    </p>
+                  ) : null}
+                </div>
+              </a>
+            ))}
           </div>
-        </div>
+        )}
       </div>
     </ScrollArea>
   );

@@ -9,6 +9,20 @@ import { Photo, PhotosView, TimeFilter } from "@/types/photos";
 import { usePhotos } from "@/lib/photos/use-photos";
 import { loadPhotosView, savePhotosView, loadPhotosSelectedId, savePhotosSelectedId } from "@/lib/sidebar-persistence";
 
+function isVideoUrl(url: string): boolean {
+  const lower = url.toLowerCase();
+  return lower.endsWith(".mp4") || lower.endsWith(".mov") || lower.endsWith(".webm");
+}
+
+function findIntroVideo(photos: Photo[]): Photo | undefined {
+  const byName = photos.find(
+    (p) =>
+      isVideoUrl(p.url) &&
+      (p.filename?.toLowerCase().includes("intro") || p.id.toLowerCase().includes("intro"))
+  );
+  return byName ?? photos.find((p) => isVideoUrl(p.url));
+}
+
 interface AppProps {
   isDesktop?: boolean;
   inShell?: boolean;
@@ -56,6 +70,21 @@ export default function App({ isDesktop = false }: AppProps) {
       savePhotosSelectedId(selectedPhotoId);
     }
   }, [selectedPhotoId, isViewLoaded]);
+
+  // Open intro video by default on desktop (unless a photo was already persisted)
+  const introOpenedRef = useRef(false);
+  useEffect(() => {
+    if (!isDesktop || !isViewLoaded || loading || introOpenedRef.current) return;
+    if (loadPhotosSelectedId()) return;
+
+    const introVideo = findIntroVideo(photos);
+    if (introVideo) {
+      introOpenedRef.current = true;
+      setSelectedPhotoId(introVideo.id);
+      setShowGrid(true);
+      setActiveView("library");
+    }
+  }, [isDesktop, isViewLoaded, loading, photos]);
 
   // Filter and sort photos based on active view (oldest first, newest at bottom)
   const filteredPhotos = useMemo(() => {
