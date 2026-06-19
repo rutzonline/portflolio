@@ -77,13 +77,22 @@ function getDefaultWindowState(appId: string): WindowState {
 // State Factory Functions
 // =============================================================================
 
+type DesktopDefaultWindow = {
+  appId: string;
+  position: Position;
+  size?: Size;
+};
+
 // Desktop default configuration (shown after logout/restart/shutdown)
 // Windows listed in z-index order (first = back, last = front)
 /** After logout/restart: clean desktop (intro.txt opens on unlock). */
-const DESKTOP_DEFAULT_CONFIG = {
-  windows: [] as const,
-  focusedAppId: null as string | null,
-} as const;
+const DESKTOP_DEFAULT_CONFIG: {
+  windows: DesktopDefaultWindow[];
+  focusedAppId: string | null;
+} = {
+  windows: [],
+  focusedAppId: null,
+};
 
 export const DESKTOP_DEFAULT_FOCUSED_APP = DESKTOP_DEFAULT_CONFIG.focusedAppId;
 
