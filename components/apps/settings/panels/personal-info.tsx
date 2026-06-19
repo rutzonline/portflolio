@@ -10,7 +10,7 @@ interface Device {
 
 const devices: Device[] = [
   { name: "Rutuja's MacBook Air", model: "This MacBook Air", type: "macbook" },
-  { name: "Entertainment Room", model: "Apple TV", type: "apple-tv" },
+  { name: "living room", model: "Apple TV", type: "apple-tv" },
   { name: "Rutuja's iPhone 14", model: "iPhone 14", type: "iphone" },
 ];
 
