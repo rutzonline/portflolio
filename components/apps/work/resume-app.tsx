@@ -6,6 +6,7 @@ import { useWindowFocus } from "@/lib/window-focus-context";
 import { useRecents } from "@/lib/recents-context";
 import { cn } from "@/lib/utils";
 import { FinderNav, FinderSidebarMobileNav } from "../finder/nav";
+import type { SidebarItem } from "../finder/finder-app";
 import { APPS } from "@/lib/app-config";
 import {
   HOME_DIR,
@@ -53,7 +54,6 @@ interface FileItem {
 }
 
 // Sidebar items
-export type SidebarItem = "recents" | "applications" | "desktop" | "documents" | "downloads" | "projects" | "trash" | "skills" | "education" | "tools" | "certifications" | "contact" | "faqs";
 
 // Sidebar items that show a static info panel instead of files
 const STATIC_PANEL_ITEMS = new Set<SidebarItem>(["skills", "education", "tools", "certifications", "contact", "faqs"]);
