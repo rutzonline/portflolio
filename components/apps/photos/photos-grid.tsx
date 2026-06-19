@@ -198,9 +198,7 @@ export function PhotosGrid({
                       : "grid-cols-4 desktop:grid-cols-5"
                   )}
                 >
-                  {groupPhotos.map((photo) => {
-  console.log("url:", photo.url, "| thumbnail:", getThumbnailUrl(photo.url));
-  return (
+                  {groupPhotos.map((photo) => (
     <button
                       key={photo.id}
                       type="button"
@@ -290,8 +288,7 @@ export function PhotosGrid({
                         </div>
                       </div>
                     </button>
-                  );
-        })}
+                  ))}
                 </div>
               </div>
             ))

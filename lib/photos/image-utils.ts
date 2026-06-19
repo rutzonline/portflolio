@@ -12,29 +12,25 @@ export function getOptimizedImageUrl(
   width: number,
   quality: number = 80
 ): string {
-  // Transform Supabase storage URL to use image transformation API
-  // From: /storage/v1/object/public/...
-  // To:   /storage/v1/render/image/public/...
+  if (!url.includes("/storage/v1/object/public/")) {
+    return url;
+  }
+
   const transformedUrl = url.replace(
     "/storage/v1/object/public/",
     "/storage/v1/render/image/public/"
   );
 
-  // Add transformation parameters
   const separator = transformedUrl.includes("?") ? "&" : "?";
   return `${transformedUrl}${separator}width=${width}&resize=contain&quality=${quality}`;
 }
 
-/**
- * Get thumbnail URL for grid display
- */
+/** Grid thumbnails — ~400px covers 5-column layout at 2× density. */
 export function getThumbnailUrl(url: string): string {
-  return url;
+  return getOptimizedImageUrl(url, 400, 75);
 }
 
-/**
- * Get viewer URL for full photo display
- */
+/** Viewer — large but not full original unless already smaller. */
 export function getViewerUrl(url: string): string {
-  return url;
+  return getOptimizedImageUrl(url, 1600, 82);
 }

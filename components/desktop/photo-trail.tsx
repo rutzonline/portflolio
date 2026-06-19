@@ -12,26 +12,9 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
-const LASTFM_USERNAME = "rutzonline";
-const LASTFM_TRACK_LIMIT = 20;
-// API key is read from your .env.local file — see setup notes below
-const LASTFM_API_KEY = process.env.NEXT_PUBLIC_LASTFM_API_KEY ?? "";
-
 export const PHOTO_STACK_ICON_PATH = "/desktop/photo-stack.png";
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
-interface LastFmImage {
-  "#text": string;
-  size: "small" | "medium" | "large" | "extralarge";
-}
-
-interface LastFmTrack {
-  name: string;
-  artist: { "#text": string };
-  album: { "#text": string };
-  image: LastFmImage[];
-}
-
 interface TrackData {
   src: string;       // album art URL
   song: string;      // track name
@@ -65,50 +48,17 @@ const SETTINGS = {
 
 // ─── LAST.FM FETCH ───────────────────────────────────────────────────────────
 async function fetchRecentTracks(): Promise<TrackData[]> {
-  if (!LASTFM_API_KEY) {
-    console.warn("PhotoTrail: NEXT_PUBLIC_LASTFM_API_KEY is not set.");
-    return [];
-  }
-
-  const url = new URL("https://ws.audioscrobbler.com/2.0/");
-  url.searchParams.set("method", "user.getrecenttracks");
-  url.searchParams.set("user", LASTFM_USERNAME);
-  url.searchParams.set("api_key", LASTFM_API_KEY);
-  url.searchParams.set("format", "json");
-  url.searchParams.set("limit", String(LASTFM_TRACK_LIMIT));
-
   try {
-    const res = await fetch(url.toString());
+    const res = await fetch("/api/lastfm/recent-tracks");
     if (!res.ok) {
-      console.warn(`PhotoTrail: Last.fm API returned ${res.status}`);
+      console.warn(`PhotoTrail: API returned ${res.status}`);
       return [];
     }
-    const data = await res.json();
-
-    const tracks: LastFmTrack[] = data?.recenttracks?.track ?? [];
-
-    const seen = new Set<string>();
-    const results: TrackData[] = [];
-
-    for (const track of tracks) {
-      // extralarge is the biggest art (300×300), fall back to large
-      const art =
-        track.image.find((i) => i.size === "extralarge")?.["#text"] ||
-        track.image.find((i) => i.size === "large")?.["#text"] ||
-        "";
-
-      // skip tracks with no art or duplicates
-      if (!art || seen.has(art)) continue;
-      seen.add(art);
-
-      results.push({
-        src: art,
-        song: track.name,
-        artist: track.artist["#text"],
-      });
+    const data = (await res.json()) as { tracks?: TrackData[]; error?: string };
+    if (data.error) {
+      console.warn("PhotoTrail:", data.error);
     }
-
-    return results;
+    return data.tracks ?? [];
   } catch (err) {
     console.warn("PhotoTrail: failed to fetch Last.fm tracks", err);
     return [];
@@ -379,6 +329,7 @@ export function PhotoTrail() {
   const [stackIconVisible, setStackIconVisible] = useState(false);
   const [showHelpNote, setShowHelpNote] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
 
   const mouseRef = useRef({ x: 0, y: 0 });
   const lagRef = useRef({ x: 0, y: 0 });
@@ -431,6 +382,7 @@ export function PhotoTrail() {
     fetchRecentTracks().then((tracks) => {
       setTrackPool(tracks);
       shuffledRef.current = buildShuffled(tracks);
+      setFetchError(tracks.length === 0);
     });
   }, []);
 
@@ -572,10 +524,12 @@ export function PhotoTrail() {
 
     // Re-fetch on each activation so the pool is always fresh
     setLoading(true);
+    setFetchError(false);
     const tracks = await fetchRecentTracks();
     setLoading(false);
 
     if (tracks.length === 0) {
+      setFetchError(true);
       console.warn("PhotoTrail: no tracks returned from Last.fm");
       return;
     }
@@ -747,7 +701,13 @@ export function PhotoTrail() {
             )}
           </div>
           <span className="text-[11px] text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.8)] tracking-wide">
-            {loading ? "loading…" : active ? "trailing…" : "listentome"}
+            {loading
+              ? "loading…"
+              : fetchError
+                ? "last.fm unavailable"
+                : active
+                  ? "trailing…"
+                  : "listentome"}
           </span>
         </button>
       </div>

@@ -20,11 +20,18 @@ const nextConfig = {
   images: {
     remotePatterns: [
       // Supabase Storage for photos
-      ...(supabaseHostname ? [{
-        protocol: "https",
-        hostname: supabaseHostname,
-        pathname: "/storage/v1/object/public/**",
-      }] : []),
+      ...(supabaseHostname ? [
+        {
+          protocol: "https",
+          hostname: supabaseHostname,
+          pathname: "/storage/v1/object/public/**",
+        },
+        {
+          protocol: "https",
+          hostname: supabaseHostname,
+          pathname: "/storage/v1/render/image/public/**",
+        },
+      ] : []),
     ],
   },
   async rewrites() {
