@@ -8,6 +8,7 @@ import { AudioProvider } from "@/lib/music/audio-context";
 import { isLowercasePreviewEnabled, LOWERCASE_PREVIEW_CLASS } from "@/lib/lowercase-preview";
 import { LowercasePreviewBody } from "@/components/lowercase-preview-body";
 import { cn } from "@/lib/utils";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -62,6 +63,7 @@ export default function RootLayout({
             </AudioProvider>
           </SystemSettingsProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
