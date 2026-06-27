@@ -35,7 +35,7 @@ import { useRouter } from "next/navigation";
 import { FinderSearchEngine, type EntryInput } from "../finder/search-engine";
 import { CaseStudyDetail } from "./case-studies/case-study-detail";
 import { SelectedWorkFolders } from "./selected-work-folders";
-import { getCaseStudyDocPath } from "@/lib/case-study-doc";
+import { getCaseStudyDocPath, toEmptyCaseStudy } from "@/lib/case-study-doc";
 import { WorkTimeline, WorkStintDetail, WORK_STINT_DETAILS_ENABLED, type WorkStint } from "./work-timeline";
 import type { CaseStudy } from "@/types/work";
 import {
@@ -70,11 +70,11 @@ const STATIC_PANEL_ITEMS = STATIC_SIDEBAR_PANELS;
 
 const SIDEBAR_ITEMS: { id: SidebarItem; label: string; icon: string }[] = [
   { id: "documents", label: "Experience", icon: "document" },
-  { id: "selected-work", label: "Selected Work", icon: "folder" },
   { id: "education", label: "Education", icon: "desktop" },
   { id: "skills", label: "Skills", icon: "grid" },
   { id: "tools", label: "Tools & Stack", icon: "code" },
   { id: "certifications", label: "Certifications", icon: "award" },
+  { id: "selected-work", label: "Selected Work", icon: "folder" },
   { id: "contact", label: "Contact", icon: "phone" },
   { id: "faqs", label: "FAQs", icon: "help" },
 ];
@@ -920,11 +920,13 @@ export function ResumeApp({
 
   const handleOpenCaseStudyFolder = useCallback(
     (study: CaseStudy) => {
+      setSelectedWorkFolderSlug(null);
+      const emptyStudy = toEmptyCaseStudy(study);
       if (onOpenCaseStudy) {
-        onOpenCaseStudy(study);
+        onOpenCaseStudy(emptyStudy);
         return;
       }
-      onOpenTextFile?.(getCaseStudyDocPath(study.slug), study.body);
+      onOpenTextFile?.(getCaseStudyDocPath(study.slug), "");
     },
     [onOpenCaseStudy, onOpenTextFile]
   );
@@ -1673,7 +1675,11 @@ export function ResumeApp({
                 <SelectedWorkFolders
                   isMobileView
                   selectedSlug={selectedWorkFolderSlug}
-                  onSelect={(study) => setSelectedWorkFolderSlug(study.slug)}
+                  onSelect={(study) =>
+                    setSelectedWorkFolderSlug((current) =>
+                      current === study.slug ? null : study.slug
+                    )
+                  }
                   onOpenStudy={handleOpenCaseStudyFolder}
                 />
               ) : isWorkDocumentsView && WORK_STINT_DETAILS_ENABLED && selectedWorkStint ? (
@@ -1709,7 +1715,13 @@ export function ResumeApp({
         {renderSidebar()}
         <div className="flex-1 flex flex-col min-w-0">
           {searchActive && searchQuery && !isMobile && renderScopeBar()}
-          <div className="flex-1 overflow-y-auto" onClick={() => setSelectedFile(null)}>
+          <div
+            className="flex-1 overflow-y-auto"
+            onClick={() => {
+              setSelectedFile(null);
+              setSelectedWorkFolderSlug(null);
+            }}
+          >
           {searchActive && searchQuery ? (
             renderSearchResults()
           ) : STATIC_PANEL_ITEMS.has(selectedSidebar) ? (
@@ -1717,7 +1729,11 @@ export function ResumeApp({
           ) : isSelectedWorkView ? (
             <SelectedWorkFolders
               selectedSlug={selectedWorkFolderSlug}
-              onSelect={(study) => setSelectedWorkFolderSlug(study.slug)}
+              onSelect={(study) =>
+                setSelectedWorkFolderSlug((current) =>
+                  current === study.slug ? null : study.slug
+                )
+              }
               onOpenStudy={handleOpenCaseStudyFolder}
             />
           ) : loading ? (

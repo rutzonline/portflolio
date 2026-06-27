@@ -1,5 +1,6 @@
 "use client";
 
+import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { ContactFooterPlayground } from "./contact-footer-playground";
 import {
@@ -12,14 +13,22 @@ const CONTACT_LINKS = [
   {
     label: "Email",
     href: "mailto:rutujarochkari7@gmail.com",
+    external: false,
   },
   {
     label: "LinkedIn",
     href: "https://linkedin.com/in/rutuja-rochkari",
+    external: true,
   },
   {
-    label: "Resume PDF",
+    label: "resume",
     href: "https://drive.google.com/file/d/1ZZXKFaZv_sprKq0GHl6761upY9KIZfyF/view?pli=1",
+    external: true,
+  },
+  {
+    label: "book a call",
+    href: siteConfig.calBookingUrl,
+    external: true,
   },
 ] as const;
 
@@ -36,8 +45,8 @@ export function ContactResumePanel({ isMobileView = false }: { isMobileView?: bo
               <a
                 key={link.label}
                 href={link.href}
-                target={link.href.startsWith("mailto:") ? undefined : "_blank"}
-                rel={link.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noopener noreferrer" : undefined}
                 className={cn(
                   RESUME_PANEL_CARD_CLASS,
                   "px-3.5 py-2 text-sm text-center text-zinc-800 dark:text-zinc-100 whitespace-nowrap",

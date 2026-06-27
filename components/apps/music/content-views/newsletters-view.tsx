@@ -20,9 +20,10 @@ interface Newsletter {
 
 interface NewslettersViewProps {
   isMobileView: boolean;
+  isWindowExpanded?: boolean;
 }
 
-export function NewslettersView({ isMobileView }: NewslettersViewProps) {
+export function NewslettersView({ isMobileView, isWindowExpanded = false }: NewslettersViewProps) {
   const [newsletters, setNewsletters] = useState<Newsletter[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -49,20 +50,29 @@ export function NewslettersView({ isMobileView }: NewslettersViewProps) {
     fetchNewsletters();
   }, []);
 
+  const gridClass = cn(
+    "grid gap-4",
+    isMobileView
+      ? "grid-cols-1"
+      : isWindowExpanded
+        ? "grid-cols-3 max-w-5xl"
+        : "grid-cols-2 max-w-3xl"
+  );
+
   return (
-    <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
+    <div className={cn("p-6", isMobileView && "p-4 pb-20", isWindowExpanded && "p-8")}>
         <p className={SECTION_SUBTEXT_CLASS}>
           happily subscribed to
         </p>
         {fetchError && <ContentFetchError message={fetchError} />}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
+          <div className={gridClass}>
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="h-24 rounded-lg bg-muted animate-pulse" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
+          <div className={gridClass}>
             {newsletters.map((item) => (
               <a
                 key={item.id}

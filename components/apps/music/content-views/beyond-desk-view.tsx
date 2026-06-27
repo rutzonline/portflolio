@@ -20,6 +20,7 @@ interface Interest {
 
 interface BeyondDeskViewProps {
   isMobileView: boolean;
+  isWindowExpanded?: boolean;
 }
 
 function SaneActivityImage({ item }: { item: Interest }) {
@@ -47,7 +48,7 @@ function SaneActivityImage({ item }: { item: Interest }) {
   );
 }
 
-export function BeyondDeskView({ isMobileView }: BeyondDeskViewProps) {
+export function BeyondDeskView({ isMobileView, isWindowExpanded = false }: BeyondDeskViewProps) {
   const [interests, setInterests] = useState<Interest[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -73,14 +74,23 @@ export function BeyondDeskView({ isMobileView }: BeyondDeskViewProps) {
     fetchInterests();
   }, []);
 
+  const gridClass = cn(
+    "grid gap-4",
+    isMobileView
+      ? "grid-cols-2"
+      : isWindowExpanded
+        ? "grid-cols-4 max-w-6xl"
+        : "grid-cols-2 desktop:grid-cols-3"
+  );
+
   return (
-    <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
+    <div className={cn("p-6", isMobileView && "p-4 pb-20", isWindowExpanded && "p-8")}>
         <p className={SECTION_SUBTEXT_CLASS}>
           what i do when i&apos;m not corporatemaxxing
         </p>
         {fetchError && <ContentFetchError message={fetchError} />}
         {loading ? (
-          <div className={cn("grid gap-4", isMobileView ? "grid-cols-2" : "grid-cols-2 desktop:grid-cols-3")}>
+          <div className={gridClass}>
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="space-y-2">
                 <div className="aspect-video rounded-xl bg-muted animate-pulse" />
@@ -89,7 +99,7 @@ export function BeyondDeskView({ isMobileView }: BeyondDeskViewProps) {
             ))}
           </div>
         ) : (
-          <div className={cn("grid gap-4", isMobileView ? "grid-cols-2" : "grid-cols-2 desktop:grid-cols-3")}>
+          <div className={gridClass}>
             {interests.map((item) => (
               <div key={item.id} className="group flex flex-col">
                 <div className="relative aspect-video rounded-xl overflow-hidden bg-muted">

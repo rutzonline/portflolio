@@ -47,11 +47,19 @@ export function CaseStudyDetail({ study }: CaseStudyDetailProps) {
           ))}
         </div>
 
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6 leading-relaxed border-b border-zinc-200 dark:border-zinc-700/60 pb-6">
-          {study.description}
-        </p>
+        {study.description.trim() ? (
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6 leading-relaxed border-b border-zinc-200 dark:border-zinc-700/60 pb-6">
+            {study.description}
+          </p>
+        ) : null}
 
-        <WorkMarkdown markdown={study.body} />
+        {study.body.trim() ? (
+          <WorkMarkdown markdown={study.body} />
+        ) : (
+          <div className="rounded-xl border border-dashed border-zinc-200 dark:border-zinc-700/60 bg-zinc-50 dark:bg-zinc-800/30 px-4 py-10 text-center">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">Content coming soon.</p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -59,6 +59,7 @@ const nextConfig = {
     ];
 
     return [
+      { source: "/favicon.ico", destination: "/favicon.png", permanent: true },
       // App route only — do not redirect /music/* assets (track.mp3, cover.jpg, etc.)
       { source: "/music", destination: "/misc", permanent: true },
       { source: "/desk", destination: "/misc", permanent: true },

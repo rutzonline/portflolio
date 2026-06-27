@@ -1,7 +1,6 @@
 import type { CalendarEvent } from "../types";
 import type { ConsumptionLog } from "@/types/consumption";
 import { calendarIdForCategory } from "./consumption-calendars";
-
 export type ConsumptionCalendarEvent = CalendarEvent & {
   url: string;
   category: string;

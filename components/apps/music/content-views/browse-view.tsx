@@ -18,6 +18,7 @@ interface Website {
 
 interface BrowseViewProps {
   isMobileView: boolean;
+  isWindowExpanded?: boolean;
 }
 
 function WebsitePreviewImage({ name, imageUrl }: { name: string; imageUrl: string }) {
@@ -44,7 +45,7 @@ function WebsitePreviewImage({ name, imageUrl }: { name: string; imageUrl: strin
   );
 }
 
-export function BrowseView({ isMobileView }: BrowseViewProps) {
+export function BrowseView({ isMobileView, isWindowExpanded = false }: BrowseViewProps) {
   const [websites, setWebsites] = useState<Website[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -70,14 +71,23 @@ export function BrowseView({ isMobileView }: BrowseViewProps) {
     fetchWebsites();
   }, []);
 
+  const gridClass = cn(
+    "grid gap-4",
+    isMobileView
+      ? "grid-cols-1"
+      : isWindowExpanded
+        ? "grid-cols-4 max-w-6xl"
+        : "grid-cols-2 desktop:grid-cols-3"
+  );
+
   return (
-    <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
+    <div className={cn("p-6", isMobileView && "p-4 pb-20", isWindowExpanded && "p-8")}>
         <p className={SECTION_SUBTEXT_CLASS}>
           prime internet real estate
         </p>
         {fetchError && <ContentFetchError message={fetchError} />}
         {loading ? (
-          <div className={cn("grid gap-4", isMobileView ? "grid-cols-1" : "grid-cols-2 desktop:grid-cols-3")}>
+          <div className={gridClass}>
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="rounded-xl overflow-hidden border border-border/50">
                 <div className="aspect-video bg-muted animate-pulse" />
@@ -88,7 +98,7 @@ export function BrowseView({ isMobileView }: BrowseViewProps) {
             ))}
           </div>
         ) : (
-          <div className={cn("grid gap-4", isMobileView ? "grid-cols-1" : "grid-cols-2 desktop:grid-cols-3")}>
+          <div className={gridClass}>
             {websites.map((site) => (
               <a
                 key={site.id}

@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { getSiteMediaViewHref } from "@/lib/external-link";
 import {
   INTRO_README_POLAROID_PATH,
   INTRO_README_POLAROID_VERSION,
@@ -47,16 +48,24 @@ export function IntroReadmePolaroid({
         onFocus();
       }}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={src}
-        alt="Rutuja Rochkari"
-        width={POLAROID_DISPLAY_WIDTH}
-        height={POLAROID_DISPLAY_HEIGHT}
-        className="block h-auto w-[150px] bg-transparent drop-shadow-[0_10px_28px_rgba(0,0,0,0.35)]"
-        draggable={false}
-        decoding="async"
-      />
+      <a
+        href={getSiteMediaViewHref(src)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block"
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt="Rutuja Rochkari"
+          width={POLAROID_DISPLAY_WIDTH}
+          height={POLAROID_DISPLAY_HEIGHT}
+          className="block h-auto w-[150px] bg-transparent drop-shadow-[0_10px_28px_rgba(0,0,0,0.35)]"
+          draggable={false}
+          decoding="async"
+        />
+      </a>
     </div>
   );
 }

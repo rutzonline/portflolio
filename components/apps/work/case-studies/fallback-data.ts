@@ -1,6 +1,6 @@
 import type { CaseStudy } from "@/types/work";
 
-/** Shared markdown for The State Plate — work timeline detail + case study card. */
+/** Shared markdown for The State Plate — work timeline detail. */
 export const STATE_PLATE_BODY = `As a marketing associate at The State Plate, a regional Indian foods brand selling niche products from different states, my work spanned multiple domains.
 
 → web experience optimisation, customer journeys, social media, content strategy, performance marketing and event management [handled pretty much everything digital- website, app, emails, ads, plus offline events]
@@ -83,70 +83,42 @@ export const STATE_PLATE_BODY = `As a marketing associate at The State Plate, a 
 - Operational problems can double as GTM opportunities
 - For D2C, product, marketing, and ops are tightly intertwined`;
 
-/** Used when Supabase table is missing or unreachable. */
-export const FALLBACK_CASE_STUDIES: CaseStudy[] = [
+const EMPTY_STUDY_FIELDS = {
+  subtitle: null,
+  description: "",
+  icon: "",
+  gradient_from: "",
+  gradient_to: "",
+  body: "",
+  tags: [] as CaseStudy["tags"],
+  published: true,
+  created_at: new Date().toISOString(),
+};
+
+/** Selected Work grid — static placeholders until case study content is added. */
+export const SELECTED_WORK_FOLDERS: CaseStudy[] = [
   {
-    id: "fallback-state-plate",
-    slug: "state-plate-d2c",
-    title: "The State Plate - D2C",
-    subtitle: "D2C",
-    description:
-      "The State Plate is an Indian regional food products company…",
-    icon: "🍽️",
-    gradient_from: "#34C759",
-    gradient_to: "#FF3B30",
-    body: STATE_PLATE_BODY,
-    tags: [
-      { label: "Full-Time", color: "green" },
-      { label: "App growth", color: "teal" },
-    ],
+    id: "selected-a",
+    slug: "a",
+    title: "a",
     sort_order: 1,
-    published: true,
-    created_at: new Date().toISOString(),
+    ...EMPTY_STUDY_FIELDS,
   },
   {
-    id: "fallback-liquide",
-    slug: "liquide-fintech",
-    title: "Liquide - Fintech",
-    subtitle: "Fintech",
-    description: "Liquide is a SEBI registered stock investment platform.",
-    icon: "📈",
-    gradient_from: "#5AC8FA",
-    gradient_to: "#FF9F9A",
-    body: `## Overview\n\nLiquide lets retail investors follow top performers and copy portfolios.\n\n## Outcomes\n\n- 35% increase in social feed engagement post-redesign`,
-    tags: [{ label: "Internship", color: "purple" }],
+    id: "selected-b",
+    slug: "b",
+    title: "b",
     sort_order: 2,
-    published: true,
-    created_at: new Date().toISOString(),
+    ...EMPTY_STUDY_FIELDS,
   },
   {
-    id: "fallback-hopstack",
-    slug: "hopstack-b2b-saas",
-    title: "Hopstack - B2B SaaS",
-    subtitle: "B2B SaaS",
-    description: "Hopstack is an advanced digital warehouse platform based in the US.",
-    icon: "📦",
-    gradient_from: "#007AFF",
-    gradient_to: "#AF52DE",
-    body: `## Overview\n\nHopstack helps 3PL providers manage inventory and shipping at scale.`,
-    tags: [{ label: "Internship", color: "purple" }],
+    id: "selected-c",
+    slug: "c",
+    title: "c",
     sort_order: 3,
-    published: true,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: "fallback-freelance",
-    slug: "freelance-assignments",
-    title: "Freelance / Assignments",
-    subtitle: "Agency",
-    description: "F&B boutique agency and creative strategy work.",
-    icon: "🎬",
-    gradient_from: "#1C3A5E",
-    gradient_to: "#34C759",
-    body: `## Overview\n\nFreelance and assignment work across F&B boutique agencies.`,
-    tags: [{ label: "Freelance", color: "blue" }],
-    sort_order: 4,
-    published: true,
-    created_at: new Date().toISOString(),
+    ...EMPTY_STUDY_FIELDS,
   },
 ];
+
+/** Used when Supabase table is missing or unreachable (legacy case study grid). */
+export const FALLBACK_CASE_STUDIES: CaseStudy[] = SELECTED_WORK_FOLDERS;

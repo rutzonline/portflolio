@@ -13,6 +13,7 @@ interface WindowControlsProps {
   restoreLabel?: string;
   className?: string;
   closeOnly?: boolean; // Show grey circles instead of yellow/green for minimize/maximize
+  maximizeDisabled?: boolean;
 }
 
 interface WindowControlButtonProps {
@@ -22,6 +23,7 @@ interface WindowControlButtonProps {
   onClick?: () => void;
   ariaLabel?: string;
   interactive?: boolean;
+  disabled?: boolean;
 }
 
 const iconWrapperClasses =
@@ -34,15 +36,18 @@ function WindowControlButton({
   onClick,
   ariaLabel,
   interactive = false,
+  disabled = false,
 }: WindowControlButtonProps) {
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
       aria-label={ariaLabel}
+      aria-disabled={disabled || undefined}
+      disabled={disabled}
       className={cn(
         "relative w-3 h-3 rounded-full flex items-center justify-center",
-        interactive ? "cursor-pointer" : "cursor-default",
+        interactive && !disabled ? "cursor-pointer" : "cursor-default",
         colorClass
       )}
     >
@@ -103,12 +108,14 @@ export function WindowControls({
   restoreLabel = "Restore window",
   className,
   closeOnly = false,
+  maximizeDisabled = false,
 }: WindowControlsProps) {
   if (!inShell && !showWhenNotInShell) {
     return null;
   }
 
   const isCloseInteractive = !!onClose || inShell;
+  const isMaximizeInteractive = inShell && !maximizeDisabled;
 
   return (
     <div className={cn("window-controls group flex items-center gap-1.5", className)}>
@@ -139,9 +146,10 @@ export function WindowControls({
             colorClass="bg-green-500"
             icon={<ZoomIcon isMaximized={inShell ? isMaximized : false} />}
             iconColorClass="text-black/50"
-            onClick={inShell ? onToggleMaximize : undefined}
-            ariaLabel={inShell ? (isMaximized ? restoreLabel : maximizeLabel) : undefined}
-            interactive={inShell}
+            onClick={isMaximizeInteractive ? onToggleMaximize : undefined}
+            ariaLabel={isMaximizeInteractive ? (isMaximized ? restoreLabel : maximizeLabel) : undefined}
+            interactive={isMaximizeInteractive}
+            disabled={maximizeDisabled}
           />
         </>
       )}

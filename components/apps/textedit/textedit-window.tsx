@@ -19,9 +19,8 @@ import {
 } from "@/lib/use-window-behavior";
 import { MAXIMIZED_Z_INDEX, useWindowManager } from "@/lib/window-context";
 import { isIntroDocPath } from "@/lib/intro-doc";
-import { isCaseStudyDocPath } from "@/lib/case-study-doc";
+import { isCaseStudyDocPath, getCaseStudyWindowTitle } from "@/lib/case-study-doc";
 import type { IntroReadmeTabId } from "@/lib/intro-doc-baseline";
-import { CaseStudyDetail } from "@/components/apps/work/case-studies/case-study-detail";
 import type { CaseStudy } from "@/types/work";
 import { IntroReadmeCarousel } from "./intro-readme-carousel";
 import { IntroReadmePolaroid } from "./intro-readme-polaroid";
@@ -70,8 +69,10 @@ export function TextEditWindow({
   // windowId is used for identification in multi-window scenarios
   void windowId;
   const windowRef = useRef<HTMLDivElement>(null);
-  const fileName = caseStudy?.title || filePath?.split("/").pop() || "Untitled";
   const isCaseStudyDoc = Boolean(caseStudy) || isCaseStudyDocPath(filePath);
+  const fileName = isCaseStudyDoc
+    ? getCaseStudyWindowTitle(filePath, caseStudy)
+    : filePath?.split("/").pop() || "Untitled";
   const { isMenuOpenRef } = useWindowManager();
   const isIntroDoc = isIntroDocPath(filePath);
   const [activeReadmeTab, setActiveReadmeTab] = useState<IntroReadmeTabId>("about");
@@ -176,8 +177,9 @@ export function TextEditWindow({
             className={cn("window-controls shrink-0", isIntroDoc ? "" : "p-2")}
             onClose={onClose}
             onMinimize={onMinimize}
-            onToggleMaximize={onToggleMaximize}
+            onToggleMaximize={isIntroDoc ? undefined : onToggleMaximize}
             isMaximized={isMaximized}
+            maximizeDisabled={isIntroDoc}
             closeLabel="Close window"
           />
           {isIntroDoc ? (
@@ -203,9 +205,7 @@ export function TextEditWindow({
             onOpenTrash={onOpenTrash}
           />
         ) : isCaseStudyDoc && caseStudy ? (
-          <div className="flex-1 min-h-0 overflow-hidden bg-white dark:bg-zinc-900">
-            <CaseStudyDetail study={caseStudy} />
-          </div>
+          <div className="flex-1 min-h-0 bg-white dark:bg-zinc-900" />
         ) : (
           <div className="flex-1 min-h-0 flex flex-col">
             <textarea

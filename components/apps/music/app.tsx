@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { DESKTOP_NAV_SIDEBAR_WIDTH_CLASS } from "@/lib/ui-tokens";
+import { useWindowExpanded } from "@/lib/use-window-expanded";
 import { useMusic } from "@/lib/music/use-music";
 import { loadMusicState, saveMusicState } from "@/lib/sidebar-persistence";
 import { MusicView } from "./types";
@@ -35,6 +36,7 @@ const getInitialState = () => {
 
 export default function App({ isDesktop = false }: AppProps) {
   const { playlists, albums, artists, songs } = useMusic();
+  const isWindowExpanded = useWindowExpanded();
 
   const [initialState] = useState(getInitialState);
   const [activeView, setActiveView] = useState<MusicView>(initialState.view);
@@ -107,20 +109,21 @@ export default function App({ isDesktop = false }: AppProps) {
             songs={songs}
             onPlaylistSelect={(id) => handleViewSelect("playlist", id)}
             isMobileView={isMobileView}
+            isWindowExpanded={isWindowExpanded}
           />
         );
       case "browse":
-        return <BrowseView isMobileView={isMobileView} />;
+        return <BrowseView isMobileView={isMobileView} isWindowExpanded={isWindowExpanded} />;
       case "artists":
         return <ArtistsView artists={artists} isMobileView={isMobileView} />;
       case "albums":
-        return <AlbumsView albums={albums} isMobileView={isMobileView} />;
+        return <AlbumsView albums={albums} isMobileView={isMobileView} isWindowExpanded={isWindowExpanded} />;
       case "songs":
-        return <SongsView songs={songs} isMobileView={isMobileView} />;
+        return <SongsView songs={songs} isMobileView={isMobileView} isWindowExpanded={isWindowExpanded} />;
       case "beyond-desk":
-        return <BeyondDeskView isMobileView={isMobileView} />;
+        return <BeyondDeskView isMobileView={isMobileView} isWindowExpanded={isWindowExpanded} />;
       case "newsletters":
-        return <NewslettersView isMobileView={isMobileView} />;
+        return <NewslettersView isMobileView={isMobileView} isWindowExpanded={isWindowExpanded} />;
       default:
         return (
           <HomeView
@@ -128,6 +131,7 @@ export default function App({ isDesktop = false }: AppProps) {
             songs={songs}
             onPlaylistSelect={(id) => handleViewSelect("playlist", id)}
             isMobileView={isMobileView}
+            isWindowExpanded={isWindowExpanded}
           />
         );
     }

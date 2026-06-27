@@ -29,7 +29,7 @@ import {
   isIntroDocPath,
   enforceIntroAppendOnly,
 } from "@/lib/intro-doc";
-import { getCaseStudyDocPath } from "@/lib/case-study-doc";
+import { getCaseStudyDocPath, toEmptyCaseStudy } from "@/lib/case-study-doc";
 import type { CaseStudy } from "@/types/work";
 import {
   getLlmsDocumentContent,
@@ -557,9 +557,11 @@ function DesktopContent({
 
   const handleOpenCaseStudy = useCallback(
     (study: CaseStudy) => {
+      const emptyStudy = toEmptyCaseStudy(study);
       const filePath = getCaseStudyDocPath(study.slug);
       const existing = textEditWindows.find((w) => w.instanceId === filePath && w.isOpen);
       if (existing) {
+        updateWindowMetadata(existing.id, { caseStudy: emptyStudy, content: "" });
         if (existing.isMinimized) {
           unminimizeMultiWindow(existing.id);
         }
@@ -568,11 +570,11 @@ function DesktopContent({
       }
       openMultiWindow("textedit", filePath, {
         filePath,
-        content: study.body,
-        caseStudy: study,
+        content: "",
+        caseStudy: emptyStudy,
       });
     },
-    [openMultiWindow, textEditWindows, focusMultiWindow, unminimizeMultiWindow]
+    [openMultiWindow, textEditWindows, focusMultiWindow, unminimizeMultiWindow, updateWindowMetadata]
   );
 
   const focusIntroWindow = useCallback(() => {

@@ -7,6 +7,7 @@ import {
   getPdfProxyUrl,
   getPdfViewerZoomForPreview,
 } from "@/lib/preview-utils";
+import { getSiteMediaViewHref } from "@/lib/external-link";
 
 interface PdfViewerProps {
   fileUrl: string;
@@ -95,7 +96,7 @@ export function PdfViewer({
               Download PDF
             </a>
             <a
-              href={fileUrl}
+              href={getSiteMediaViewHref(fileUrl)}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg hover:bg-zinc-200/60 dark:hover:bg-zinc-700/60 transition-colors"

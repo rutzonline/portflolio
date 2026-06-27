@@ -14,6 +14,7 @@ import {
   insertImageMarkdown,
 } from "@/lib/notes/image-upload";
 import { cn } from "@/lib/utils";
+import { getSiteMediaViewHref, isSiteOwnedMediaUrl } from "@/lib/external-link";
 
 const SPACE_TAB = "  ";
 const NBSP_TAB = "\u00a0\u00a0";
@@ -420,7 +421,7 @@ export default function NoteContent({
     const src = typeof props.src === "string" ? props.src : "";
     if (!src) return null;
 
-    return (
+    const image = (
       <Image
         src={src}
         alt={props.alt || "image"}
@@ -430,7 +431,22 @@ export default function NoteContent({
         unoptimized
       />
     );
-  }, []);
+
+    if (!isSiteOwnedMediaUrl(src)) {
+      return image;
+    }
+
+    return (
+      <a
+        href={getSiteMediaViewHref(src)}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={stopPropagation}
+      >
+        {image}
+      </a>
+    );
+  }, [stopPropagation]);
 
   return (
     <div

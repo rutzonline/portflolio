@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm";
 import type { Components } from "react-markdown";
 import type { Element, ElementContent } from "hast";
 import { resolveIntroReadmeAppLink } from "@/lib/intro-readme-app-links";
+import { getSiteMediaViewHref, isSiteOwnedMediaUrl } from "@/lib/external-link";
 
 const RULE_LINE = /^(?:-{3,}|─{3,}|═{3,})$/;
 const LEADING_IMAGE = /^!\[([^\]]*)\]\(([^)]+)\)\s*\n\n/;
@@ -35,16 +36,39 @@ function isBannerImage(src: string): boolean {
   return /readme(?:-cover)?\.png|banner/i.test(src);
 }
 
+function ReadmeImage({
+  src,
+  alt,
+  className,
+}: {
+  src: string;
+  alt?: string;
+  className: string;
+}) {
+  const image = (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={alt ?? ""} className={className} draggable={false} />
+  );
+
+  if (!isSiteOwnedMediaUrl(src)) {
+    return image;
+  }
+
+  return (
+    <a href={getSiteMediaViewHref(src)} target="_blank" rel="noopener noreferrer" className="block">
+      {image}
+    </a>
+  );
+}
+
 function ReadmeBanner({ src, alt }: { src: string; alt?: string }) {
   return (
     <div className="mb-5 flex justify-center">
       <div className="overflow-hidden rounded-lg border border-black/10 bg-zinc-100 dark:border-white/8 dark:bg-black">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <ReadmeImage
           src={src}
-          alt={alt ?? ""}
+          alt={alt}
           className="block h-auto w-auto max-h-[360px] max-w-[min(100%,300px)] object-contain"
-          draggable={false}
         />
       </div>
     </div>
@@ -55,10 +79,9 @@ function ReadmePhoto({ src, alt }: { src: string; alt?: string }) {
   return (
     <div className="flex shrink-0 items-stretch gap-2">
       <span className="w-px shrink-0 self-stretch bg-black/10 dark:bg-white/12" aria-hidden />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <ReadmeImage
         src={src}
-        alt={alt ?? ""}
+        alt={alt}
         className="block h-[148px] w-[124px] max-w-[36vw] rounded-lg object-cover object-top"
       />
       <span className="w-px shrink-0 self-stretch bg-black/10 dark:bg-white/12" aria-hidden />

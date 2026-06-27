@@ -14,7 +14,9 @@ export const metadata: Metadata = {
   title: siteConfig.title,
   description: "Personal website of rutuja rochkari",
   icons: {
-    icon: "/favicon.png",
+    icon: [{ url: "/favicon.png", type: "image/png" }],
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
   },
 
 

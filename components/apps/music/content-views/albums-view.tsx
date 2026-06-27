@@ -30,6 +30,7 @@ function getCampaignLocalId(campaign: Campaign): string {
 interface CampaignsViewProps {
   albums: unknown[];
   isMobileView: boolean;
+  isWindowExpanded?: boolean;
 }
 
 function CampaignCardImage({ campaign }: { campaign: Campaign }) {
@@ -56,7 +57,7 @@ function CampaignCardImage({ campaign }: { campaign: Campaign }) {
   );
 }
 
-export function AlbumsView({ isMobileView }: CampaignsViewProps) {
+export function AlbumsView({ isMobileView, isWindowExpanded = false }: CampaignsViewProps) {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -82,14 +83,23 @@ export function AlbumsView({ isMobileView }: CampaignsViewProps) {
     fetchCampaigns();
   }, []);
 
+  const gridClass = cn(
+    "grid gap-4",
+    isMobileView
+      ? "grid-cols-1"
+      : isWindowExpanded
+        ? "grid-cols-4 max-w-6xl"
+        : "grid-cols-2 lg:grid-cols-3 max-w-5xl"
+  );
+
   return (
-    <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
+    <div className={cn("p-6", isMobileView && "p-4 pb-20", isWindowExpanded && "p-8")}>
         <p className={SECTION_SUBTEXT_CLASS}>
           my content marketing hall of fame
         </p>
         {fetchError && <ContentFetchError message={fetchError} />}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl">
+          <div className={gridClass}>
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="rounded-lg overflow-hidden border border-border/40">
                 <div className="aspect-[4/3] bg-muted animate-pulse" />
@@ -98,7 +108,7 @@ export function AlbumsView({ isMobileView }: CampaignsViewProps) {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl">
+          <div className={gridClass}>
             {campaigns.map((campaign) => {
               const card = (
                 <>

@@ -62,19 +62,19 @@ in case you were wondering... my favorite color is #0c121f`,
 
 so first up, the dock as it appears: 
 
-- **finder**, where you can browse the files and projects i've worked on.
+- **finder**, your default primary management guy on the desktop.
 
-- **notes**, which is a true reflection of me and my very intellectual thoughts.
+- **notes**, a veritable reflection of me and my very intellectual thoughts.
 
-- **messages**, a sample of how i write and communicate — curated threads, not private DMs.
+- **resume**, the main entry point to my work timeline, skills, educations, yada yada.
 
-- **photos**, you'll find a video introduction of me, along with a few pictures.
+- what is **misc**? well, it's kinda like a curation of all things marketing that i loveee.
 
-- **resume**, where you'll find my work timeline, skills, educations, yada yada.
+- **photos**, here you'll find a video introduction of me, along with a few pictures.
 
 - the **calendar** like icon? that's where you'll find a log of things i've read, watched, listened to, etc.
 
-- what is **misc**? well, it's kinda like a curation of all things marketing that i loveee.
+- **messages**, very personal chats with close family and friends.
 
 - **settings**, where you can change the appearance of the site and other settings.
 
