@@ -5,6 +5,8 @@ export interface AppMobilePolicy {
   shellFallbackAppId?: string; // fallback app when unsupported on mobile
   directRouteRedirectTo?: string; // defaults to "/"
   showInFinderApplications?: boolean; // defaults to true
+  /** Hide from iOS home grid (Finder, Trash, dock apps, etc.). Defaults to true. */
+  showOnIosHome?: boolean;
 }
 
 export interface AppConfig {

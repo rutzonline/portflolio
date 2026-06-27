@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useCallback } from "react";
 import { RecentsProvider } from "@/lib/recents-context";
 import type { Note as NoteType } from "@/lib/notes/types";
-import { MobileHomeGrid } from "./mobile-home-grid";
+import { IosShell } from "./ios/ios-shell";
 
 const NotesApp = dynamic(() => import("@/components/apps/notes/notes-app").then((mod) => mod.NotesApp), {
   ssr: false,
@@ -42,7 +42,7 @@ interface MobileShellProps {
   initialNote?: NoteType;
 }
 
-export function MobileShell({ initialNoteSlug, initialNote }: MobileShellProps) {
+export function MobileShell({ initialApp, initialNoteSlug, initialNote }: MobileShellProps) {
   const renderApp = useCallback(
     (appId: string) => {
       switch (appId) {
@@ -78,7 +78,7 @@ export function MobileShell({ initialNoteSlug, initialNote }: MobileShellProps) 
 
   return (
     <RecentsProvider>
-      <MobileHomeGrid renderApp={renderApp} />
+      <IosShell initialApp={initialApp} renderApp={renderApp} />
     </RecentsProvider>
   );
 }

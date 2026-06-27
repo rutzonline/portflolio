@@ -13,6 +13,9 @@ export const APPS: AppConfig[] = [
     menuBarTitle: "Finder",
     multiWindow: true,
     cascadeOffset: 30,
+    mobile: {
+      showOnIosHome: false,
+    },
   },
   {
     id: "notes",
