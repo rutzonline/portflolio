@@ -1,10 +1,11 @@
-import { getSearchString, type SearchParams } from "@/lib/route-utils";
-import { RouteRedirect } from "@/components/route-redirect";
+import { redirect } from "next/navigation";
 
 type PageProps = {
-  searchParams?: SearchParams;
+  params: Promise<{ slug?: string[] }>;
 };
 
-export default function DeskCatchAllPage({ searchParams }: PageProps) {
-  return <RouteRedirect basePath="/desk" search={getSearchString(searchParams)} />;
+export default async function DeskCatchAllPage({ params }: PageProps) {
+  const { slug } = await params;
+  const suffix = slug?.length ? `/${slug.join("/")}` : "";
+  redirect(`/misc${suffix}`);
 }

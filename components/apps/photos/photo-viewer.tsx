@@ -10,13 +10,7 @@ import { toZonedTime } from "date-fns-tz";
 import { format, parseISO } from "date-fns";
 import Image from "next/image";
 import { getViewerUrl } from "@/lib/photos/image-utils";
-
-// Preload an image for faster navigation
-function preloadImage(url: string) {
-  if (typeof window === "undefined") return;
-  const img = new window.Image();
-  img.src = getViewerUrl(url);
-}
+import { getPhotoAlt } from "@/lib/photos/photo-alt";
 
 function isVideo(url: string): boolean {
   const lower = url.toLowerCase();
@@ -25,7 +19,7 @@ function isVideo(url: string): boolean {
 
 interface PhotoViewerProps {
   photo: Photo;
-  photos: Photo[]; // All photos for prefetching
+  photos: Photo[];
   currentIndex: number;
   totalPhotos: number;
   onBack: () => void;
@@ -38,7 +32,6 @@ interface PhotoViewerProps {
 
 export function PhotoViewer({
   photo,
-  photos,
   currentIndex,
   totalPhotos,
   onBack,
@@ -49,10 +42,14 @@ export function PhotoViewer({
   isDesktop = false,
 }: PhotoViewerProps) {
   const windowFocus = useWindowFocus();
+  const [imageFailed, setImageFailed] = useState(false);
   const inShell = isDesktop && windowFocus;
   const [isSwiping, setIsSwiping] = useState(false);
 
-  // Prevent default touch move when swiping to avoid scroll interference
+  useEffect(() => {
+    setImageFailed(false);
+  }, [photo.id]);
+
   useEffect(() => {
     const preventDefault = (e: TouchEvent) => {
       if (isSwiping && e.cancelable) {
@@ -67,7 +64,6 @@ export function PhotoViewer({
     };
   }, [isSwiping]);
 
-  // Swipe handlers for mobile navigation
   const swipeHandlers = useSwipeable({
     onSwipeStart: () => setIsSwiping(true),
     onSwiped: () => setIsSwiping(false),
@@ -78,23 +74,8 @@ export function PhotoViewer({
     preventScrollOnSwipe: true,
   });
 
-  // Preload adjacent photos (3 in each direction) when current photo changes
-  useEffect(() => {
-    const preloadRange = 3;
-    for (let i = 1; i <= preloadRange; i++) {
-      if (currentIndex - i >= 0) {
-        preloadImage(photos[currentIndex - i].url);
-      }
-      if (currentIndex + i < photos.length) {
-        preloadImage(photos[currentIndex + i].url);
-      }
-    }
-  }, [currentIndex, photos]);
-
-  // Handle keyboard navigation (only when Photos app is focused)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Only handle if Photos app is focused
       const photosApp = document.querySelector('[data-app="photos"]');
       if (!photosApp?.contains(document.activeElement) && document.activeElement !== photosApp) {
         return;
@@ -118,7 +99,6 @@ export function PhotoViewer({
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header - matches PhotosGrid header style */}
       <div
         className={cn(
           "px-4 py-3 flex items-center justify-between border-b dark:border-foreground/20 select-none",
@@ -126,7 +106,6 @@ export function PhotoViewer({
         )}
         onMouseDown={inShell && !isMobileView ? windowFocus.onDragStart : undefined}
       >
-        {/* Back button */}
         <button
           onClick={onBack}
           onMouseDown={(e) => e.stopPropagation()}
@@ -135,7 +114,6 @@ export function PhotoViewer({
           <ChevronLeft className="w-5 h-5 text-foreground" />
         </button>
 
-        {/* Date and counter */}
         <div className="text-center">
           <p className="text-sm font-medium">{formattedDate}</p>
           <p className="text-xs text-muted-foreground">
@@ -143,7 +121,6 @@ export function PhotoViewer({
           </p>
         </div>
 
-        {/* Favorite button */}
         <button
           onClick={() => onToggleFavorite?.(photo.id)}
           onMouseDown={(e) => e.stopPropagation()}
@@ -158,7 +135,6 @@ export function PhotoViewer({
         </button>
       </div>
 
-      {/* Photo/Video with swipe support */}
       <div
         {...swipeHandlers}
         className="flex-1 flex items-center justify-center min-h-0 bg-muted/30"
@@ -173,16 +149,28 @@ export function PhotoViewer({
               autoPlay
               className="w-full h-full object-contain"
             />
+          ) : imageFailed ? (
+            <div className="flex h-full w-full flex-col items-center justify-center gap-2 p-6 text-center text-sm text-muted-foreground">
+              <p>Couldn&apos;t load this photo.</p>
+              <button
+                type="button"
+                className="text-accent-blue underline can-hover:hover:opacity-80"
+                onClick={() => setImageFailed(false)}
+              >
+                Try again
+              </button>
+            </div>
           ) : (
             <Image
               key={photo.id}
               src={getViewerUrl(photo.url)}
-              alt=""
+              alt={getPhotoAlt(photo)}
               fill
               className="object-contain"
               sizes="(max-width: 768px) 100vw, 80vw"
               priority
               unoptimized
+              onError={() => setImageFailed(true)}
             />
           )}
         </div>

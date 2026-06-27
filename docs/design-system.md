@@ -18,13 +18,38 @@ Use these semantic color variables instead of hardcoded values:
 
 ### Accent Color
 
-New apps should use the primary blue (`#0A7CFF`) for:
-- Selected/active states
-- Primary actions
-- Interactive elements
+Site-wide accent blue: `#007AFF` (`--accent-blue` / Tailwind `accent-blue`) — macOS system blue.
+
+Use for:
+- Selected/active sidebar items (`SIDEBAR_ITEM_ACTIVE_CLASS` in `lib/ui-tokens.ts`)
+- Selected thumbnails/tiles (`SELECTION_FRAME_CLASS`)
+- Inline caption annotations (`CAPTION_ANNOTATION_ROW_CLASS`, `CAPTION_ACCENT_LINE_CLASS`, `CAPTION_ANNOTATION_TEXT_CLASS`)
+- Primary actions and interactive elements
+
+```tsx
+import {
+  SIDEBAR_ITEM_ACTIVE_CLASS,
+  SELECTION_FRAME_CLASS,
+  CAPTION_ANNOTATION_ROW_CLASS,
+  CAPTION_ACCENT_LINE_CLASS,
+  CAPTION_ANNOTATION_TEXT_CLASS,
+} from "@/lib/ui-tokens";
+
+// Sidebar selected row (desktop only)
+isActive && !isMobileView && SIDEBAR_ITEM_ACTIVE_CLASS
+
+// Selected tile ring (padded inset)
+isSelected && SELECTION_FRAME_CLASS
+
+// Muted caption with left accent line (no box)
+<div className={CAPTION_ANNOTATION_ROW_CLASS}>
+  <div className={CAPTION_ACCENT_LINE_CLASS} aria-hidden />
+  <p className={CAPTION_ANNOTATION_TEXT_CLASS}>…</p>
+</div>
+```
 
 Existing app accents (for reference):
-- Messages: `#0A7CFF` (blue)
+- Messages: `#007AFF` (blue)
 - Notes: `#FFE390` / `#9D7D28` (yellow)
 
 ## Sidebar Patterns
@@ -44,21 +69,25 @@ Existing app accents (for reference):
 
 ### Selected State
 
-Sidebars should NOT have hover states on items. Use solid background for selected state on **desktop only**:
+Sidebars should NOT have hover states on items. Use **`SIDEBAR_ITEM_ACTIVE_CLASS`** from `lib/ui-tokens.ts` on **desktop only** (muted gray background + blue text/icons — not solid blue fill):
 
 ```tsx
+import { SIDEBAR_ITEM_ACTIVE_CLASS } from "@/lib/ui-tokens";
+
 // Correct - selected state only on desktop
 <div className={cn(
   "px-2 py-1.5 rounded-lg",
-  isSelected && !isMobileView && "bg-[#0A7CFF] text-white"
+  isActive && !isMobileView && SIDEBAR_ITEM_ACTIVE_CLASS
 )}>
 
 // Incorrect - avoid hover states in sidebars
 <div className="can-hover:hover:bg-muted/50"> // Don't do this
 
 // Incorrect - applying selected background on mobile
-<div className={isSelected && "bg-[#0A7CFF]"}> // Don't do this on mobile
+<div className={isActive && SIDEBAR_ITEM_ACTIVE_CLASS}> // Don't do this on mobile
 ```
+
+**Exceptions (intentional):** Notes uses yellow selection; Messages conversation list and Finder/Resume **file rows** use solid `bg-accent-blue text-white`; Settings categories use zinc gray.
 
 **Why no selected state on mobile?** On mobile, tapping a sidebar item navigates to the detail view (full-screen), so there's no split view where selection needs to be indicated. The selected state is only meaningful on desktop where sidebar and content are visible simultaneously.
 
@@ -111,7 +140,7 @@ Always use `text-foreground` or `text-muted-foreground` for icons. Never use har
 Exception: Back/navigation chevrons can use the app's accent color:
 
 ```tsx
-<ChevronLeft className="text-[#0A7CFF]" />
+<ChevronLeft className="text-[#007AFF]" />
 ```
 
 ### Icon Sizing
@@ -228,7 +257,7 @@ On mobile, replace window controls with a back button:
 
 ```tsx
 {isMobileView ? (
-  <button onClick={onBack} className="flex items-center gap-1 text-[#0A7CFF]">
+  <button onClick={onBack} className="flex items-center gap-1 text-[#007AFF]">
     <ChevronLeft size={24} />
     <span>Back</span>
   </button>
@@ -429,7 +458,7 @@ const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
 |-----|-----------------|----------------|----------|
 | Notes | Yes (search) | Yes | `sidebar.tsx` |
 | Messages | Yes (search, message input) | Yes | `sidebar.tsx` |
-| iTerm | Yes (terminal input) | Yes | `terminal.tsx` |
+| Resume | Yes (contact feedback) | Yes | `contact-footer-playground.tsx` |
 | TextEdit | Yes (textarea) | Yes | `textedit-app.tsx`, `textedit-window.tsx` |
 | Photos | No | Not needed | - |
 | Finder | No | Not needed | - |
@@ -476,7 +505,7 @@ When adding persistence to a new app:
 When creating a new app, ensure:
 
 - [ ] Sidebar uses `bg-muted` on desktop, `bg-background` on mobile
-- [ ] Selected states use `#0A7CFF` background with white text (desktop only, no background on mobile)
+- [ ] Selected states use `SIDEBAR_ITEM_ACTIVE_CLASS` from `lib/ui-tokens.ts` (desktop only, no background on mobile)
 - [ ] No hover states on sidebar items
 - [ ] Icons use `text-muted-foreground` or `text-foreground`
 - [ ] Nav bar includes window controls (desktop) or back button (mobile)

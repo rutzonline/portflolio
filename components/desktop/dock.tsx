@@ -39,7 +39,7 @@ function DockTooltip({ label }: { label: string }) {
           className="fill-white/70 dark:fill-zinc-800/70"
         />
       </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-zinc-800 dark:text-white text-xs font-medium pb-2 whitespace-nowrap px-3">
+      <span className="absolute inset-0 flex items-center justify-center text-[13px] text-zinc-800 dark:text-white font-medium pb-2 whitespace-nowrap px-3">
         {label}
       </span>
     </div>
@@ -538,7 +538,7 @@ export function Dock({
           onLostPointerCapture={endDockResize}
           onKeyDown={handleResizeKeyDown}
           onMouseEnter={() => setHoveredApp(null)}
-          className="relative self-center rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70"
+          className="relative self-center rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue/70"
           style={{
             width: `${metrics.handleHitboxWidth}px`,
             height: `${metrics.dividerHeight + 8}px`,

@@ -16,11 +16,11 @@
 
 /* Mention node styling */
 .ProseMirror .mention-node {
-  color: #0A7CFF;
+  color: #007AFF;
   font-weight: 500;
   position: relative;
   display: inline-block;
-  background: #0A7CFF -webkit-gradient(linear, 100% 0, 0 0, from(#0A7CFF), color-stop(0.5, #ffffff), to(#0A7CFF));
+  background: #007AFF -webkit-gradient(linear, 100% 0, 0 0, from(#007AFF), color-stop(0.5, #ffffff), to(#007AFF));
   background-position: -4rem top;
   background-repeat: no-repeat;
   -webkit-background-clip: text;

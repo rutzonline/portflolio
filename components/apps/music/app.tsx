@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
+import { DESKTOP_NAV_SIDEBAR_WIDTH_CLASS } from "@/lib/ui-tokens";
 import { useMusic } from "@/lib/music/use-music";
-import { useWindowFocus } from "@/lib/window-focus-context";
 import { loadMusicState, saveMusicState } from "@/lib/sidebar-persistence";
 import { MusicView } from "./types";
 import { Sidebar } from "./sidebar";
-import { Nav } from "./nav";
+import { Nav, DeskTopNav } from "./nav";
 import { ChevronLeft } from "lucide-react";
 import {
   HomeView,
@@ -45,8 +45,6 @@ export default function App({ isDesktop = false }: AppProps) {
   const [showContent, setShowContent] = useState(initialState.showContent);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const windowFocus = useWindowFocus();
-  const inShell = !!(isDesktop && windowFocus);
 
   useEffect(() => {
     setIsMobileView(!isDesktop);
@@ -71,23 +69,25 @@ export default function App({ isDesktop = false }: AppProps) {
     setShowContent(false);
   }, []);
 
-  // Mobile header labels
-  const mobileHeader = (() => {
+  // Section titles shown in the content header (desktop) and mobile header.
+  const sectionTitle = (() => {
     switch (activeView) {
+      case "home":
+        return "Home";
       case "browse":
-        return { title: "Cool Websites", subtitle: null };
+        return "Cool Websites";
       case "artists":
-        return { title: "brands getting it right", subtitle: null };
+        return "brands getting it right";
       case "albums":
-        return { title: "campaigns & content", subtitle: null };
+        return "campaigns & content";
       case "beyond-desk":
-        return { title: "Things Keeping Me Sane", subtitle: null };
+        return "Things keeping me sane";
       case "songs":
-        return { title: "Products & Packaging", subtitle: null };
+        return "Products & Packaging";
       case "newsletters":
-        return { title: "Newsletters & Blogs", subtitle: null };
+        return "Newsletters & Blogs";
       default:
-        return { title: "", subtitle: null };
+        return "";
     }
   })();
 
@@ -141,15 +141,16 @@ export default function App({ isDesktop = false }: AppProps) {
       onMouseDown={() => containerRef.current?.focus()}
       className="music-app h-full flex flex-col bg-background text-foreground outline-none overflow-hidden"
     >
+      {!isMobileView && <DeskTopNav title={sectionTitle} isDesktop={isDesktop} />}
+
       <main className="flex-1 flex min-h-0 overflow-hidden">
-        {/* Sidebar */}
         <div
           className={cn(
             "h-full flex-shrink-0 overflow-hidden",
             showSidebar
               ? isMobileView
                 ? "block w-full"
-                : "block w-[220px] border-r dark:border-foreground/20"
+                : cn("block border-r dark:border-foreground/20", DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)
               : "hidden"
           )}
         >
@@ -161,22 +162,22 @@ export default function App({ isDesktop = false }: AppProps) {
             isMobileView={isMobileView}
             onScroll={setIsScrolled}
           >
-            <Nav
-              isMobileView={isMobileView}
-              isScrolled={isScrolled}
-              isDesktop={isDesktop}
-            />
+            {isMobileView ? (
+              <Nav
+                isMobileView={isMobileView}
+                isScrolled={isScrolled}
+                isDesktop={isDesktop}
+              />
+            ) : null}
           </Sidebar>
         </div>
 
-        {/* Main Content */}
         <div
           className={cn(
-            "flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden relative",
-            showMainContent ? "block" : "hidden"
+            "flex-1 flex-col min-h-0 min-w-0 overflow-hidden",
+            showMainContent ? "flex" : "hidden"
           )}
         >
-          {/* Mobile content header */}
           {isMobileView && (
             <div className="px-4 py-3 flex items-center gap-3 sticky top-0 z-[1] select-none bg-background">
               <button
@@ -185,28 +186,29 @@ export default function App({ isDesktop = false }: AppProps) {
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              {activeView !== "home" && activeView !== "browse" && (
-                <div>
-                  <h1 className="text-lg font-semibold">{mobileHeader.title}</h1>
-                  {mobileHeader.subtitle && (
-                    <p className="text-xs text-muted-foreground">{mobileHeader.subtitle}</p>
-                  )}
-                </div>
+              {activeView !== "home" && (
+                <h1 className="text-lg font-semibold">{sectionTitle}</h1>
               )}
             </div>
           )}
 
-          {/* Draggable header area for desktop window */}
-          {!isMobileView && (
-            <div
-              className="absolute top-0 left-0 right-0 h-12 z-10 select-none"
-              onMouseDown={inShell && windowFocus ? windowFocus.onDragStart : undefined}
-            />
-          )}
-
-          {renderContent()}
+          <div className="desk-scroll flex-1 min-h-0 overflow-y-auto">
+            {renderContent()}
+          </div>
         </div>
       </main>
     </div>
   );
+
+  /*
+  return (
+    <div className="h-full w-full overflow-hidden rounded-b-lg bg-background">
+      <iframe
+        title="Notion — Portfolio"
+        src="https://rutujarochkari.notion.site/portfolio"
+        className="w-full h-full border-0"
+      />
+    </div>
+  );
+  */
 }

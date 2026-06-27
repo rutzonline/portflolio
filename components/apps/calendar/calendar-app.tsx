@@ -70,7 +70,7 @@ export function CalendarApp({ isMobile = false, inShell = false }: CalendarAppPr
         {appMode === "booking" ? (
           <CalEmbed />
         ) : (
-          <ConsumptionShell currentDate={currentDate} onDateChange={handleDateChange} />
+          <ConsumptionShell currentDate={currentDate} onDateChange={handleDateChange} isMobileView={isMobile} />
         )}
       </div>
     </div>

@@ -20,7 +20,7 @@ export function CalEmbed() {
           href={siteConfig.calBookingUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="can-hover:hover:text-blue-600 underline"
+          className="can-hover:hover:text-accent-blue underline"
         >
           Open in Cal.com if the embed does not load
         </a>

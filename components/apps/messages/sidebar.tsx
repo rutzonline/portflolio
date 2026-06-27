@@ -376,7 +376,7 @@ export function Sidebar({
                                     }
                                     className={`w-20 aspect-square rounded-lg flex flex-col items-center justify-center p-2 relative ${
                                       activeConversation === conversation.id && !isMobileView
-                                        ? "bg-[#0A7CFF] text-white"
+                                        ? "bg-accent-blue text-white"
                                         : ""
                                     }`}
                                   >
@@ -533,7 +533,7 @@ export function Sidebar({
                                       <div className="relative max-w-full inline-flex justify-center">
                                         {conversation.unreadCount > 0 &&
                                           activeConversation !== conversation.id && (
-                                          <div className="absolute right-full mr-1 top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-[#0A7CFF] rounded-full" />
+                                          <div className="absolute right-full mr-1 top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-accent-blue rounded-full" />
                                         )}
                                         <span className="text-xs truncate max-w-full">
                                           {conversation.name ||
@@ -545,7 +545,7 @@ export function Sidebar({
                                 </ContextMenuTrigger>
                                 <ContextMenuContent>
                                   <ContextMenuItem
-                                    className={`focus:bg-[#0A7CFF] focus:text-white ${
+                                    className={`focus:bg-accent-blue focus:text-white ${
                                       isMobileView
                                         ? "flex items-center justify-between"
                                         : ""
@@ -569,7 +569,7 @@ export function Sidebar({
                                     )}
                                   </ContextMenuItem>
                                   <ContextMenuItem
-                                    className={`focus:bg-[#0A7CFF] focus:text-white ${
+                                    className={`focus:bg-accent-blue focus:text-white ${
                                       isMobileView
                                         ? "flex items-center justify-between"
                                         : ""
@@ -603,7 +603,7 @@ export function Sidebar({
                                       ))}
                                   </ContextMenuItem>
                                   <ContextMenuItem
-                                    className={`focus:bg-[#0A7CFF] focus:text-white ${
+                                    className={`focus:bg-accent-blue focus:text-white ${
                                       isMobileView
                                         ? "flex items-center justify-between"
                                         : ""

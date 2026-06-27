@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { ExternalLink } from "lucide-react";
+import { SECTION_SUBTEXT_CLASS, DESK_TEXT_CARD_CLASS } from "@/lib/ui-tokens";
+import { ContentFetchError } from "@/components/shared/content-fetch-error";
 import { createClient } from "@/utils/supabase/client";
 import { getNewsletterCategoryStyles } from "@/lib/newsletter-category-styles";
 
@@ -24,6 +25,7 @@ interface NewslettersViewProps {
 export function NewslettersView({ isMobileView }: NewslettersViewProps) {
   const [newsletters, setNewsletters] = useState<Newsletter[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchNewsletters() {
@@ -36,8 +38,10 @@ export function NewslettersView({ isMobileView }: NewslettersViewProps) {
 
         if (error) throw error;
         setNewsletters(data || []);
+        setFetchError(null);
       } catch (err) {
         console.error("Failed to fetch newsletters:", err);
+        setFetchError("Couldn't load newsletters. Try refreshing.");
       } finally {
         setLoading(false);
       }
@@ -46,10 +50,11 @@ export function NewslettersView({ isMobileView }: NewslettersViewProps) {
   }, []);
 
   return (
-    <ScrollArea className="h-full" bottomMargin="0">
-      <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
-        <h2 className="text-lg font-semibold mb-6">Newsletters & Blogs</h2>
-
+    <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
+        <p className={SECTION_SUBTEXT_CLASS}>
+          happily subscribed to
+        </p>
+        {fetchError && <ContentFetchError message={fetchError} />}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -64,7 +69,7 @@ export function NewslettersView({ isMobileView }: NewslettersViewProps) {
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex flex-col p-4 rounded-lg bg-muted/40 border border-border/40 hover:border-border hover:bg-muted/70 transition-all min-w-0 min-h-[5.5rem]"
+                className={cn(DESK_TEXT_CARD_CLASS, "min-h-[5.5rem]")}
               >
                 <div className="flex items-start justify-between gap-2 mb-1.5">
                   <p className="text-sm font-medium leading-snug line-clamp-2 min-w-0">
@@ -91,7 +96,6 @@ export function NewslettersView({ isMobileView }: NewslettersViewProps) {
             ))}
           </div>
         )}
-      </div>
-    </ScrollArea>
+    </div>
   );
 }

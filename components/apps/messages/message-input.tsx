@@ -1,4 +1,5 @@
 import { Recipient } from "@/types/messages";
+import { ACCENT_BLUE_HEX } from "@/lib/ui-tokens";
 import {
   useState,
   useRef,
@@ -155,7 +156,7 @@ export const MessageInput = forwardRef<
       Mention.configure({
         HTMLAttributes: {
           class: "mention-node",
-          style: "color: #0A7CFF !important; font-weight: 500 !important;",
+          style: `color: ${ACCENT_BLUE_HEX} !important; font-weight: 500 !important;`,
           onanimationend: 'this.classList.add("shimmer-done")',
         },
         renderText: ({ node }) => {
@@ -178,7 +179,7 @@ export const MessageInput = forwardRef<
               "data-label": label,
               "data-name": recipient?.name ?? node.attrs.name ?? label,
               class: "mention-node",
-              style: "color: #0A7CFF !important; font-weight: 500 !important;",
+              style: `color: ${ACCENT_BLUE_HEX} !important; font-weight: 500 !important;`,
             },
             label,
           ];
@@ -423,7 +424,7 @@ export const MessageInput = forwardRef<
               type="submit"
               onClick={handleSubmit}
               disabled={disabled || !message.trim()}
-              className="absolute right-1 bottom-1 bg-[#0A7CFF] rounded-full p-1 text-white font-bold transition-colors"
+              className="absolute right-1 bottom-1 bg-accent-blue rounded-full p-1 text-white font-bold transition-colors"
               aria-label="Send message"
             >
               <Icons.arrowUp className="h-4 w-4" strokeWidth={3} />

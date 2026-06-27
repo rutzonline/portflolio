@@ -5,11 +5,13 @@ import Image from "next/image";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { useRecents } from "@/lib/recents-context";
 import { cn } from "@/lib/utils";
+import { SIDEBAR_ITEM_ACTIVE_CLASS, ACCENT_BLUE_CLASS, FILE_LIST_ROW_SELECTED_CLASS, DESKTOP_NAV_SIDEBAR_WIDTH_CLASS } from "@/lib/ui-tokens";
 import { FinderNav, FinderSidebarMobileNav } from "./nav";
 import { APPS } from "@/lib/app-config";
 import {
   HOME_DIR,
   LOCAL_FINDER_FILES,
+  CURSOR_APP_LAUNCH_ID,
   getLocalTextFileContent,
   PROJECTS_DIR,
 } from "@/lib/file-route-utils";
@@ -30,7 +32,7 @@ import {
 import { useRouter } from "next/navigation";
 import { FinderSearchEngine, type EntryInput } from "./search-engine";
 
-const USERNAME = HOME_DIR.split("/").pop() ?? "rutujarochkari";
+const USERNAME = "rutuja rochkari";
 
 interface FileItem {
   name: string;
@@ -96,7 +98,7 @@ function FileIcon({ type, name, icon, className }: { type: "file" | "dir" | "app
   const getFileIcon = () => {
     if (type === "dir") {
       return (
-        <svg className={cn("text-blue-500", className)} viewBox="0 0 24 24" fill="currentColor">
+        <svg className={cn("text-accent-blue", className)} viewBox="0 0 24 24" fill="currentColor">
           <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
         </svg>
       );
@@ -116,6 +118,7 @@ function FileIcon({ type, name, icon, className }: { type: "file" | "dir" | "app
             width={48}
             height={48}
             className={className}
+            unoptimized={appIcon.endsWith(".svg")}
           />
         );
       }
@@ -657,7 +660,11 @@ export function FinderApp({
       setCurrentPath(file.path);
       setSelectedFile(null);
     } else if (file.type === "app") {
-      const appId = file.path.replace("/", ""); // "/notes" -> "notes"
+      const appId = file.path.replace("/", "");
+      if (appId === CURSOR_APP_LAUNCH_ID) {
+        window.open("https://cursor.com", "_blank", "noopener,noreferrer");
+        return;
+      }
       if (onOpenApp) {
         // Use window manager callback (desktop shell)
         onOpenApp(appId);
@@ -848,7 +855,7 @@ export function FinderApp({
       <div className="absolute left-2 top-1/2 -translate-y-1/2">
         <button
           onClick={handleBack}
-          className="flex items-center gap-1 text-blue-500 hover:text-blue-600 transition-colors"
+          className="flex items-center gap-1 text-accent-blue hover:text-accent-blue transition-colors"
         >
           <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M15 18l-6-6 6-6" />
@@ -904,7 +911,7 @@ export function FinderApp({
                   index < SIDEBAR_ITEMS.length - 1 && "border-b border-zinc-200 dark:border-zinc-700"
                 )}
               >
-                <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-500">
+                <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-accent-blue">
                   <SidebarIcon icon={item.icon} className="w-5 h-5 text-white" />
                 </span>
                 <span className="flex-1 text-left text-zinc-900 dark:text-white">{item.label}</span>
@@ -920,7 +927,7 @@ export function FinderApp({
 
     // Desktop sidebar
     return (
-      <div className="flex flex-col w-48 border-r border-zinc-200 dark:border-zinc-700 bg-zinc-100/80 dark:bg-zinc-800/80 backdrop-blur-xl">
+      <div className={cn("flex flex-col border-r border-zinc-200 dark:border-zinc-700 bg-zinc-100/80 dark:bg-zinc-800/80 backdrop-blur-xl", DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)}>
         <div className="flex-1 overflow-y-auto py-2">
           {SIDEBAR_ITEMS.map(item => (
             <button
@@ -929,7 +936,7 @@ export function FinderApp({
               className={cn(
                 "w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left rounded-md",
                 selectedSidebar === item.id
-                  ? "bg-zinc-200/70 dark:bg-zinc-700/70 text-blue-500"
+                  ? SIDEBAR_ITEM_ACTIVE_CLASS
                   : "text-zinc-900 dark:text-zinc-100"
               )}
             >
@@ -937,7 +944,7 @@ export function FinderApp({
                 icon={item.icon}
                 className={cn(
                   "w-4 h-4",
-                  selectedSidebar === item.id ? "text-blue-500" : "text-zinc-900 dark:text-zinc-100"
+                  selectedSidebar === item.id ? ACCENT_BLUE_CLASS : "text-zinc-900 dark:text-zinc-100"
                 )}
               />
               <span>{item.label}</span>
@@ -1122,7 +1129,7 @@ export function FinderApp({
           <span className={cn(
             "text-xs break-all line-clamp-2 px-1 rounded",
             selectedFile === file.path
-              ? "bg-blue-500 text-white"
+              ? FILE_LIST_ROW_SELECTED_CLASS
               : "text-zinc-700 dark:text-zinc-300"
           )}>
             {file.displayName || file.name}
@@ -1155,7 +1162,7 @@ export function FinderApp({
             onDoubleClick={() => handleFileDoubleClick(file)}
             className={cn(
               "w-full flex items-center px-4 py-1 text-left text-sm text-zinc-900 dark:text-zinc-100",
-              selectedFile === file.path && "bg-blue-500 text-white"
+              selectedFile === file.path && FILE_LIST_ROW_SELECTED_CLASS
             )}
           >
             <div className="flex-1 min-w-0 flex items-center gap-2">
@@ -1283,7 +1290,7 @@ export function FinderApp({
                 <span className={cn(
                   "text-xs break-all line-clamp-2 px-1 rounded",
                   isSelected
-                    ? "bg-blue-500 text-white"
+                    ? FILE_LIST_ROW_SELECTED_CLASS
                     : "text-zinc-700 dark:text-zinc-300"
                 )}>
                   {file.name}
@@ -1315,7 +1322,7 @@ export function FinderApp({
                 })}
                 className={cn(
                   "w-full flex items-center px-4 py-1 text-left text-sm text-zinc-900 dark:text-zinc-100",
-                  isSelected && "bg-blue-500 text-white"
+                  isSelected && FILE_LIST_ROW_SELECTED_CLASS
                 )}
               >
                 <div className="flex-1 min-w-0 flex items-center gap-2">
@@ -1461,7 +1468,7 @@ export function FinderApp({
                 </h3>
                 <button
                   onClick={() => { setPreviewContent(null); setSelectedFile(null); }}
-                  className="text-sm text-blue-500 hover:text-blue-600"
+                  className="text-sm text-accent-blue hover:text-accent-blue"
                 >
                   Close Preview
                 </button>

@@ -787,7 +787,14 @@ export function clearAppState(appId: string): void {
     case "weather":
       clearWeatherState();
       break;
+    case "resume":
+      clearResumeState();
+      break;
   }
+}
+
+export function clearResumeState(): void {
+  // Resume reopens to Work (~/Documents) via getInitialPath; no session selection to clear yet.
 }
 
 export function clearAllAppState(): void {
@@ -799,4 +806,5 @@ export function clearAllAppState(): void {
   clearNotesState();
   clearMessagesState();
   clearWeatherState();
+  clearResumeState();
 }

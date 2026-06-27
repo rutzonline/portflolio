@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { cn } from "@/lib/utils";
+import { DESKTOP_NAV_SIDEBAR_WIDTH_CLASS } from "@/lib/ui-tokens";
 import { Sidebar } from "./sidebar";
 import { PhotosGrid } from "./photos-grid";
 import { PhotoViewer } from "./photo-viewer";
@@ -167,13 +169,14 @@ export default function App({ isDesktop = false }: AppProps) {
         <div className="flex-1 flex min-h-0">
           {/* Sidebar */}
           <div
-            className={`h-full flex-shrink-0 overflow-hidden ${
+            className={cn(
+              "h-full flex-shrink-0 overflow-hidden",
               showSidebar
                 ? isMobileView
                   ? "block w-full"
-                  : "block w-[220px] border-r dark:border-foreground/20"
+                  : cn("block border-r dark:border-foreground/20", DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)
                 : "hidden"
-            }`}
+            )}
           >
             <Sidebar
               collections={collections}

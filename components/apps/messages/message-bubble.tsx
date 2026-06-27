@@ -132,7 +132,7 @@ export const MessageBubble = memo(function MessageBubble({
     if (!mentions?.length) return content;
 
     const colorClass =
-      sender === "me" ? "" : "text-[#0A7CFF] dark:text-[#0A7CFF]";
+      sender === "me" ? "" : "text-accent-blue dark:text-accent-blue";
     const nodes: ReactNode[] = [];
     let cursor = 0;
 
@@ -266,7 +266,7 @@ export const MessageBubble = memo(function MessageBubble({
       maskRepeat: "no-repeat",
       WebkitMaskPosition: "center",
       maskPosition: "center",
-      background: "linear-gradient(to bottom, #47B5FF, #0A7CFF)",
+      background: "linear-gradient(to bottom, #47B5FF, #007AFF)",
       backgroundAttachment: "fixed",
     };
   };
@@ -328,8 +328,8 @@ export const MessageBubble = memo(function MessageBubble({
                     "border-[17px] border-solid text-white",
                     hideTail ? "mr-[5px]" : "border-r-[22px]",
                     isMobileView
-                      ? "bg-[#0A7CFF]"
-                      : "bg-[linear-gradient(#47B5FF,#0A7CFF)] bg-fixed"
+                      ? "bg-accent-blue"
+                      : "bg-[linear-gradient(#47B5FF,#007AFF)] bg-fixed"
                   )
                 : cn(
                     "border-[17px] border-solid bg-gray-100 dark:bg-[#404040] text-gray-900 dark:text-gray-100",
@@ -425,7 +425,7 @@ export const MessageBubble = memo(function MessageBubble({
                         className={cn(
                           "inline-flex items-center justify-center rounded-full w-8 h-8 aspect-square p-0 cursor-pointer text-base transition-all duration-200 ease-out text-gray-500 can-hover:hover:scale-125 flex-shrink-0",
                           isReactionActive(type as ReactionType)
-                            ? "bg-[#0A7CFF] text-white scale-110"
+                            ? "bg-accent-blue text-white scale-110"
                             : ""
                         )}
                       >

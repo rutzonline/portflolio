@@ -36,19 +36,19 @@ const categoryInfo: Record<
     icon: <Paintbrush className="w-8 h-8" />,
     title: "Appearance",
     description: "Customize the look and feel of your Mac.",
-    iconBg: "bg-blue-500",
+    iconBg: "bg-accent-blue",
   },
   wifi: {
     icon: <Wifi className="w-8 h-8" />,
     title: "Wi-Fi",
     description: "Set up Wi-Fi to wirelessly connect your Mac to the internet.",
-    iconBg: "bg-blue-500",
+    iconBg: "bg-accent-blue",
   },
   bluetooth: {
     icon: <Bluetooth className="w-8 h-8" />,
     title: "Bluetooth",
     description: "Connect to accessories you can use for activities such as streaming music, making phone calls, and gaming.",
-    iconBg: "bg-blue-500",
+    iconBg: "bg-accent-blue",
   },
 };
 
@@ -98,7 +98,7 @@ export function Content({
   }
 
   // Get icon background color for mobile
-  const iconBgColor = selectedCategory === "general" ? "bg-gray-500" : "bg-blue-500";
+  const iconBgColor = selectedCategory === "general" ? "bg-gray-500" : "bg-accent-blue";
 
   // Wi-Fi and Bluetooth have their own header layout on desktop
   if (!isMobile && (selectedCategory === "wifi" || selectedCategory === "bluetooth")) {

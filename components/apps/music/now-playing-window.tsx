@@ -38,7 +38,7 @@ export function NowPlayingWindow() {
 
   return (
     <div
-      className="flex flex-col h-full bg-zinc-900 text-white rounded-xl overflow-hidden"
+      className="flex flex-col h-full bg-white text-zinc-900 rounded-xl overflow-hidden border border-black/10 dark:bg-zinc-900 dark:text-white dark:border-transparent"
       onMouseDown={nav.onDragStart}
     >
       {/* Window controls — always visible at top */}
@@ -61,7 +61,7 @@ export function NowPlayingWindow() {
       >
         {/* Cover art — centered in upper flex space */}
         <div className="flex-1 flex items-center justify-center min-h-0 py-3">
-          <div className="relative w-full max-w-[220px] max-h-[220px] aspect-square rounded-xl overflow-hidden bg-zinc-800 shadow-2xl">
+          <div className="relative w-full max-w-[220px] max-h-[220px] aspect-square rounded-xl overflow-hidden bg-zinc-200 shadow-2xl dark:bg-zinc-800">
             <Image
               src={displayTrack.albumArt}
               alt={displayTrack.name}
@@ -76,7 +76,7 @@ export function NowPlayingWindow() {
         <div className="shrink-0 flex flex-col gap-4 pb-5">
           <div className="space-y-1">
             <p className="text-sm font-semibold truncate leading-tight">{displayTrack.name}</p>
-            <p className="text-xs text-white/60 truncate">{displayTrack.artist}</p>
+            <p className="text-xs text-zinc-500 truncate dark:text-white/60">{displayTrack.artist}</p>
           </div>
 
           <div className="space-y-2">
@@ -87,7 +87,7 @@ export function NowPlayingWindow() {
               onValueChange={([value]) => seek(value / 100)}
               className="w-full"
             />
-            <div className="flex justify-between text-[10px] text-white/40 tabular-nums px-0.5">
+            <div className="flex justify-between text-[10px] text-zinc-400 tabular-nums px-0.5 dark:text-white/40">
               <span>{formatDuration(currentTime)}</span>
               <span>{formatDuration(duration)}</span>
             </div>
@@ -117,7 +117,7 @@ export function NowPlayingWindow() {
           </div>
 
           <div className="flex items-center gap-2.5">
-            <button onClick={handleVolumeToggle} className="text-white/60 hover:text-white transition-colors shrink-0">
+            <button onClick={handleVolumeToggle} className="text-zinc-500 can-hover:hover:text-zinc-800 transition-colors shrink-0 dark:text-white/60 dark:can-hover:hover:text-white">
               {volume === 0 ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
             </button>
             <Slider

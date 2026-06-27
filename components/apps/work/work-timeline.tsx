@@ -1,6 +1,5 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WORK_LOGOS } from "@/lib/work-logos";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -8,6 +7,7 @@ import { STATE_PLATE_BODY } from "./case-studies/fallback-data";
 import { WorkMarkdown } from "./work-markdown";
 import { WorkStintHeader } from "./work-stint-header";
 import { useWorkStintMedia, WorkStintGallery } from "./work-stint-media";
+import { RESUME_PANEL_CARD_CLASS } from "@/components/apps/resume/resume-panel-styles";
 
 export interface WorkStint {
   id: string;
@@ -25,6 +25,11 @@ export interface WorkStint {
 
 export const WORK_PAGE_INTRO =
   "marketing & growth associate with 2+ years building multi-channel 0-1 engines across D2C, Fintech, and SaaS in India. AI-native marketer who thrives on learning, experimenting, and scaling across channels.";
+
+/** Stint detail pages stay off until long-form write-ups are ready; cards render as static summaries. */
+export const WORK_STINT_DETAILS_ENABLED = false;
+
+const STINT_CARD_CLASS = cn(RESUME_PANEL_CARD_CLASS, "p-4");
 
 export const ALL_WORK_STINTS: WorkStint[] = [
   {
@@ -116,7 +121,7 @@ function StintCard({
   stint: WorkStint;
   onSelect?: (stint: WorkStint) => void;
 }) {
-  const navigable = stint.type === "work" && onSelect;
+  const navigable = WORK_STINT_DETAILS_ENABLED && stint.type === "work" && onSelect;
 
   const content = (
     <>
@@ -127,16 +132,9 @@ function StintCard({
             {stint.company}
           </p>
         </div>
-        <div className="flex items-center gap-1.5 flex-shrink-0 pt-0.5">
-          <span className="text-xs text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
-            {stint.timeline}
-          </span>
-          {navigable && (
-            <ChevronRight
-              className="w-3.5 h-3.5 text-zinc-400 dark:text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity"
-            />
-          )}
-        </div>
+        <span className="flex-shrink-0 pt-0.5 text-xs text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
+          {stint.timeline}
+        </span>
       </div>
       <p className="text-sm text-zinc-700 dark:text-zinc-300 mt-2 leading-relaxed">{stint.summary}</p>
       {(stint.highlights?.length ?? 0) > 0 && (
@@ -155,23 +153,26 @@ function StintCard({
     </>
   );
 
-  if (!navigable) {
+  if (navigable) {
     return (
       <div className="mb-4">
-        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-800/60 p-4">{content}</div>
+        <button
+          type="button"
+          onClick={() => onSelect!(stint)}
+          className={cn(
+            STINT_CARD_CLASS,
+            "group w-full text-left transition-colors can-hover:hover:border-zinc-300 dark:can-hover:hover:border-zinc-600"
+          )}
+        >
+          {content}
+        </button>
       </div>
     );
   }
 
   return (
     <div className="mb-4">
-      <button
-        type="button"
-        onClick={() => onSelect!(stint)}
-        className="group w-full text-left rounded-lg bg-zinc-50 dark:bg-zinc-800/60 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors p-4"
-      >
-        {content}
-      </button>
+      <div className={STINT_CARD_CLASS}>{content}</div>
     </div>
   );
 }
@@ -231,9 +232,10 @@ export function WorkStintDetail({ stint }: { stint: WorkStint }) {
         {hasDetails && <WorkMarkdown markdown={stint.details!} />}
 
         {loading && !hasDetails && (
-          <div className="space-y-4">
-            <div className="h-48 rounded-xl bg-zinc-800/40 animate-pulse" />
-            <div className="h-48 rounded-xl bg-zinc-800/40 animate-pulse" />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+            <div className="aspect-[4/3] rounded-xl bg-zinc-800/40 animate-pulse" />
+            <div className="aspect-[4/3] rounded-xl bg-zinc-800/40 animate-pulse" />
+            <div className="aspect-[4/3] rounded-xl bg-zinc-800/40 animate-pulse" />
           </div>
         )}
 
@@ -265,9 +267,14 @@ export function WorkTimeline({ isMobileView = false, onSelect }: WorkTimelinePro
   return (
     <ScrollArea className="h-full" bottomMargin="0">
       <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
-        <p className="mb-4 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
-          {WORK_PAGE_INTRO}
-        </p>
+        <div className="mb-8">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2 px-1">
+            professional summary
+          </h3>
+          <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300 px-1">
+            {WORK_PAGE_INTRO}
+          </p>
+        </div>
         <TimelineSection title="Experience" stints={WORK_STINTS} onSelect={onSelect} />
         <TimelineSection title="Volunteering & Community" stints={VOLUNTEERING} />
         <TimelineSection title="Projects" stints={PROJECTS} />

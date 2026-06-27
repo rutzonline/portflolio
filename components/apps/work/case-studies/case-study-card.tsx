@@ -14,7 +14,7 @@ export function CaseStudyCard({ study, onClick }: CaseStudyCardProps) {
     <button
       type="button"
       onClick={onClick}
-      className="flex-shrink-0 w-[200px] text-left rounded-xl overflow-hidden bg-zinc-800/60 border border-white/8 transition-all can-hover:hover:bg-zinc-700/60 can-hover:hover:border-white/15 can-hover:hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 group"
+      className="flex-shrink-0 w-[200px] text-left rounded-xl overflow-hidden bg-zinc-800/60 border border-white/8 transition-all can-hover:hover:bg-zinc-700/60 can-hover:hover:border-white/15 can-hover:hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue group"
     >
       <div
         className="h-24 relative flex items-end p-3"

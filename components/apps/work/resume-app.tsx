@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { useRecents } from "@/lib/recents-context";
 import { cn } from "@/lib/utils";
+import { SIDEBAR_ITEM_ACTIVE_CLASS, ACCENT_BLUE_CLASS, FILE_LIST_ROW_SELECTED_CLASS, DESKTOP_NAV_SIDEBAR_WIDTH_CLASS } from "@/lib/ui-tokens";
 import { FinderNav, FinderSidebarMobileNav } from "../finder/nav";
 import type { SidebarItem } from "../finder/sidebar-types";
 import { getSearchSectionForSidebar, STATIC_SIDEBAR_PANELS } from "../finder/sidebar-types";
@@ -12,6 +13,7 @@ import { APPS } from "@/lib/app-config";
 import {
   HOME_DIR,
   LOCAL_FINDER_FILES,
+  CURSOR_APP_LAUNCH_ID,
   getLocalTextFileContent,
   PROJECTS_DIR,
 } from "@/lib/file-route-utils";
@@ -32,7 +34,9 @@ import {
 import { useRouter } from "next/navigation";
 import { FinderSearchEngine, type EntryInput } from "../finder/search-engine";
 import { CaseStudyDetail } from "./case-studies/case-study-detail";
-import { WorkTimeline, WorkStintDetail, type WorkStint } from "./work-timeline";
+import { SelectedWorkFolders } from "./selected-work-folders";
+import { getCaseStudyDocPath } from "@/lib/case-study-doc";
+import { WorkTimeline, WorkStintDetail, WORK_STINT_DETAILS_ENABLED, type WorkStint } from "./work-timeline";
 import type { CaseStudy } from "@/types/work";
 import {
   EDUCATION_SECTIONS,
@@ -43,8 +47,13 @@ import { LearningCardsPanel } from "@/components/apps/resume/learning-cards-pane
 import { LanguagesResumePanel } from "@/components/apps/resume/languages-resume-panel";
 import { FaqResumePanel } from "@/components/apps/resume/faq-resume-panel";
 import { ContactResumePanel } from "@/components/apps/resume/contact-resume-panel";
+import {
+  RESUME_PANEL_CARD_OVERFLOW_CLASS,
+  RESUME_PANEL_COL_DIVIDER,
+  resumePanelScrollClass,
+} from "@/components/apps/resume/resume-panel-styles";
 
-const USERNAME = HOME_DIR.split("/").pop() ?? "rutujarochkari";
+const USERNAME = "rutuja rochkari";
 
 interface FileItem {
   name: string;
@@ -60,7 +69,8 @@ interface FileItem {
 const STATIC_PANEL_ITEMS = STATIC_SIDEBAR_PANELS;
 
 const SIDEBAR_ITEMS: { id: SidebarItem; label: string; icon: string }[] = [
-  { id: "documents", label: "Work", icon: "document" },
+  { id: "documents", label: "Experience", icon: "document" },
+  { id: "selected-work", label: "Selected Work", icon: "folder" },
   { id: "education", label: "Education", icon: "desktop" },
   { id: "skills", label: "Skills", icon: "grid" },
   { id: "tools", label: "Tools & Stack", icon: "code" },
@@ -91,6 +101,7 @@ interface ResumeAppProps {
   onOpenApp?: (appId: string) => void;
   onOpenTextFile?: (filePath: string, content: string) => void;
   onOpenPreviewFile?: (filePath: string, fileUrl: string, fileType: "image" | "pdf") => void;
+  onOpenCaseStudy?: (study: CaseStudy) => void;
   initialPath?: string;
   onPathChange?: (path: string) => void;
 }
@@ -118,7 +129,7 @@ function FileIcon({ type, name, icon, className }: { type: "file" | "dir" | "app
   const getFileIcon = () => {
     if (type === "dir") {
       return (
-        <svg className={cn("text-blue-500", className)} viewBox="0 0 24 24" fill="currentColor">
+        <svg className={cn("text-accent-blue", className)} viewBox="0 0 24 24" fill="currentColor">
           <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
         </svg>
       );
@@ -207,8 +218,8 @@ function SidebarIcon({ icon, className }: { icon: string; className?: string }) 
     ),
     award: (
       <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="8" r="6" />
-        <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <path d="M9 3v8l3-2 3 2V3" />
       </svg>
     ),
     heart: (
@@ -243,6 +254,7 @@ export function ResumeApp({
   onOpenApp,
   onOpenTextFile,
   onOpenPreviewFile,
+  onOpenCaseStudy,
   initialPath,
   onPathChange,
 }: ResumeAppProps) {
@@ -258,6 +270,7 @@ export function ResumeApp({
       case "applications": return "applications";
       case "desktop": return `${HOME_DIR}/Desktop`;
       case "documents": return `${HOME_DIR}/Documents`;
+      case "selected-work": return "selected-work";
       case "downloads": return `${HOME_DIR}/Downloads`;
       case "projects": return PROJECTS_DIR;
       case "trash": return "trash";
@@ -279,6 +292,7 @@ export function ResumeApp({
     if (path === "trash" || path.startsWith("trash/")) return "trash";
     if (path === `${HOME_DIR}/Desktop` || path.startsWith(`${HOME_DIR}/Desktop/`)) return "desktop";
     if (path === `${HOME_DIR}/Documents` || path.startsWith(`${HOME_DIR}/Documents/`)) return "documents";
+    if (path === "selected-work") return "selected-work";
     if (path === `${HOME_DIR}/Downloads` || path.startsWith(`${HOME_DIR}/Downloads/`)) return "downloads";
     if (path === PROJECTS_DIR || path.startsWith(`${PROJECTS_DIR}/`)) return "projects";
     // Static panel sections
@@ -309,6 +323,7 @@ export function ResumeApp({
   const [showViewDropdown, setShowViewDropdown] = useState(false);
   const [githubRecentFiles, setGithubRecentFiles] = useState<GitHubRecentFile[]>([]);
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<CaseStudy | null>(null);
+  const [selectedWorkFolderSlug, setSelectedWorkFolderSlug] = useState<string | null>(null);
   const [selectedWorkStint, setSelectedWorkStint] = useState<WorkStint | null>(null);
 
   const [searchActive, setSearchActive] = useState(false);
@@ -707,6 +722,7 @@ export function ResumeApp({
     setSelectedFile(null);
     setSelectedCaseStudy(null);
     setSelectedWorkStint(null);
+    setSelectedWorkFolderSlug(null);
     if (isMobile) {
       setShowSidebar(false);
     }
@@ -725,7 +741,11 @@ export function ResumeApp({
       setCurrentPath(file.path);
       setSelectedFile(null);
     } else if (file.type === "app") {
-      const appId = file.path.replace("/", ""); // "/notes" -> "notes"
+      const appId = file.path.replace("/", "");
+      if (appId === CURSOR_APP_LAUNCH_ID) {
+        window.open("https://cursor.com", "_blank", "noopener,noreferrer");
+        return;
+      }
       if (onOpenApp) {
         // Use window manager callback (desktop shell)
         onOpenApp(appId);
@@ -896,6 +916,18 @@ export function ResumeApp({
   // Get breadcrumb parts
   const isWorkDocumentsView =
     currentPath === `${HOME_DIR}/Documents` && selectedSidebar === "documents";
+  const isSelectedWorkView = selectedSidebar === "selected-work";
+
+  const handleOpenCaseStudyFolder = useCallback(
+    (study: CaseStudy) => {
+      if (onOpenCaseStudy) {
+        onOpenCaseStudy(study);
+        return;
+      }
+      onOpenTextFile?.(getCaseStudyDocPath(study.slug), study.body);
+    },
+    [onOpenCaseStudy, onOpenTextFile]
+  );
 
   const handleCaseStudyBack = useCallback(() => {
     setSelectedCaseStudy(null);
@@ -903,10 +935,10 @@ export function ResumeApp({
 
   const getBreadcrumbs = useCallback(() => {
     if (selectedWorkStint) {
-      return [USERNAME, "Work", selectedWorkStint.company];
+      return [USERNAME, "Experience", selectedWorkStint.company];
     }
     if (selectedCaseStudy) {
-      return [USERNAME, "Work", selectedCaseStudy.title];
+      return [USERNAME, "Experience", selectedCaseStudy.title];
     }
     if (currentPath === "recents") return ["Recents"];
     if (currentPath === "applications") return ["Applications"];
@@ -921,8 +953,8 @@ export function ResumeApp({
       return parts;
     }
     const parts = currentPath.replace(HOME_DIR, USERNAME).split("/").filter(Boolean);
-    // Rename "Documents" segment to "Work" for Resume app
-    return parts.map(p => p === "Documents" ? "Work" : p);
+    // Rename "Documents" segment to "Experience" for Resume app
+    return parts.map(p => p === "Documents" ? "Experience" : p);
   }, [currentPath, selectedCaseStudy, selectedWorkStint]);
 
   // Check if can go back
@@ -941,7 +973,7 @@ export function ResumeApp({
       <div className="absolute left-2 top-1/2 -translate-y-1/2">
         <button
           onClick={handleBack}
-          className="flex items-center gap-1 text-blue-500 hover:text-blue-600 transition-colors"
+          className="flex items-center gap-1 text-accent-blue hover:text-accent-blue transition-colors"
         >
           <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M15 18l-6-6 6-6" />
@@ -997,7 +1029,7 @@ export function ResumeApp({
                   index < SIDEBAR_ITEMS.length - 1 && "border-b border-zinc-200 dark:border-zinc-700"
                 )}
               >
-                <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-500">
+                <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-accent-blue">
                   <SidebarIcon icon={item.icon} className="w-5 h-5 text-white" />
                 </span>
                 <span className="flex-1 text-left text-zinc-900 dark:text-white">{item.label}</span>
@@ -1013,7 +1045,7 @@ export function ResumeApp({
 
     // Desktop sidebar
     return (
-      <div className="flex flex-col w-48 border-r border-zinc-200 dark:border-zinc-700 bg-zinc-100/80 dark:bg-zinc-800/80 backdrop-blur-xl">
+      <div className={cn("flex flex-col border-r border-zinc-200 dark:border-zinc-700 bg-zinc-100/80 dark:bg-zinc-800/80 backdrop-blur-xl", DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)}>
         <div className="flex-1 overflow-y-auto py-2">
           {SIDEBAR_ITEMS.map(item => (
             <button
@@ -1022,7 +1054,7 @@ export function ResumeApp({
               className={cn(
                 "w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left rounded-md",
                 selectedSidebar === item.id
-                  ? "bg-zinc-200/70 dark:bg-zinc-700/70 text-blue-500"
+                  ? SIDEBAR_ITEM_ACTIVE_CLASS
                   : "text-zinc-900 dark:text-zinc-100"
               )}
             >
@@ -1030,7 +1062,7 @@ export function ResumeApp({
                 icon={item.icon}
                 className={cn(
                   "w-4 h-4",
-                  selectedSidebar === item.id ? "text-blue-500" : "text-zinc-900 dark:text-zinc-100"
+                  selectedSidebar === item.id ? ACCENT_BLUE_CLASS : "text-zinc-900 dark:text-zinc-100"
                 )}
               />
               <span>{item.label}</span>
@@ -1215,7 +1247,7 @@ export function ResumeApp({
           <span className={cn(
             "text-xs break-all line-clamp-2 px-1 rounded",
             selectedFile === file.path
-              ? "bg-blue-500 text-white"
+              ? FILE_LIST_ROW_SELECTED_CLASS
               : "text-zinc-700 dark:text-zinc-300"
           )}>
             {file.displayName || file.name}
@@ -1248,7 +1280,7 @@ export function ResumeApp({
             onDoubleClick={() => handleFileDoubleClick(file)}
             className={cn(
               "w-full flex items-center px-4 py-1 text-left text-sm text-zinc-900 dark:text-zinc-100",
-              selectedFile === file.path && "bg-blue-500 text-white"
+              selectedFile === file.path && FILE_LIST_ROW_SELECTED_CLASS
             )}
           >
             <div className="flex-1 min-w-0 flex items-center gap-2">
@@ -1376,7 +1408,7 @@ export function ResumeApp({
                 <span className={cn(
                   "text-xs break-all line-clamp-2 px-1 rounded",
                   isSelected
-                    ? "bg-blue-500 text-white"
+                    ? FILE_LIST_ROW_SELECTED_CLASS
                     : "text-zinc-700 dark:text-zinc-300"
                 )}>
                   {file.name}
@@ -1408,7 +1440,7 @@ export function ResumeApp({
                 })}
                 className={cn(
                   "w-full flex items-center px-4 py-1 text-left text-sm text-zinc-900 dark:text-zinc-100",
-                  isSelected && "bg-blue-500 text-white"
+                  isSelected && FILE_LIST_ROW_SELECTED_CLASS
                 )}
               >
                 <div className="flex-1 min-w-0 flex items-center gap-2">
@@ -1444,84 +1476,111 @@ export function ResumeApp({
 
   const renderStaticPanel = () => {
     if (currentPath === "certifications") {
-      return <LearningCardsPanel />;
+      return <LearningCardsPanel isMobileView={isMobile} />;
     }
 
     if (currentPath === "faqs") {
-      return <FaqResumePanel />;
+      return <FaqResumePanel isMobileView={isMobile} />;
     }
 
     if (currentPath === "contact") {
-      return <ContactResumePanel />;
+      return <ContactResumePanel isMobileView={isMobile} />;
     }
+
+    const renderInlineHeading = (heading: string) =>
+      heading.trim() ? (
+        <div className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2 px-1">
+          {heading}
+        </div>
+      ) : null;
+
+    // Items laid out horizontally as columns within a single filled card
+    // that hugs its content rather than stretching the full row width.
+    const renderRowItems = (items: string[]) => (
+      <div className={cn(RESUME_PANEL_CARD_OVERFLOW_CLASS, "inline-flex flex-wrap w-fit max-w-full")}>
+        {items.map((item, idx) => (
+          <div
+            key={item}
+            className={cn(
+              "px-4 py-2 text-sm text-zinc-800 dark:text-zinc-100",
+              idx < items.length - 1 && RESUME_PANEL_COL_DIVIDER
+            )}
+          >
+            {item}
+          </div>
+        ))}
+      </div>
+    );
 
     if (currentPath === "skills") {
       const sections = STATIC_PANEL_CONTENT.skills ?? [];
       return (
-        <div className="flex-1 overflow-y-auto p-6 bg-background">
-          <div className="max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className={resumePanelScrollClass(isMobile)}>
+          <div className="max-w-4xl space-y-6">
             {sections.map((section) => (
               <div key={section.heading || section.items[0]}>
-                {section.heading.trim() ? (
-                  <div className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2 px-1">
-                    {section.heading}
-                  </div>
-                ) : null}
-                <div className="rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 overflow-hidden">
-                  {section.items.map((item, idx) => (
-                    <div
-                      key={item}
-                      className={cn(
-                        "px-4 py-2 text-sm text-zinc-800 dark:text-zinc-100",
-                        idx < section.items.length - 1 && "border-b border-zinc-200 dark:border-zinc-700/60"
-                      )}
-                    >
-                      {item}
-                    </div>
-                  ))}
-                </div>
+                {renderInlineHeading(section.heading)}
+                {renderRowItems(section.items)}
               </div>
             ))}
-            <div className="md:col-span-2">
-              <LanguagesResumePanel embedded />
-            </div>
+            <LanguagesResumePanel embedded />
           </div>
         </div>
       );
     }
 
     const sections = STATIC_PANEL_CONTENT[currentPath] ?? [];
-    const isTwoColumn = currentPath === "skills" || currentPath === "tools";
 
+    // Education: education / major / minor stay frameless plain text (major and
+    // minor sit side by side); the remaining sections get framed like the other
+    // sidebar sections.
+    if (currentPath === "education") {
+      const renderPlainSection = (section: (typeof sections)[number]) => (
+        <div key={section.heading || section.items[0]}>
+          {renderInlineHeading(section.heading)}
+          <div className="space-y-1 px-1">
+            {section.items.map((item) => (
+              <div key={item} className="text-sm text-zinc-800 dark:text-zinc-100">
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+      const [eduSection, majorSection, minorSection, ...restSections] = sections;
+
+      return (
+        <div className={resumePanelScrollClass(isMobile)}>
+          <div className="max-w-2xl space-y-6">
+            {eduSection ? renderPlainSection(eduSection) : null}
+
+            {(majorSection || minorSection) && (
+              <div className="flex flex-wrap gap-x-12 gap-y-6">
+                {majorSection ? renderPlainSection(majorSection) : null}
+                {minorSection ? renderPlainSection(minorSection) : null}
+              </div>
+            )}
+
+            {restSections.map((section) => (
+              <div key={section.heading || section.items[0]}>
+                {renderInlineHeading(section.heading)}
+                {renderRowItems(section.items)}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Tools & stack: horizontal column items.
     return (
-      <div className="flex-1 overflow-y-auto p-6">
-        <div
-          className={cn(
-            isTwoColumn
-              ? "max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6"
-              : "max-w-lg space-y-6"
-          )}
-        >
+      <div className={resumePanelScrollClass(isMobile)}>
+        <div className="max-w-4xl space-y-6">
           {sections.map((section) => (
             <div key={section.heading || section.items[0]}>
-              {section.heading.trim() ? (
-                <div className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2 px-1">
-                  {section.heading}
-                </div>
-              ) : null}
-              <div className="rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 overflow-hidden">
-                {section.items.map((item, idx) => (
-                  <div
-                    key={item}
-                    className={cn(
-                      "px-4 py-2 text-sm text-zinc-800 dark:text-zinc-100",
-                      idx < section.items.length - 1 && "border-b border-zinc-200 dark:border-zinc-700/60"
-                    )}
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
+              {renderInlineHeading(section.heading)}
+              {renderRowItems(section.items)}
             </div>
           ))}
         </div>
@@ -1610,12 +1669,22 @@ export function ResumeApp({
             <div className="flex-1 overflow-y-auto">
               {STATIC_PANEL_ITEMS.has(selectedSidebar) ? (
                 renderStaticPanel()
-              ) : isWorkDocumentsView && selectedWorkStint ? (
+              ) : isSelectedWorkView ? (
+                <SelectedWorkFolders
+                  isMobileView
+                  selectedSlug={selectedWorkFolderSlug}
+                  onSelect={(study) => setSelectedWorkFolderSlug(study.slug)}
+                  onOpenStudy={handleOpenCaseStudyFolder}
+                />
+              ) : isWorkDocumentsView && WORK_STINT_DETAILS_ENABLED && selectedWorkStint ? (
                 <WorkStintDetail stint={selectedWorkStint} />
               ) : isWorkDocumentsView && selectedCaseStudy ? (
                 <CaseStudyDetail study={selectedCaseStudy} />
               ) : isWorkDocumentsView ? (
-                <WorkTimeline isMobileView={true} onSelect={setSelectedWorkStint} />
+                <WorkTimeline
+                  isMobileView={true}
+                  onSelect={WORK_STINT_DETAILS_ENABLED ? setSelectedWorkStint : undefined}
+                />
               ) : loading ? (
                 renderMobileListSkeleton()
               ) : (
@@ -1645,14 +1714,23 @@ export function ResumeApp({
             renderSearchResults()
           ) : STATIC_PANEL_ITEMS.has(selectedSidebar) ? (
             renderStaticPanel()
+          ) : isSelectedWorkView ? (
+            <SelectedWorkFolders
+              selectedSlug={selectedWorkFolderSlug}
+              onSelect={(study) => setSelectedWorkFolderSlug(study.slug)}
+              onOpenStudy={handleOpenCaseStudyFolder}
+            />
           ) : loading ? (
             viewMode === "list" ? renderDesktopListSkeleton() : renderIconsGridSkeleton()
-          ) : isWorkDocumentsView && selectedWorkStint ? (
+          ) : isWorkDocumentsView && WORK_STINT_DETAILS_ENABLED && selectedWorkStint ? (
             <WorkStintDetail stint={selectedWorkStint} />
           ) : isWorkDocumentsView && selectedCaseStudy ? (
             <CaseStudyDetail study={selectedCaseStudy} />
           ) : isWorkDocumentsView ? (
-            <WorkTimeline isMobileView={false} onSelect={setSelectedWorkStint} />
+            <WorkTimeline
+              isMobileView={false}
+              onSelect={WORK_STINT_DETAILS_ENABLED ? setSelectedWorkStint : undefined}
+            />
           ) : previewContent !== null ? (
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
@@ -1661,7 +1739,7 @@ export function ResumeApp({
                 </h3>
                 <button
                   onClick={() => { setPreviewContent(null); setSelectedFile(null); }}
-                  className="text-sm text-blue-500 hover:text-blue-600"
+                  className="text-sm text-accent-blue hover:text-accent-blue"
                 >
                   Close Preview
                 </button>

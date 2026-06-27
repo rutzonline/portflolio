@@ -183,8 +183,8 @@ export const SKILLS_SECTIONS: ResumeListSection[] = [
 
 export const EDUCATION_SECTIONS: ResumeListSection[] = [
   {
-    heading: "flame university",
-    items: ["bachelor of business administration"],
+    heading: "education",
+    items: ["flame university"],
   },
   {
     heading: "major",
@@ -227,7 +227,7 @@ export type LearningItemIcon =
   | "analytics"
   | "pie"
   | "users"
-  | "sparkles"
+  | "palette"
   | "user";
 
 export interface LearningItem {
@@ -246,7 +246,7 @@ export const LEARNING_ITEMS: LearningItem[] = [
   { id: "google-analytics", title: "Google Analytics", icon: "analytics", kind: "certification" },
   { id: "data-visualization", title: "Data Visualization", icon: "pie", kind: "course" },
   { id: "consumer-behavior", title: "Consumer Behavior", icon: "users", kind: "course" },
-  { id: "creative-strategy", title: "Creative Strategy", icon: "sparkles", kind: "course" },
+  { id: "creative-strategy", title: "Creative Strategy", icon: "palette", kind: "course" },
   { id: "consumer-experience", title: "Consumer Experience", icon: "user", kind: "course" },
 ];
 

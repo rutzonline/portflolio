@@ -171,7 +171,7 @@ function ThemeCard({ theme, label, isSelected, onClick, isMobile = false }: Them
           className={cn(
             "w-6 h-6 rounded-full flex items-center justify-center",
             isSelected
-              ? "bg-blue-500"
+              ? "bg-accent-blue"
               : "border-2 border-gray-300"
           )}
         >
@@ -187,7 +187,7 @@ function ThemeCard({ theme, label, isSelected, onClick, isMobile = false }: Them
       onClick={onClick}
       className={cn(
         "flex flex-col items-center gap-2 p-2 rounded-xl transition-all",
-        isSelected && "ring-2 ring-blue-500"
+        isSelected && "ring-2 ring-accent-blue"
       )}
     >
       <DesktopPreview theme={theme} />
@@ -217,11 +217,11 @@ function OSVersionCard({
       className={cn(
         "relative flex flex-col items-center p-3 rounded-xl transition-all",
         "can-hover:hover:bg-muted/50",
-        isSelected && "ring-2 ring-blue-500 bg-blue-500/10"
+        isSelected && "ring-2 ring-accent-blue bg-accent-blue/10"
       )}
     >
       {isSelected && (
-        <div className="absolute top-2 right-2 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+        <div className="absolute top-2 right-2 w-5 h-5 bg-accent-blue rounded-full flex items-center justify-center">
           <Check className="w-3 h-3 text-white" />
         </div>
       )}

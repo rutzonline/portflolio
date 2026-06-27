@@ -442,7 +442,25 @@ export default function NoteContent({
       onDrop={handleDrop}
     >
       {isDragActive && canEdit && (
-        <div className="pointer-events-none absolute inset-0 z-20 rounded-lg border-2 border-dashed border-[#0A7CFF]/60 bg-[#0A7CFF]/6" />
+        <div className="pointer-events-none absolute inset-0 z-20 rounded-lg border-2 border-dashed border-accent-blue/60 bg-accent-blue/6" />
+      )}
+      {isUploadingImages && (
+        <p className="mb-2 px-1 text-sm text-muted-foreground">Uploading image…</p>
+      )}
+      {uploadError && !isUploadFeedbackDismissed && (
+        <p
+          role="alert"
+          className="mb-2 px-1 text-sm text-red-600/90 dark:text-red-400/90"
+        >
+          {uploadError}{" "}
+          <button
+            type="button"
+            className="underline can-hover:hover:opacity-80"
+            onClick={() => setIsUploadFeedbackDismissed(true)}
+          >
+            Dismiss
+          </button>
+        </p>
       )}
       {(isEditing && canEdit) || (!note.content && canEdit) ? (
         <Textarea

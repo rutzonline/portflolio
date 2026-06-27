@@ -37,7 +37,7 @@ export function WifiPanel({}: WifiPanelProps) {
     <div className="max-w-2xl">
       {/* Header section with toggle */}
       <div className="flex items-start gap-4 pb-4 border-b border-border/50">
-        <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-blue-500 shrink-0">
+        <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-accent-blue shrink-0">
           <Wifi className="w-7 h-7 text-white" />
         </div>
         <div className="flex-1 min-w-0">
@@ -47,7 +47,7 @@ export function WifiPanel({}: WifiPanelProps) {
               onClick={() => setWifiEnabled(!wifiEnabled)}
               className={cn(
                 "w-10 h-6 rounded-full transition-colors relative shrink-0",
-                wifiEnabled ? "bg-blue-500" : "bg-gray-300"
+                wifiEnabled ? "bg-accent-blue" : "bg-gray-300"
               )}
             >
               <div
@@ -60,7 +60,7 @@ export function WifiPanel({}: WifiPanelProps) {
           </div>
           <p className="text-xs text-muted-foreground mt-1">
             Set up Wi-Fi to wirelessly connect your Mac to the internet. Turn on Wi-Fi, then choose a network to join.{" "}
-            <span className="text-blue-500 cursor-pointer can-hover:hover:underline">Learn More...</span>
+            <span className="text-accent-blue cursor-pointer can-hover:hover:underline">Learn More...</span>
           </p>
         </div>
       </div>

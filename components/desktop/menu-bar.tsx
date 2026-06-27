@@ -116,7 +116,7 @@ export function MenuBar({
           onClick={() => toggleMenu("apple")}
           className={cn(
             "flex items-center justify-center w-6 h-5 -ml-1 rounded transition-colors",
-            openMenu === "apple" ? "bg-blue-500" : "can-hover:hover:bg-white/10"
+            openMenu === "apple" ? "bg-accent-blue" : "can-hover:hover:bg-white/10"
           )}
         >
           <FontAwesomeIcon
@@ -132,7 +132,7 @@ export function MenuBar({
           className={cn(
             "text-sm font-semibold px-2 py-0.5 rounded transition-colors",
             openMenu === "appMenu"
-              ? "bg-blue-500 text-white"
+              ? "bg-accent-blue text-white"
               : "text-black dark:text-white can-hover:hover:bg-white/10"
           )}
         >
@@ -144,7 +144,7 @@ export function MenuBar({
             className={cn(
               "text-sm px-2 py-0.5 rounded transition-colors",
               openMenu === "fileMenu"
-                ? "bg-blue-500 text-white"
+                ? "bg-accent-blue text-white"
                 : "text-black dark:text-white can-hover:hover:bg-white/10"
             )}
           >

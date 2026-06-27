@@ -88,7 +88,7 @@ export function ContactDrawer({
             <DrawerClose asChild>
               <Button
                 variant="ghost"
-                className="text-blue-500 text-lg font-medium hover:text-blue-600 hover:bg-transparent"
+                className="text-accent-blue text-lg font-medium hover:text-accent-blue hover:bg-transparent"
                 onClick={() => setOpen(false)}
               >
                 Done
@@ -149,7 +149,7 @@ export function ContactDrawer({
                 )}
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="text-blue-500 text-sm font-medium hover:text-blue-600 mt-2"
+                  className="text-accent-blue text-sm font-medium hover:text-accent-blue mt-2"
                 >
                   Change Name
                 </button>
@@ -218,7 +218,7 @@ export function ContactDrawer({
               {/* Add Contact Button */}
               <div className="py-4 border-t">
                 <button 
-                  className="w-full flex items-center gap-3 text-blue-500 hover:bg-transparent hover:text-blue-600 justify-start"
+                  className="w-full flex items-center gap-3 text-accent-blue hover:bg-transparent hover:text-accent-blue justify-start"
                   onClick={() => {
                     setOpen(false);
                     if (onAddContact) {
@@ -227,7 +227,7 @@ export function ContactDrawer({
                   }}
                 >
                   <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                    <span className="text-2xl text-blue-500">+</span>
+                    <span className="text-2xl text-accent-blue">+</span>
                   </div>
                   <span className="font-medium text-base">Add Contact</span>
                 </button>

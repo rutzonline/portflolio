@@ -31,9 +31,31 @@ function MediaImage({ item, className }: { item: WorkStintMediaItem; className?:
       alt={mediaLabel(item.name)}
       width={1200}
       height={675}
-      className={cn("w-full h-auto object-contain", className)}
+      className={cn("h-full w-full object-contain", className)}
       unoptimized
     />
+  );
+}
+
+function MediaImageCell({ item }: { item: WorkStintMediaItem }) {
+  return (
+    <figure className="min-w-0">
+      <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-white/5 bg-zinc-800/40">
+        <MediaImage item={item} />
+      </div>
+    </figure>
+  );
+}
+
+function MediaVideoCell({ item }: { item: WorkStintMediaItem }) {
+  return (
+    <figure className="min-w-0 sm:col-span-2 lg:col-span-3">
+      <div className="overflow-hidden rounded-xl border border-white/5 bg-zinc-800/40">
+        <video src={item.url} controls className="h-auto w-full" playsInline>
+          <track kind="captions" />
+        </video>
+      </div>
+    </figure>
   );
 }
 
@@ -47,44 +69,36 @@ export function WorkStintGallery({ media }: { media: WorkStintMediaItem[] }) {
       )
     : media;
 
+  const images = rest.filter((item) => item.type !== "video");
+  const videos = rest.filter((item) => item.type === "video");
+
   return (
     <div className="space-y-6">
       {pair && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {pair.map((item) => (
             <figure key={item.url} className="space-y-2">
               <figcaption className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
                 {mediaLabel(item.name)}
               </figcaption>
-              <div className="rounded-xl overflow-hidden border border-white/5 bg-zinc-800/40">
-                <MediaImage item={item} />
+              <div className="overflow-hidden rounded-xl border border-white/5 bg-zinc-800/40">
+                <MediaImage item={item} className="h-auto w-full" />
               </div>
             </figure>
           ))}
         </div>
       )}
 
-      {rest.map((item) => {
-        if (item.type === "video") {
-          return (
-            <figure key={item.url} className="space-y-2">
-              <div className="rounded-xl overflow-hidden border border-white/5 bg-zinc-800/40">
-                <video src={item.url} controls className="w-full h-auto" playsInline>
-                  <track kind="captions" />
-                </video>
-              </div>
-            </figure>
-          );
-        }
-
-        return (
-          <figure key={item.url}>
-            <div className="rounded-xl overflow-hidden border border-white/5 bg-zinc-800/40">
-              <MediaImage item={item} />
-            </div>
-          </figure>
-        );
-      })}
+      {(images.length > 0 || videos.length > 0) && (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+          {images.map((item) => (
+            <MediaImageCell key={item.url} item={item} />
+          ))}
+          {videos.map((item) => (
+            <MediaVideoCell key={item.url} item={item} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

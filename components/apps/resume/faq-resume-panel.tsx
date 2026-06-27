@@ -2,8 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { ChevronRight } from "lucide-react";
+import { ContentFetchError } from "@/components/shared/content-fetch-error";
 import { createClient } from "@/utils/supabase/client";
+import { ContactCharmsPlayground } from "./contact-charms-playground";
+import {
+  RESUME_SECTION_HEADING_CLASS,
+  resumePanelScrollClass,
+} from "./resume-panel-styles";
 
 interface FAQ {
   id: string;
@@ -18,15 +23,25 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
     <button
       type="button"
       onClick={() => setOpen((prev) => !prev)}
-      className="w-full text-left rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 px-4 py-3 hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors"
+      className={cn(
+        "w-full text-left rounded-xl bg-muted/50 border border-border/50 px-4 py-3 transition-colors",
+        "can-hover:hover:border-border can-hover:hover:bg-muted/70"
+      )}
     >
-      <div className="flex items-start gap-2">
-        <ChevronRight
+      <div className="flex items-center gap-2.5">
+        <svg
+          aria-hidden
+          viewBox="0 0 10 12"
           className={cn(
-            "w-3.5 h-3.5 text-zinc-400 flex-shrink-0 mt-0.5 transition-transform duration-200",
+            "h-3 w-2.5 shrink-0 text-zinc-400/90 dark:text-zinc-500/90 transition-transform duration-200",
             open && "rotate-90"
           )}
-        />
+        >
+          <path
+            d="M1.6 1.1c0-.55.6-.9 1.1-.65l6.2 3.4c.5.28.5 1.02 0 1.3L2.7 8.55c-.5.25-1.1-.1-1.1-.65V1.1z"
+            fill="currentColor"
+          />
+        </svg>
         <span className="text-sm text-zinc-800 dark:text-zinc-100">{question}</span>
       </div>
       {open && (
@@ -36,9 +51,10 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
   );
 }
 
-export function FaqResumePanel() {
+export function FaqResumePanel({ isMobileView = false }: { isMobileView?: boolean }) {
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchFAQs() {
@@ -50,8 +66,10 @@ export function FaqResumePanel() {
           .order("order_index", { ascending: true });
         if (error) throw error;
         setFaqs(data || []);
+        setFetchError(null);
       } catch (err) {
         console.error("Failed to fetch FAQs:", err);
+        setFetchError("Couldn't load FAQs. Try refreshing.");
       } finally {
         setLoading(false);
       }
@@ -60,16 +78,18 @@ export function FaqResumePanel() {
   }, []);
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 bg-background">
-      <div className="max-w-3xl space-y-6">
-        <div>
-          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">FAQs</h2>
+    <div className={resumePanelScrollClass(isMobileView, "pt-8")}>
+      <div className="max-w-4xl">
+        <div className={cn(RESUME_SECTION_HEADING_CLASS, "mb-4")}>
+          the questions never stop, do they?
         </div>
+
+        {fetchError && <ContentFetchError message={fetchError} className="mb-4" />}
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-14 rounded-lg bg-muted animate-pulse" />
+              <div key={i} className="h-14 rounded-xl bg-muted/50 border border-border/50 animate-pulse" />
             ))}
           </div>
         ) : (
@@ -79,6 +99,10 @@ export function FaqResumePanel() {
             ))}
           </div>
         )}
+
+        <div className="mt-12">
+          <ContactCharmsPlayground />
+        </div>
       </div>
     </div>
   );

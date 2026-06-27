@@ -7,15 +7,8 @@ import { cn } from "@/lib/utils";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { toZonedTime } from "date-fns-tz";
 import { format, parseISO } from "date-fns";
-import Image from "next/image";
-import { getThumbnailUrl, getViewerUrl } from "@/lib/photos/image-utils";
-
-// Preload viewer-size image on hover for faster viewer loading
-function preloadImage(url: string) {
-  if (typeof window === "undefined") return;
-  const img = new window.Image();
-  img.src = getViewerUrl(url);
-}
+import { PhotoThumbnail } from "./photo-thumbnail";
+import { getPhotoAlt } from "@/lib/photos/photo-alt";
 
 function isVideo(url: string): boolean {
   const lower = url.toLowerCase();
@@ -222,11 +215,6 @@ export function PhotosGrid({
                           onPhotoSelect?.(photo.id);
                         }
                       }}
-                      onMouseEnter={() => {
-                        if (!isMobileView) {
-                          preloadImage(photo.url);
-                        }
-                      }}
                     >
                       <div className="relative w-full h-full overflow-hidden bg-muted group rounded-sm pointer-events-none">
                         {isVideo(photo.url) ? (
@@ -238,14 +226,7 @@ export function PhotosGrid({
                             playsInline
                           />
                         ) : (
-                          <Image
-                            src={getThumbnailUrl(photo.url)}
-                            alt=""
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 768px) 33vw, 16vw"
-                            unoptimized
-                          />
+                          <PhotoThumbnail url={photo.url} alt={getPhotoAlt(photo)} />
                         )}
                         {/* Play button overlay for videos */}
                         {isVideo(photo.url) && (

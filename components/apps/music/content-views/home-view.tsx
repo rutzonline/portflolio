@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { SECTION_SUBTEXT_CLASS } from "@/lib/ui-tokens";
+import { ContentFetchError } from "@/components/shared/content-fetch-error";
 import { createClient } from "@/utils/supabase/client";
 
 interface HomeContent {
@@ -25,6 +27,7 @@ interface HomeViewProps {
 export function HomeView({ isMobileView }: HomeViewProps) {
   const [content, setContent] = useState<HomeContent | null>(null);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchHome() {
@@ -37,8 +40,10 @@ export function HomeView({ isMobileView }: HomeViewProps) {
           .single();
         if (error) throw error;
         setContent(data);
+        setFetchError(null);
       } catch (err) {
         console.error("Failed to fetch home content:", err);
+        setFetchError("Couldn't load home content. Try refreshing.");
       } finally {
         setLoading(false);
       }
@@ -47,8 +52,12 @@ export function HomeView({ isMobileView }: HomeViewProps) {
   }, []);
 
   return (
-    <div className="h-full overflow-y-auto overflow-x-hidden">
+    <div className="overflow-x-hidden">
       <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
+        <p className={SECTION_SUBTEXT_CLASS}>
+          beyond the desk
+        </p>
+        {fetchError && <ContentFetchError message={fetchError} />}
 
         {/* Banner */}
         <div className="mb-6">
@@ -61,15 +70,13 @@ export function HomeView({ isMobileView }: HomeViewProps) {
                   src={content.banner_image_url}
                   alt={content.banner_title || "beyond the desk"}
                   fill
+                  sizes="(max-width: 768px) 100vw, 80vw"
                   className="object-cover"
                   unoptimized
                   priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <p className="text-white/70 text-sm font-medium mb-1 uppercase tracking-wider">
-                    beyond the desk
-                  </p>
                   <h2 className="text-white text-2xl desktop:text-3xl font-bold mb-1">
                     {content.banner_title}
                   </h2>

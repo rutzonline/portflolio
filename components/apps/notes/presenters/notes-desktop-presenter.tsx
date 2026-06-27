@@ -4,6 +4,7 @@ import { RefObject } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { Note as NoteType } from "@/lib/notes/types";
+import { ContentFetchError } from "@/components/shared/content-fetch-error";
 import Sidebar from "../sidebar";
 import Note from "../note";
 
@@ -14,6 +15,7 @@ interface NotesDesktopPresenterProps {
   handleNoteCreated: (note: NoteType) => void;
   handleNoteSelect: (note: NoteType) => Promise<void>;
   inShell: boolean;
+  noteLoadError: string | null;
   notes: NoteType[];
   selectedNote: NoteType | null;
   selectedSlugForSidebar: string | null;
@@ -25,6 +27,7 @@ export function NotesDesktopPresenter({
   handleNoteCreated,
   handleNoteSelect,
   inShell,
+  noteLoadError,
   notes,
   selectedNote,
   selectedSlugForSidebar,
@@ -90,7 +93,9 @@ export function NotesDesktopPresenter({
               <Note key={selectedNote.id} note={selectedNote} isMobile={false} />
             </div>
           ) : (
-            <div className="h-full bg-background" />
+            <div className="h-full bg-background flex items-start p-6">
+              {noteLoadError && <ContentFetchError message={noteLoadError} />}
+            </div>
           )}
         </ScrollArea>
       </div>

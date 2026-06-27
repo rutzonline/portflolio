@@ -170,10 +170,10 @@ export function FinderNav({
                 >
                   <button
                     onClick={() => onSetViewMode("icons")}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left text-zinc-900 dark:text-zinc-100 hover:bg-blue-500 hover:text-white transition-colors"
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left text-zinc-900 dark:text-zinc-100 hover:bg-accent-blue hover:text-white transition-colors"
                   >
                     {viewMode === "icons" ? (
-                      <svg className="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                      <svg className="w-4 h-4 text-accent-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                         <path d="M5 12l5 5L20 7" />
                       </svg>
                     ) : (
@@ -183,10 +183,10 @@ export function FinderNav({
                   </button>
                   <button
                     onClick={() => onSetViewMode("list")}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left text-zinc-900 dark:text-zinc-100 hover:bg-blue-500 hover:text-white transition-colors"
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left text-zinc-900 dark:text-zinc-100 hover:bg-accent-blue hover:text-white transition-colors"
                   >
                     {viewMode === "list" ? (
-                      <svg className="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                      <svg className="w-4 h-4 text-accent-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                         <path d="M5 12l5 5L20 7" />
                       </svg>
                     ) : (

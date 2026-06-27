@@ -15,7 +15,7 @@ const items = [
     id: "about" as const,
     name: "About",
     icon: <Info className="w-5 h-5 text-white" />,
-    iconBg: "bg-blue-500",
+    iconBg: "bg-accent-blue",
     navigable: true,
   },
   {

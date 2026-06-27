@@ -14,7 +14,11 @@ const APP_LABEL_TO_ID: Record<string, string> = {
 export type IntroReadmeAppAction = "trash";
 
 export function normalizeReadmeAppLabel(label: string): string {
-  return label.toLowerCase().replace(/['']/g, "").trim();
+  return label
+    .toLowerCase()
+    .replace(/['']/g, "")
+    .replace(/^[^a-z0-9]+|[^a-z0-9]+$/g, "")
+    .trim();
 }
 
 export function resolveIntroReadmeAppLink(label: string): string | IntroReadmeAppAction | null {

@@ -259,7 +259,7 @@ export function DesktopStickyNote() {
                   <span
                     className={cn(
                       "text-[12px] leading-snug transition-colors",
-                      item.done ? "line-through text-zinc-600" : "text-zinc-300"
+                      item.done ? "line-through text-zinc-400 dark:text-zinc-600" : "text-zinc-700 dark:text-zinc-300"
                     )}
                   >
                     {item.text}
@@ -280,12 +280,12 @@ export function DesktopStickyNote() {
               }}
               onFocus={raiseNote}
               placeholder="add item..."
-              className="flex-1 min-w-0 bg-transparent text-[12px] text-zinc-300 placeholder:text-zinc-600 outline-none"
+              className="flex-1 min-w-0 bg-transparent text-[12px] text-zinc-800 placeholder:text-zinc-400 outline-none dark:text-zinc-300 dark:placeholder:text-zinc-600"
             />
             <button
               type="button"
               onClick={addTodo}
-              className="text-[14px] font-medium text-zinc-500 can-hover:hover:text-zinc-200 transition-colors leading-none"
+              className="text-[14px] font-medium text-zinc-400 can-hover:hover:text-zinc-700 transition-colors leading-none dark:text-zinc-500 dark:can-hover:hover:text-zinc-200"
             >
               +
             </button>

@@ -29,6 +29,13 @@ import {
   isIntroDocPath,
   enforceIntroAppendOnly,
 } from "@/lib/intro-doc";
+import { getCaseStudyDocPath } from "@/lib/case-study-doc";
+import type { CaseStudy } from "@/types/work";
+import {
+  getLlmsDocumentContent,
+  isLlmsDocPath,
+  enforceLlmsAppendOnly,
+} from "@/lib/llms-doc";
 import { DesktopIcons } from "./desktop-icons";
 import { PhotoTrail } from "./photo-trail";
 import { DesktopStickyNote } from "./desktop-sticky-note";
@@ -47,6 +54,7 @@ import { getShellUrlForApp } from "@/lib/shell-routing";
 import { fetchGitHubFileContent } from "@/lib/github-client";
 import type { MessagesNotificationPayload } from "@/types/messages/notification";
 import type { MessagesConversationSelectRequest } from "@/types/messages/selection";
+import { getMessagesUnreadCount } from "@/lib/messages/unread-count";
 import { getAppById } from "@/lib/app-config";
 import { useAudio } from "@/lib/music/audio-context";
 
@@ -198,6 +206,7 @@ function DesktopContent({
     closeMultiWindow,
     focusMultiWindow,
     minimizeMultiWindow,
+    unminimizeMultiWindow,
     moveMultiWindow,
     resizeMultiWindow,
     toggleMaximizeMultiWindow,
@@ -266,7 +275,13 @@ function DesktopContent({
   const [documentAppRouteProcessed, setDocumentAppRouteProcessed] = useState(
     !(initialDocumentRouteAppId && !(initialDocumentRouteAppId === "textedit" ? initialTextEditFile : initialPreviewFile))
   );
-  const [appBadges, setAppBadges] = useState<Record<string, number>>({});
+  const [appBadges, setAppBadges] = useState<Record<string, number>>(() => {
+    const badges: Record<string, number> = {};
+    if (typeof window === "undefined") return badges;
+    const unread = getMessagesUnreadCount();
+    if (unread > 0) badges.messages = unread;
+    return badges;
+  });
   const [activeNotification, setActiveNotification] = useState<MessagesNotificationPayload | null>(null);
   const [isNotificationHovered, setIsNotificationHovered] = useState(false);
   const [messagesSelectRequest, setMessagesSelectRequest] = useState<MessagesConversationSelectRequest | null>(null);
@@ -415,9 +430,15 @@ function DesktopContent({
     // Window doesn't exist, need to create it
     const cachedContent = getTextEditContent(initialTextEditFile);
     if (cachedContent !== undefined) {
+      const content = isLlmsDocPath(initialTextEditFile)
+        ? getLlmsDocumentContent(cachedContent)
+        : cachedContent;
+      if (isLlmsDocPath(initialTextEditFile)) {
+        cacheTextEditContent(initialTextEditFile, content);
+      }
       openMultiWindow("textedit", initialTextEditFile, {
         filePath: initialTextEditFile,
-        content: cachedContent,
+        content,
       });
       setUrlFileProcessed(true);
     } else {
@@ -517,6 +538,10 @@ function DesktopContent({
 
       if (isIntroDocPath(filePath)) {
         contentToUse = getIntroDocumentContent();
+      } else if (isLlmsDocPath(filePath)) {
+        const cachedContent = getTextEditContent(filePath);
+        contentToUse = getLlmsDocumentContent(cachedContent);
+        cacheTextEditContent(filePath, contentToUse);
       } else {
         const cachedContent = getTextEditContent(filePath);
         contentToUse = cachedContent !== undefined ? cachedContent : content;
@@ -528,6 +553,26 @@ function DesktopContent({
       openMultiWindow("textedit", filePath, { filePath, content: contentToUse });
     },
     [openMultiWindow]
+  );
+
+  const handleOpenCaseStudy = useCallback(
+    (study: CaseStudy) => {
+      const filePath = getCaseStudyDocPath(study.slug);
+      const existing = textEditWindows.find((w) => w.instanceId === filePath && w.isOpen);
+      if (existing) {
+        if (existing.isMinimized) {
+          unminimizeMultiWindow(existing.id);
+        }
+        focusMultiWindow(existing.id);
+        return;
+      }
+      openMultiWindow("textedit", filePath, {
+        filePath,
+        content: study.body,
+        caseStudy: study,
+      });
+    },
+    [openMultiWindow, textEditWindows, focusMultiWindow, unminimizeMultiWindow]
   );
 
   const focusIntroWindow = useCallback(() => {
@@ -876,6 +921,7 @@ function DesktopContent({
               onOpenApp={handleOpenApp}
               onOpenTextFile={handleOpenTextFile}
               onOpenPreviewFile={handleOpenPreviewFile}
+              onOpenCaseStudy={handleOpenCaseStudy}
             />
           </Window>
 
@@ -913,12 +959,14 @@ function DesktopContent({
           {visibleTextEditWindows.map((windowState) => {
               const filePath = windowState.metadata!.filePath as string;
               const content = (windowState.metadata?.content as string) ?? "";
+              const caseStudy = windowState.metadata?.caseStudy as CaseStudy | undefined;
               return (
                 <TextEditWindow
                   key={windowState.id}
                   windowId={windowState.id}
                   filePath={filePath}
                   content={content}
+                  caseStudy={caseStudy}
                   position={windowState.position}
                   size={windowState.size}
                   zIndex={windowState.zIndex}
@@ -934,7 +982,9 @@ function DesktopContent({
                     const prior = (windowState.metadata?.content as string) ?? "";
                     const safeContent = isIntroDocPath(filePath)
                       ? enforceIntroAppendOnly(newContent, prior)
-                      : newContent;
+                      : isLlmsDocPath(filePath)
+                        ? enforceLlmsAppendOnly(newContent, prior)
+                        : newContent;
                     updateWindowMetadata(windowState.id, { content: safeContent });
                     if (filePath) {
                       saveTextEditContent(filePath, safeContent);

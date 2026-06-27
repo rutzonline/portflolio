@@ -291,8 +291,8 @@ function TrailHelpNote({ onDismiss }: { onDismiss: () => void }) {
           ✕
         </button>
         <div className="px-4 py-4 space-y-1.5">
-          <p className="text-[12px] text-zinc-300 leading-snug m-0">move the cursor around</p>
-          <p className="text-[12px] text-zinc-300 leading-snug m-0">click any cover to reveal the song</p>
+          <p className="text-[12px] text-zinc-300 leading-snug m-0">move your cursor around</p>
+          <p className="text-[12px] text-zinc-300 leading-snug m-0">click on a cover for the song</p>
           <p className="text-[12px] text-zinc-300 leading-snug m-0">double-click to stop trailing</p>
         </div>
       </div>

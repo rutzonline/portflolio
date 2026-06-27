@@ -32,6 +32,8 @@ const nextConfig = {
           pathname: "/storage/v1/render/image/public/**",
         },
       ] : []),
+      { protocol: "https", hostname: "github.com", pathname: "/**" },
+      { protocol: "https", hostname: "raw.githubusercontent.com", pathname: "/**" },
     ],
   },
   async rewrites() {
@@ -58,7 +60,11 @@ const nextConfig = {
 
     return [
       // App route only — do not redirect /music/* assets (track.mp3, cover.jpg, etc.)
-      { source: "/music", destination: "/desk", permanent: true },
+      { source: "/music", destination: "/misc", permanent: true },
+      { source: "/desk", destination: "/misc", permanent: true },
+      { source: "/desk/:path*", destination: "/misc/:path*", permanent: true },
+      { source: "/iterm", destination: "/finder", permanent: true },
+      { source: "/iterm/:path*", destination: "/finder/:path*", permanent: true },
       // Legacy note slugs redirect to /notes/*
       ...legacyNoteSlugs.map((slug) => ({
         source: `/${slug}`,

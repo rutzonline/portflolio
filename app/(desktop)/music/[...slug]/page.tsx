@@ -6,5 +6,5 @@ type PageProps = {
 };
 
 export default function MusicCatchAllPage({ searchParams }: PageProps) {
-  return <RouteRedirect basePath="/desk" search={getSearchString(searchParams)} />;
+  return <RouteRedirect basePath="/misc" search={getSearchString(searchParams)} />;
 }

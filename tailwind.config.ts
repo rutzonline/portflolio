@@ -11,6 +11,7 @@ export default {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./lib/**/*.{js,ts,jsx,tsx}",
     "./src/**/*.{ts,tsx}",
   ],
   safelist: ["mention-node"],
@@ -74,6 +75,7 @@ export default {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        "accent-blue": "var(--accent-blue)",
       },
       borderRadius: {
         lg: "var(--radius)",

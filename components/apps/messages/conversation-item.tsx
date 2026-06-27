@@ -133,7 +133,7 @@ export const ConversationItem = memo(function ConversationItem({
       aria-current={activeConversation === conversation.id ? "true" : undefined}
       className={`w-full h-[70px] py-2 text-left relative flex items-center ${
         activeConversation === conversation.id && !isMobileView
-          ? "bg-[#0A7CFF] text-white rounded-md"
+          ? "bg-accent-blue text-white rounded-md"
           : ""
       } ${
         showDivider
@@ -143,7 +143,7 @@ export const ConversationItem = memo(function ConversationItem({
     >
       {conversation.unreadCount > 0 &&
         activeConversation !== conversation.id && (
-        <div className="absolute left-0.5 w-2.5 h-2.5 bg-[#0A7CFF] rounded-full flex-shrink-0" />
+        <div className="absolute left-0.5 w-2.5 h-2.5 bg-accent-blue rounded-full flex-shrink-0" />
       )}
       <div className="flex items-center gap-2 w-full px-4">
         <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 relative">
@@ -300,7 +300,7 @@ export const ConversationItem = memo(function ConversationItem({
         </ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuItem
-            className={`focus:bg-[#0A7CFF] focus:text-white ${
+            className={`focus:bg-accent-blue focus:text-white ${
               isMobileView ? "flex items-center justify-between" : ""
             }`}
             onClick={handleContextMenuPin}
@@ -309,7 +309,7 @@ export const ConversationItem = memo(function ConversationItem({
             {isMobileView && <Icons.pin className="h-4 w-4 ml-2" />}
           </ContextMenuItem>
           <ContextMenuItem
-            className={`focus:bg-[#0A7CFF] focus:text-white ${
+            className={`focus:bg-accent-blue focus:text-white ${
               isMobileView ? "flex items-center justify-between" : ""
             }`}
             onClick={handleContextMenuHideAlerts}
@@ -322,7 +322,7 @@ export const ConversationItem = memo(function ConversationItem({
             )}
           </ContextMenuItem>
           <ContextMenuItem
-            className={`focus:bg-[#0A7CFF] focus:text-white ${
+            className={`focus:bg-accent-blue focus:text-white ${
               isMobileView ? "flex items-center justify-between" : ""
             } text-red-600`}
             onClick={handleContextMenuDelete}
@@ -341,19 +341,19 @@ export const ConversationItem = memo(function ConversationItem({
         </ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuItem
-            className={`focus:bg-[#0A7CFF] focus:text-white focus:rounded-md`}
+            className={`focus:bg-accent-blue focus:text-white focus:rounded-md`}
             onClick={handleContextMenuPin}
           >
             <span>{conversation.pinned ? "Unpin" : "Pin"}</span>
           </ContextMenuItem>
           <ContextMenuItem
-            className={`focus:bg-[#0A7CFF] focus:text-white focus:rounded-md`}
+            className={`focus:bg-accent-blue focus:text-white focus:rounded-md`}
             onClick={handleContextMenuHideAlerts}
           >
             <span>{conversation.hideAlerts ? "Show Alerts" : "Hide Alerts"}</span>
           </ContextMenuItem>
           <ContextMenuItem
-            className={`focus:bg-[#0A7CFF] focus:text-white focus:rounded-md text-red-600`}
+            className={`focus:bg-accent-blue focus:text-white focus:rounded-md text-red-600`}
             onClick={handleContextMenuDelete}
           >
             <span>Delete</span>

@@ -242,9 +242,22 @@ function loadStateFromStorage(): WindowManagerState | null {
           focusedWindowId = "resume";
         }
 
+        const resumeApp = getAppById("resume");
+        const resumeWindow = mergedWindows.resume;
+        if (resumeApp && resumeWindow?.size) {
+          const targetWidth = resumeApp.defaultSize.width;
+          const savedWidth = resumeWindow.size.width;
+          if (savedWidth === 1120 || savedWidth === 1040 || savedWidth === 900 || savedWidth === 950 || savedWidth < targetWidth) {
+            mergedWindows.resume = {
+              ...resumeWindow,
+              size: { ...resumeWindow.size, width: targetWidth },
+            };
+          }
+        }
+
         const nowPlaying = mergedWindows["now-playing"];
         const nowPlayingApp = getAppById("now-playing");
-        if (nowPlaying && nowPlayingApp && nowPlaying.position.x <= 500) {
+        if (nowPlaying && nowPlayingApp) {
           mergedWindows["now-playing"] = {
             ...nowPlaying,
             position: getNowPlayingDefaultPosition(
@@ -339,6 +352,11 @@ function windowReducer(
       const window = state.windows[appId];
       if (!window) return state;
 
+      const position =
+        appId === "now-playing"
+          ? getNowPlayingDefaultPosition(window.size)
+          : window.position;
+
       return {
         ...state,
         windows: {
@@ -346,6 +364,7 @@ function windowReducer(
           [appId]: {
             ...window,
             isOpen: true,
+            position,
             zIndex: state.nextZIndex,
           },
         },

@@ -4,6 +4,7 @@ export type SidebarItem =
   | "applications"
   | "desktop"
   | "documents"
+  | "selected-work"
   | "downloads"
   | "projects"
   | "trash"

@@ -115,13 +115,13 @@ export function BluetoothPanel({ isMobile = false }: BluetoothPanelProps) {
       <div className="px-4 py-4 space-y-4">
         {/* Header card */}
         <div className="rounded-xl bg-background p-4">
-          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-blue-500 mb-3">
+          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-accent-blue mb-3">
             <Bluetooth className="w-7 h-7 text-white" />
           </div>
           <h1 className="text-xl font-bold mb-1">Bluetooth</h1>
           <p className="text-sm text-muted-foreground">
             Connect to accessories you can use for activities such as streaming music, making phone calls, and gaming.{" "}
-            <span className="text-blue-500">Learn more...</span>
+            <span className="text-accent-blue">Learn more...</span>
           </p>
 
           {/* Bluetooth toggle */}
@@ -172,7 +172,7 @@ export function BluetoothPanel({ isMobile = false }: BluetoothPanelProps) {
                     {device.connected ? "Connected" : "Not Connected"}
                   </span>
                   <div className="w-6 h-6 rounded-full border-2 border-blue-500 flex items-center justify-center">
-                    <span className="text-blue-500 text-xs font-medium">i</span>
+                    <span className="text-accent-blue text-xs font-medium">i</span>
                   </div>
                 </div>
               </div>
@@ -188,7 +188,7 @@ export function BluetoothPanel({ isMobile = false }: BluetoothPanelProps) {
     <div className="max-w-2xl">
       {/* Header section with toggle */}
       <div className="flex items-start gap-4 pb-4 border-b border-border/50">
-        <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-blue-500 shrink-0">
+        <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-accent-blue shrink-0">
           <Bluetooth className="w-7 h-7 text-white" />
         </div>
         <div className="flex-1 min-w-0">
@@ -198,7 +198,7 @@ export function BluetoothPanel({ isMobile = false }: BluetoothPanelProps) {
               onClick={() => setBluetoothEnabled(!bluetoothEnabled)}
               className={cn(
                 "w-10 h-6 rounded-full transition-colors relative shrink-0",
-                bluetoothEnabled ? "bg-blue-500" : "bg-gray-300"
+                bluetoothEnabled ? "bg-accent-blue" : "bg-gray-300"
               )}
             >
               <div
@@ -211,7 +211,7 @@ export function BluetoothPanel({ isMobile = false }: BluetoothPanelProps) {
           </div>
           <p className="text-xs text-muted-foreground mt-1">
             Connect to accessories you can use for activities such as streaming music, typing, and gaming.{" "}
-            <span className="text-blue-500 cursor-pointer can-hover:hover:underline">Learn more...</span>
+            <span className="text-accent-blue cursor-pointer can-hover:hover:underline">Learn more...</span>
           </p>
         </div>
       </div>

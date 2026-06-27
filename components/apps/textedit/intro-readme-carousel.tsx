@@ -52,7 +52,7 @@ export function IntroReadmeCarousel({
 
   return (
     <div className="flex-1 min-h-0 flex flex-col">
-      <div className="flex-1 min-h-0 overflow-y-auto bg-zinc-950 px-4 py-4 [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.15)_transparent]">
+      <div className="flex-1 min-h-0 overflow-y-auto bg-zinc-50 px-4 py-4 [scrollbar-width:thin] [scrollbar-color:rgba(0,0,0,0.15)_transparent] dark:bg-zinc-950 dark:[scrollbar-color:rgba(255,255,255,0.15)_transparent]">
         <IntroReadmeContent
           text={activeTab.content}
           linkAppNames={activeId === "the-site"}
@@ -72,8 +72,8 @@ export function IntroReadmeCarousel({
               className={cn(
                 "rounded-md px-2.5 py-1 text-[12px] font-medium transition-colors",
                 tab.id === activeId
-                  ? "bg-white/12 text-zinc-100"
-                  : "text-zinc-500 can-hover:hover:text-zinc-300 can-hover:hover:bg-white/5"
+                  ? "bg-black/8 text-zinc-900 dark:bg-white/12 dark:text-zinc-100"
+                  : "text-zinc-500 can-hover:hover:text-zinc-700 can-hover:hover:bg-black/5 dark:can-hover:hover:text-zinc-300 dark:can-hover:hover:bg-white/5"
               )}
             >
               {tab.label}

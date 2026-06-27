@@ -31,7 +31,7 @@ export function Nav({ canGoBack, canGoForward, onBack, onForward, isMobile, isDe
             onMouseDown={(e) => e.stopPropagation()}
             disabled={!canGoBack}
             className={cn(
-              "flex items-center gap-1 rounded-lg px-1 py-1 transition-colors text-[#0A7CFF]",
+              "flex items-center gap-1 rounded-lg px-1 py-1 transition-colors text-accent-blue",
               canGoBack ? "can-hover:hover:bg-muted-foreground/10" : "opacity-0 pointer-events-none"
             )}
             aria-label="Go back"

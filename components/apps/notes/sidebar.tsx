@@ -27,6 +27,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { cn } from "@/lib/utils";
 import { useFileMenu } from "@/lib/file-menu-context";
+import { ContentFetchError } from "@/components/shared/content-fetch-error";
 import { createNote } from "@/lib/notes/create-note";
 
 const labels = {
@@ -73,6 +74,7 @@ export default function Sidebar({
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [groupedNotes, setGroupedNotes] = useState<GroupedNotes>({});
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [openSwipeItemSlug, setOpenSwipeItemSlug] = useState<string | null>(
     null
   );
@@ -275,11 +277,14 @@ export default function Sidebar({
 
       try {
         if (noteToDelete.id && sessionId) {
-          await supabase.rpc("delete_note", {
+          const { error } = await supabase.rpc("delete_note", {
             uuid_arg: noteToDelete.id,
             session_arg: sessionId,
           });
+          if (error) throw error;
         }
+
+        setDeleteError(null);
 
         setGroupedNotes((prevGroupedNotes: Record<string, Note[]>) => {
           const newGroupedNotes = { ...prevGroupedNotes };
@@ -318,6 +323,7 @@ export default function Sidebar({
 
       } catch (error) {
         console.error("Error deleting note:", error);
+        setDeleteError("Couldn't delete this note. Try again.");
       }
     },
     [
@@ -501,6 +507,11 @@ export default function Sidebar({
         useCallbackNavigation={useCallbackNavigation}
         onNoteCreated={onNoteCreated}
       />
+      {deleteError && (
+        <div className="px-3 pt-2">
+          <ContentFetchError message={deleteError} className="mb-0" />
+        </div>
+      )}
       <div className="flex-1 min-h-0 overflow-hidden">
         <ScrollArea
           className="h-full"

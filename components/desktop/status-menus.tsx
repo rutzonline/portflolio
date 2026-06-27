@@ -48,7 +48,7 @@ function Toggle({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean
       onClick={() => onChange(!enabled)}
       className={cn(
         "w-8 h-5 rounded-full transition-colors relative shrink-0",
-        enabled ? "bg-blue-500" : "bg-gray-300 dark:bg-gray-600"
+        enabled ? "bg-accent-blue" : "bg-gray-300 dark:bg-gray-600"
       )}
     >
       <div
@@ -101,7 +101,7 @@ export function BatteryMenu({ isOpen, onClose }: BatteryMenuProps) {
 
       <button
         onClick={() => setLowPowerMode(!lowPowerMode)}
-        className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-blue-500 hover:text-white transition-colors group"
+        className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-accent-blue hover:text-white transition-colors group"
       >
         <div className={cn(
           "flex items-center justify-center w-6 h-6 rounded",
@@ -162,7 +162,7 @@ export function WifiMenu({ isOpen, onClose, onOpenWifiSettings }: WifiMenuProps)
             <span className="text-xs font-semibold text-muted-foreground">Personal Hotspot</span>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1.5 can-hover:hover:bg-blue-500 can-hover:hover:text-white transition-colors cursor-pointer group">
+          <div className="flex items-center gap-2 px-3 py-1.5 can-hover:hover:bg-accent-blue can-hover:hover:text-white transition-colors cursor-pointer group">
             <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-500">
               <Smartphone className="w-3 h-3 text-white" />
             </div>
@@ -185,8 +185,8 @@ export function WifiMenu({ isOpen, onClose, onOpenWifiSettings }: WifiMenuProps)
             <span className="text-xs font-semibold text-muted-foreground">Known Network</span>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1.5 can-hover:hover:bg-blue-500 can-hover:hover:text-white transition-colors cursor-pointer group">
-            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500">
+          <div className="flex items-center gap-2 px-3 py-1.5 can-hover:hover:bg-accent-blue can-hover:hover:text-white transition-colors cursor-pointer group">
+            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-accent-blue">
               <Wifi className="w-3 h-3 text-white" />
             </div>
             <span className="text-xs flex-1">basecase</span>
@@ -198,7 +198,7 @@ export function WifiMenu({ isOpen, onClose, onOpenWifiSettings }: WifiMenuProps)
           {/* Other Networks */}
           <button
             onClick={() => setShowOtherNetworks(!showOtherNetworks)}
-            className="w-full flex items-center justify-between px-3 py-1.5 text-xs hover:bg-blue-500 hover:text-white transition-colors group"
+            className="w-full flex items-center justify-between px-3 py-1.5 text-xs hover:bg-accent-blue hover:text-white transition-colors group"
           >
             <span>Other Networks</span>
             <ChevronRight className={cn(
@@ -212,7 +212,7 @@ export function WifiMenu({ isOpen, onClose, onOpenWifiSettings }: WifiMenuProps)
               {otherNetworks.map((network) => (
                 <div
                   key={network.name}
-                  className="flex items-center gap-2 px-3 py-1.5 can-hover:hover:bg-blue-500 can-hover:hover:text-white transition-colors cursor-pointer group"
+                  className="flex items-center gap-2 px-3 py-1.5 can-hover:hover:bg-accent-blue can-hover:hover:text-white transition-colors cursor-pointer group"
                 >
                   <Wifi className="w-3 h-3 text-muted-foreground can-hover:group-hover:text-white/70" />
                   <span className="text-xs flex-1 truncate">{network.name}</span>
@@ -231,7 +231,7 @@ export function WifiMenu({ isOpen, onClose, onOpenWifiSettings }: WifiMenuProps)
           onOpenWifiSettings?.();
           onClose();
         }}
-        className="w-full px-3 py-1.5 text-xs text-left hover:bg-blue-500 hover:text-white transition-colors"
+        className="w-full px-3 py-1.5 text-xs text-left hover:bg-accent-blue hover:text-white transition-colors"
       >
         Wi-Fi Settings...
       </button>
@@ -307,7 +307,7 @@ export function ControlCenterMenu({ isOpen, onClose }: ControlCenterMenuProps) {
           >
             <div className={cn(
               "flex items-center justify-center w-6 h-6 rounded-full",
-              wifiEnabled ? "bg-blue-500" : "bg-black/10 dark:bg-white/10"
+              wifiEnabled ? "bg-accent-blue" : "bg-black/10 dark:bg-white/10"
             )}>
               <Wifi className={cn("w-3.5 h-3.5", wifiEnabled ? "text-white" : "")} />
             </div>
@@ -326,7 +326,7 @@ export function ControlCenterMenu({ isOpen, onClose }: ControlCenterMenuProps) {
           >
             <div className={cn(
               "flex items-center justify-center w-6 h-6 rounded-full",
-              bluetoothEnabled ? "bg-blue-500" : "bg-black/10 dark:bg-white/10"
+              bluetoothEnabled ? "bg-accent-blue" : "bg-black/10 dark:bg-white/10"
             )}>
               <Bluetooth className={cn("w-3.5 h-3.5", bluetoothEnabled ? "text-white" : "")} />
             </div>
@@ -343,7 +343,7 @@ export function ControlCenterMenu({ isOpen, onClose }: ControlCenterMenuProps) {
             onClick={toggleAirdrop}
             className="flex items-center gap-2 w-full"
           >
-            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500">
+            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-accent-blue">
               <AirDropIcon className="w-3.5 h-3.5 text-white" />
             </div>
             <div className="text-left min-w-0">
@@ -455,7 +455,7 @@ export function ControlCenterMenu({ isOpen, onClose }: ControlCenterMenuProps) {
                   <button
                     key={mode}
                     onClick={() => handleFocusSelect(mode)}
-                    className="w-full flex items-center gap-2 px-2 py-1.5 text-left hover:bg-blue-500 hover:text-white transition-colors"
+                    className="w-full flex items-center gap-2 px-2 py-1.5 text-left hover:bg-accent-blue hover:text-white transition-colors"
                   >
                     <div className={cn(
                       "flex items-center justify-center w-5 h-5 rounded-full",

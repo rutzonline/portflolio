@@ -69,7 +69,7 @@ export function AboutPanel({ isMobile = false, onCategorySelect }: AboutPanelPro
               </div>
             </div>
             <div className="px-4 py-3">
-              <span className="text-base text-blue-500">Upgrade Coverage</span>
+              <span className="text-base text-accent-blue">Upgrade Coverage</span>
             </div>
           </div>
           <p className="text-sm text-muted-foreground px-2 pt-2">

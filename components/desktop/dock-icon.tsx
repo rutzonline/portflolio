@@ -9,6 +9,8 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { CalendarDockIcon } from "@/components/apps/calendar/calendar-dock-icon";
+
 const MAGNIFY_DISTANCE = 150;
 const SPRING_CONFIG = { stiffness: 150, damping: 20, mass: 0.1 };
 const DOT_MARGIN = 4;
@@ -98,7 +100,11 @@ export function DockIcon({
 
   const useMagnify = magnificationEnabled && animState === "stable";
   const visualSize = getDockIconVisualSize(baseSize);
-  const artScale = dockArtScale > 0 ? dockArtScale : 1;
+  const isCalendar = appId === "calendar";
+  // Calendar icon is a self-contained component with its own internal
+  // proportions — skip the art-scale nudge and drop-shadow filter that
+  // are meant for bitmap PNG icons only.
+  const artScale = !isCalendar && dockArtScale > 0 ? dockArtScale : 1;
 
   const tooltipBottom = useTransform(iconScale, (scale) => {
     const visualScale = useMagnify ? scale : 1;
@@ -135,7 +141,7 @@ export function DockIcon({
       >
         <div className="flex h-full w-full items-end justify-center pointer-events-none">
           <div
-            className="[filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.35))]"
+            className={cn(!isCalendar && "[filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.35))]")}
             style={{
               width: visualSize,
               height: visualSize,
@@ -143,15 +149,19 @@ export function DockIcon({
               transformOrigin: "bottom center",
             }}
           >
-            <Image
-              src={iconSrc}
-              alt={name}
-              width={visualSize}
-              height={visualSize}
-              className="h-full w-full object-contain pointer-events-none"
-              draggable={false}
-              unoptimized
-            />
+            {isCalendar ? (
+              <CalendarDockIcon size={visualSize} />
+            ) : (
+              <Image
+                src={iconSrc}
+                alt={name}
+                width={visualSize}
+                height={visualSize}
+                className="h-full w-full object-contain pointer-events-none"
+                draggable={false}
+                unoptimized
+              />
+            )}
           </div>
         </div>
         {badgeCount > 0 && (

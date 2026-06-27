@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { SECTION_SUBTEXT_CLASS, DESK_MEDIA_CARD_CLASS } from "@/lib/ui-tokens";
+import { ContentFetchError } from "@/components/shared/content-fetch-error";
 import { createClient } from "@/utils/supabase/client";
 import { BeyondDeskMediaImage } from "../beyond-desk-media-image";
 import { ExternalLink } from "lucide-react";
@@ -58,6 +59,7 @@ function CampaignCardImage({ campaign }: { campaign: Campaign }) {
 export function AlbumsView({ isMobileView }: CampaignsViewProps) {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchCampaigns() {
@@ -69,8 +71,10 @@ export function AlbumsView({ isMobileView }: CampaignsViewProps) {
           .order("created_at", { ascending: true });
         if (error) throw error;
         setCampaigns(data || []);
+        setFetchError(null);
       } catch (err) {
         console.error("Failed to fetch campaigns:", err);
+        setFetchError("Couldn't load campaigns. Try refreshing.");
       } finally {
         setLoading(false);
       }
@@ -79,9 +83,11 @@ export function AlbumsView({ isMobileView }: CampaignsViewProps) {
   }, []);
 
   return (
-    <ScrollArea className="h-full" bottomMargin="0">
-      <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
-        <h2 className="text-lg font-semibold mb-6">campaigns & content</h2>
+    <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
+        <p className={SECTION_SUBTEXT_CLASS}>
+          my content marketing hall of fame
+        </p>
+        {fetchError && <ContentFetchError message={fetchError} />}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -105,11 +111,11 @@ export function AlbumsView({ isMobileView }: CampaignsViewProps) {
                     )}
                   </div>
                   <div className="p-3 min-w-0">
-                    <p className="text-sm font-medium leading-snug line-clamp-2">
+                    <p className="text-[11px] text-muted-foreground truncate">
                       {campaign.title}
                     </p>
                     {campaign.brand_name?.trim() ? (
-                      <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                      <p className="text-sm font-medium leading-snug line-clamp-2 mt-0.5">
                         {campaign.brand_name}
                       </p>
                     ) : null}
@@ -122,8 +128,7 @@ export function AlbumsView({ isMobileView }: CampaignsViewProps) {
                 </>
               );
 
-              const className =
-                "group flex flex-col rounded-lg overflow-hidden bg-muted/40 border border-border/40 hover:border-border hover:bg-muted/70 transition-all min-w-0";
+              const className = cn(DESK_MEDIA_CARD_CLASS, "min-w-0 can-hover:hover:bg-muted/70");
 
               if (campaign.url?.trim()) {
                 return (
@@ -147,7 +152,6 @@ export function AlbumsView({ isMobileView }: CampaignsViewProps) {
             })}
           </div>
         )}
-      </div>
-    </ScrollArea>
+    </div>
   );
 }

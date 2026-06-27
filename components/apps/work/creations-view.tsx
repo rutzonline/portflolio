@@ -21,7 +21,7 @@ interface Creation {
 const TAG_COLORS: Record<string, string> = {
   "vibe coded": "bg-purple-500/20 text-purple-400",
   canva: "bg-pink-500/20 text-pink-400",
-  design: "bg-blue-500/20 text-blue-400",
+  design: "bg-accent-blue/20 text-accent-blue",
   video: "bg-red-500/20 text-red-400",
   writing: "bg-yellow-500/20 text-yellow-400",
   marketing: "bg-green-500/20 text-green-400",
@@ -29,6 +29,38 @@ const TAG_COLORS: Record<string, string> = {
 
 function tagColor(tag: string) {
   return TAG_COLORS[tag.toLowerCase()] ?? "bg-zinc-500/20 text-zinc-400";
+}
+
+function CreationThumbnail({ creation }: { creation: Creation }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!creation.thumbnail_url || failed) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <span className="text-3xl text-zinc-600">
+          {creation.type === "video"
+            ? "▶"
+            : creation.type === "canva"
+              ? "✦"
+              : creation.type === "image"
+                ? "◻"
+                : "⊕"}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={creation.thumbnail_url}
+      alt={creation.title}
+      fill
+      sizes="(max-width: 768px) 100vw, 33vw"
+      className="object-cover transition-transform duration-300 group-hover:scale-105"
+      unoptimized
+      onError={() => setFailed(true)}
+    />
+  );
 }
 
 function CreationCard({ creation }: { creation: Creation }) {
@@ -42,27 +74,7 @@ function CreationCard({ creation }: { creation: Creation }) {
       className="group flex flex-col rounded-xl overflow-hidden bg-zinc-800/50 border border-white/8 hover:border-white/15 hover:bg-zinc-800/80 transition-all hover:shadow-xl"
     >
       <div className="relative aspect-video bg-zinc-700/50 overflow-hidden">
-        {creation.thumbnail_url ? (
-          <Image
-            src={creation.thumbnail_url}
-            alt={creation.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            unoptimized
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span className="text-3xl text-zinc-600">
-              {creation.type === "video"
-                ? "▶"
-                : creation.type === "canva"
-                  ? "✦"
-                  : creation.type === "image"
-                    ? "◻"
-                    : "⊕"}
-            </span>
-          </div>
-        )}
+        <CreationThumbnail creation={creation} />
         {isVideo && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity">
             <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">

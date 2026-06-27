@@ -20,7 +20,6 @@ import { useClickOutside } from "@/lib/hooks/use-click-outside";
 import { useWindowManager } from "@/lib/window-context";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePhotos } from "@/lib/photos/use-photos";
-import { getThumbnailUrl } from "@/lib/photos/image-utils";
 import { getEventsForDay, formatEventTime } from "@/components/apps/calendar/utils";
 import { loadCalendars } from "@/components/apps/calendar/data";
 import { WeatherSceneEffects } from "@/components/apps/weather/weather-scene-effects";
@@ -279,7 +278,7 @@ function MessagesWidget({
         <MessageCircle className="w-3.5 h-3.5 text-muted-foreground" />
         <span className="text-xs font-semibold flex-1">Messages</span>
         {totalUnread > 0 && (
-          <span className="bg-[#0A7CFF] text-white text-[10px] font-medium rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+          <span className="bg-accent-blue text-white text-[10px] font-medium rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
             {totalUnread}
           </span>
         )}
@@ -386,11 +385,11 @@ function PhotosWidget({
             className="aspect-square rounded overflow-hidden relative"
           >
             <Image
-              src={getThumbnailUrl(photo.url)}
+              src={photo.url}
               alt={photo.filename || "photo"}
               fill
               className="object-cover"
-              unoptimized
+              sizes="120px"
             />
           </div>
         ))}

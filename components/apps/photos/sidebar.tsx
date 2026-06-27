@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { SIDEBAR_ITEM_ACTIVE_CLASS, DESKTOP_NAV_SIDEBAR_WIDTH_CLASS } from "@/lib/ui-tokens";
 import { Collection, PhotosView } from "@/types/photos";
 import { Images, Heart, FolderOpen } from "lucide-react";
 
@@ -39,7 +40,7 @@ export function Sidebar({
             onScroll?.(target.scrollTop > 0);
           }}
         >
-          <div className={cn("px-2 py-2", isMobileView ? "w-full" : "w-[220px]")}>
+          <div className={cn("px-2 py-2", isMobileView ? "w-full" : DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)}>
             {/* Library Section */}
             <div className="mb-4">
               <p className="text-xs text-muted-foreground px-3 py-1 font-semibold uppercase tracking-wide">
@@ -105,7 +106,7 @@ function SidebarItem({
       className={cn(
         "w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors text-left",
         isActive && !isMobileView
-          ? "bg-zinc-200/70 dark:bg-zinc-700/70 text-blue-500"
+          ? SIDEBAR_ITEM_ACTIVE_CLASS
           : "text-foreground",
         isMobileView && "py-3"
       )}

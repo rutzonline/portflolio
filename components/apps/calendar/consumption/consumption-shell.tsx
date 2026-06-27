@@ -38,6 +38,7 @@ import { CONSUMPTION_CATEGORIES } from "@/types/consumption";
 interface ConsumptionShellProps {
   currentDate: Date;
   onDateChange: (date: Date) => void;
+  isMobileView?: boolean;
 }
 
 const SUBVIEW_OPTIONS: { value: ConsumptionSubview; label: string }[] = [
@@ -84,7 +85,7 @@ function buildFetchRange(date: Date): { start: string; end: string } {
   return { start: `${year}-01-01`, end: `${year}-12-31` };
 }
 
-export function ConsumptionShell({ currentDate, onDateChange }: ConsumptionShellProps) {
+export function ConsumptionShell({ currentDate, onDateChange, isMobileView = false }: ConsumptionShellProps) {
   const [subview, setSubview] = useState<ConsumptionSubview>("calendar");
   const [calendarView, setCalendarView] = useState<ConsumptionCalendarView>("month");
   const [highlightDate, setHighlightDate] = useState<string | null>(null);
@@ -176,7 +177,7 @@ export function ConsumptionShell({ currentDate, onDateChange }: ConsumptionShell
   }
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-background text-foreground font-[system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro',sans-serif]">
+    <div className={cn("flex flex-col h-full min-h-0 bg-background text-foreground font-[system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro',sans-serif]", isMobileView && "pb-20")}>
       <div className="px-4 pt-3 pb-2 border-b border-border/80 bg-muted/20 backdrop-blur-xl shrink-0">
         <p className="text-sm text-muted-foreground">
           using this space to keep track of things I&apos;ve read (updated weekly)

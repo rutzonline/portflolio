@@ -15,7 +15,7 @@ const APP_ROUTE_SEGMENTS = {
   photos: "photos",
   calendar: "calendar",
   weather: "weather",
-  desk: "desk",
+  misc: "desk",
   resume: "resume",
   textedit: "textedit",
   preview: "preview",
@@ -23,6 +23,13 @@ const APP_ROUTE_SEGMENTS = {
 } as const;
 
 const APP_ROUTE_SEGMENT_SET = new Set(Object.keys(APP_ROUTE_SEGMENTS));
+
+function getRouteSegmentForAppId(appId: string): string {
+  for (const [segment, id] of Object.entries(APP_ROUTE_SEGMENTS)) {
+    if (id === appId) return segment;
+  }
+  return appId;
+}
 
 type ShellContext = "desktop" | "mobile";
 
@@ -127,7 +134,7 @@ export function getShellUrlForApp(appId: string, options: ShellUrlOptions = {}):
     return `/${appId}?file=${encodeURIComponent(fileParam)}`;
   }
 
-  return `/${appId}`;
+  return `/${getRouteSegmentForAppId(appId)}`;
 }
 
 export function parseShellLocation(

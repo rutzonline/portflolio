@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { SECTION_SUBTEXT_CLASS } from "@/lib/ui-tokens";
+import { ContentFetchError } from "@/components/shared/content-fetch-error";
 import { createClient } from "@/utils/supabase/client";
 import { BeyondDeskMediaImage } from "../beyond-desk-media-image";
 import {
@@ -49,6 +50,7 @@ function SaneActivityImage({ item }: { item: Interest }) {
 export function BeyondDeskView({ isMobileView }: BeyondDeskViewProps) {
   const [interests, setInterests] = useState<Interest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchInterests() {
@@ -60,8 +62,10 @@ export function BeyondDeskView({ isMobileView }: BeyondDeskViewProps) {
           .order("created_at", { ascending: true });
         if (error) throw error;
         setInterests(data || []);
+        setFetchError(null);
       } catch (err) {
         console.error("Failed to fetch interests:", err);
+        setFetchError("Couldn't load interests. Try refreshing.");
       } finally {
         setLoading(false);
       }
@@ -70,12 +74,11 @@ export function BeyondDeskView({ isMobileView }: BeyondDeskViewProps) {
   }, []);
 
   return (
-    <ScrollArea className="h-full" bottomMargin="0">
-      <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
-        <h2 className="text-lg font-semibold mb-1">Things (currently) keeping me sane</h2>
-        <p className="text-sm text-muted-foreground mb-6">
-          what i do when i'm not corporatemaxxing
+    <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
+        <p className={SECTION_SUBTEXT_CLASS}>
+          what i do when i&apos;m not corporatemaxxing
         </p>
+        {fetchError && <ContentFetchError message={fetchError} />}
         {loading ? (
           <div className={cn("grid gap-4", isMobileView ? "grid-cols-2" : "grid-cols-2 desktop:grid-cols-3")}>
             {Array.from({ length: 6 }).map((_, i) => (
@@ -97,7 +100,6 @@ export function BeyondDeskView({ isMobileView }: BeyondDeskViewProps) {
             ))}
           </div>
         )}
-      </div>
-    </ScrollArea>
+    </div>
   );
 }

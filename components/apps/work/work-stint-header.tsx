@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 import type { WorkStint } from "./work-timeline";
+import { WorkStintLogo } from "./work-stint-logo";
 
 interface WorkStintHeaderProps {
   stint: WorkStint;
@@ -22,14 +22,7 @@ export function WorkStintHeader({ stint, className }: WorkStintHeaderProps) {
           )}
         >
           {stint.logo ? (
-            <Image
-              src={stint.logo}
-              alt=""
-              width={56}
-              height={56}
-              className="h-full w-full object-contain"
-              unoptimized
-            />
+            <WorkStintLogo company={stint.company} logo={stint.logo} />
           ) : (
             <span className="px-1 text-center text-xs font-bold uppercase leading-tight tracking-tight text-amber-400">
               {stint.company

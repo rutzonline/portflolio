@@ -1104,7 +1104,7 @@ export function WeatherApp({ isMobile = false, inShell = false }: WeatherAppProp
                         className={cn(
                           "shrink-0 pb-1 text-sm",
                           city.id === selectedCityId
-                            ? "text-[#0A7CFF] font-medium"
+                            ? "text-accent-blue font-medium"
                             : "text-white/82"
                         )}
                       >

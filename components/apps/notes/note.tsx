@@ -20,6 +20,7 @@ export default function Note({ note: initialNote, isMobile, onBack }: NoteProps)
   const [note, setNote] = useState(initialNote);
   const [sessionId, setSessionId] = useState("");
   const [isEditing, setIsEditing] = useState(!initialNote.content);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pendingUpdatesRef = useRef<Partial<NoteType>>({});
   const noteRef = useRef(initialNote);
@@ -86,7 +87,13 @@ export default function Note({ note: initialNote, isMobile, onBack }: NoteProps)
             }
 
             // Execute all updates in parallel for efficiency
-            await Promise.all(promises);
+            const results = await Promise.all(promises);
+            const failed = results.find((result) => result.error);
+            if (failed?.error) {
+              throw failed.error;
+            }
+
+            setSaveError(null);
 
             // Public note pages are cached and need explicit server-side revalidation.
             if (currentNote.public) {
@@ -96,6 +103,7 @@ export default function Note({ note: initialNote, isMobile, onBack }: NoteProps)
           }
         } catch (error) {
           console.error("Save failed:", error);
+          setSaveError("Couldn't save changes. Try again.");
         }
       }, 500);
     },
@@ -133,6 +141,14 @@ export default function Note({ note: initialNote, isMobile, onBack }: NoteProps)
         isMobile={isMobile}
         onBack={onBack}
       />
+      {saveError && (
+        <p
+          role="alert"
+          className="mx-3 mb-2 text-sm text-red-600/90 dark:text-red-400/90"
+        >
+          {saveError}
+        </p>
+      )}
       <div className="relative" onClick={(e) => e.stopPropagation()}>
         {/* Click target for entering edit mode - covers visible area */}
         {canEdit && !note.public && !isEditing && (

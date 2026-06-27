@@ -3,14 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Note as NoteType } from "@/lib/notes/types";
-import { loadNotesSelectedSlug, saveNotesSelectedSlug } from "@/lib/sidebar-persistence";
+import { saveNotesSelectedSlug } from "@/lib/sidebar-persistence";
 import {
   getNoteSlugFromShellPathname,
+  SHELL_DEFAULT_NOTE_SLUG,
   SHELL_NOTES_ROOT_PATH,
 } from "@/lib/shell-routing";
 import { setUrl } from "@/lib/set-url";
 import {
-  getNotesSelectedSlugMemory,
   setNotesSelectedSlugMemory,
 } from "@/lib/notes/selection-state";
 import { groupNotesByCategory, sortGroupedNotes } from "@/lib/notes/note-utils";
@@ -20,9 +20,7 @@ import {
 
 // Module state survives Notes unmount/remount within a single page session.
 // It resets on hard refresh/navigation.
-let hasMountedNotesInPageSession = false;
 const SIDEBAR_CATEGORY_ORDER = ["pinned", "today", "yesterday", "7", "30", "older"] as const;
-type DesktopStartupMode = "first-mount" | "remount";
 
 function getPinnedSlugsForFallback(notes: NoteType[]): Set<string> {
   const defaultPinned = new Set(
@@ -44,6 +42,26 @@ function getPinnedSlugsForFallback(notes: NoteType[]): Set<string> {
   } catch {
     return defaultPinned;
   }
+}
+
+function getDefaultNoteSlug(notes: NoteType[]): string | undefined {
+  if (notes.length === 0) return undefined;
+
+  const aboutMe = notes.find((note) => note.slug === SHELL_DEFAULT_NOTE_SLUG);
+  if (aboutMe) return aboutMe.slug;
+
+  return getTopmostNoteSlug(notes);
+}
+
+function findNoteInLists(
+  slug: string,
+  notes: NoteType[],
+  notesForFallback: NoteType[]
+): NoteType | undefined {
+  return (
+    notesForFallback.find((note) => note.slug === slug) ??
+    notes.find((note) => note.slug === slug)
+  );
 }
 
 function getTopmostNoteSlug(notes: NoteType[]): string | undefined {
@@ -91,9 +109,9 @@ export function useNotesSelection({
   const [selectedNote, setSelectedNote] = useState<NoteType | null>(
     initialNote ? withDisplayCreatedAt(initialNote) : null
   );
+  const [noteLoadError, setNoteLoadError] = useState<string | null>(null);
   const selectedSlugRef = useRef<string | undefined>(selectedNote?.slug);
   const syncCancelledRef = useRef(false);
-  const desktopStartupModeRef = useRef<DesktopStartupMode | null>(null);
 
   const canUpdateNotesUrl = useCallback(() => {
     if (isWindowFocused) return true;
@@ -113,17 +131,6 @@ export function useNotesSelection({
     saveNotesSelectedSlug(slug);
   }, [isMobile]);
 
-  const resolveDesktopStartupMode = useCallback((): DesktopStartupMode => {
-    if (desktopStartupModeRef.current) {
-      return desktopStartupModeRef.current;
-    }
-
-    const mode: DesktopStartupMode = hasMountedNotesInPageSession ? "remount" : "first-mount";
-    hasMountedNotesInPageSession = true;
-    desktopStartupModeRef.current = mode;
-    return mode;
-  }, []);
-
   useEffect(() => {
     setSelectedNote((current) => (current ? withDisplayCreatedAt(current) : current));
   }, []);
@@ -137,7 +144,7 @@ export function useNotesSelection({
   }, [isMobile, persistDesktopSelection, selectedNote]);
 
   useEffect(() => {
-    const desktopStartupMode = isMobile ? null : resolveDesktopStartupMode();
+    if (loading) return;
 
     let cancelled = false;
     syncCancelledRef.current = false;
@@ -146,52 +153,48 @@ export function useNotesSelection({
 
     async function syncSelectedNote() {
       const routeSlug = getNoteSlugFromShellPathname(window.location.pathname);
-
-      if (!isMobile && selectedSlugRef.current) {
-        return;
-      }
+      const availableNotes = notesForFallback.length > 0 ? notesForFallback : notes;
+      const defaultSlug = getDefaultNoteSlug(availableNotes);
 
       if (isMobile && !routeSlug) {
-        if (!loading) {
-          setSelectedNote(null);
-        }
+        setSelectedNote(null);
         return;
       }
 
-      const persistedSlug = isMobile ? null : loadNotesSelectedSlug();
-      const memorySlug = isMobile ? null : getNotesSelectedSlugMemory();
-      const fallbackSlug = getTopmostNoteSlug(
-        notesForFallback.length > 0 ? notesForFallback : notes
-      );
-      const isFirstDesktopMount = desktopStartupMode === "first-mount";
-      const targetSlug = isMobile
-        ? (routeSlug || fallbackSlug)
-        : (isFirstDesktopMount
-          ? (routeSlug || memorySlug || persistedSlug || fallbackSlug)
-          : (memorySlug || persistedSlug || fallbackSlug));
-
+      const targetSlug = routeSlug || defaultSlug;
       if (!targetSlug) {
-        if (!loading) {
-          setSelectedNote(null);
+        setSelectedNote(null);
+        return;
+      }
+
+      if (selectedNote?.slug === targetSlug) {
+        return;
+      }
+
+      const listNote = findNoteInLists(targetSlug, notes, notesForFallback);
+      if (listNote) {
+        setSelectedNote(withDisplayCreatedAt(listNote));
+        persistDesktopSelection(targetSlug);
+        if (!isMobile) {
+          const expectedPath = `/notes/${encodeURIComponent(targetSlug)}`;
+          if (window.location.pathname !== expectedPath) {
+            safeSetNotesUrl(expectedPath);
+          }
         }
-        return;
       }
 
-      if (selectedSlugRef.current === targetSlug) {
-        return;
-      }
-
-      const { data: fullNote } = await supabase
+      const { data: fullNote, error: fullNoteError } = await supabase
         .rpc("select_note", { note_slug_arg: targetSlug })
         .single();
 
       if (isCancelled()) return;
-      if (selectedSlugRef.current && selectedSlugRef.current !== targetSlug) {
-        return;
+
+      if (fullNoteError) {
+        console.error("Failed to load note:", fullNoteError);
       }
 
       if (fullNote) {
-        selectedSlugRef.current = targetSlug;
+        setNoteLoadError(null);
         persistDesktopSelection(targetSlug);
         setSelectedNote(withDisplayCreatedAt(fullNote as NoteType));
         if (!isMobile) {
@@ -203,36 +206,43 @@ export function useNotesSelection({
         return;
       }
 
-      if (loading) {
-        return;
-      }
-
-      if (fallbackSlug && fallbackSlug !== targetSlug) {
-        const { data: fallbackFullNote } = await supabase
-          .rpc("select_note", { note_slug_arg: fallbackSlug })
+      if (defaultSlug && defaultSlug !== targetSlug) {
+        const { data: defaultFullNote, error: defaultNoteError } = await supabase
+          .rpc("select_note", { note_slug_arg: defaultSlug })
           .single();
 
         if (isCancelled()) return;
-        if (selectedSlugRef.current && selectedSlugRef.current !== fallbackSlug) {
-          return;
+
+        if (defaultNoteError) {
+          console.error("Failed to load default note:", defaultNoteError);
         }
 
-        if (fallbackFullNote) {
-          selectedSlugRef.current = fallbackSlug;
-          persistDesktopSelection(fallbackSlug);
-          setSelectedNote(withDisplayCreatedAt(fallbackFullNote as NoteType));
-          safeSetNotesUrl(`/notes/${encodeURIComponent(fallbackSlug)}`);
+        const defaultListNote = findNoteInLists(defaultSlug, notes, notesForFallback);
+        if (defaultFullNote || defaultListNote) {
+          setNoteLoadError(null);
+          persistDesktopSelection(defaultSlug);
+          setSelectedNote(
+            withDisplayCreatedAt(
+              (defaultFullNote as NoteType | null) ??
+                defaultListNote!
+            )
+          );
+          safeSetNotesUrl(`/notes/${encodeURIComponent(defaultSlug)}`);
           return;
         }
       }
 
-      setSelectedNote(null);
-      if (routeSlug) {
-        safeSetNotesUrl("/notes");
+      if (!listNote) {
+        setSelectedNote(null);
+        if (fullNoteError) {
+          setNoteLoadError("Couldn't load this note. Try refreshing.");
+        }
+      } else if (fullNoteError) {
+        setNoteLoadError(null);
       }
     }
 
-    syncSelectedNote();
+    void syncSelectedNote();
 
     return () => {
       cancelled = true;
@@ -243,8 +253,8 @@ export function useNotesSelection({
     notes,
     notesForFallback,
     persistDesktopSelection,
-    resolveDesktopStartupMode,
     safeSetNotesUrl,
+    selectedNote?.slug,
     supabase,
   ]);
 
@@ -254,9 +264,18 @@ export function useNotesSelection({
     setUrl(`/notes/${note.slug}`);
     setSelectedNote(withDisplayCreatedAt(note));
 
-    const { data: fullNote } = await supabase
+    const { data: fullNote, error: fullNoteError } = await supabase
       .rpc("select_note", { note_slug_arg: note.slug })
       .single();
+
+    if (fullNoteError) {
+      console.error("Failed to load note:", fullNoteError);
+      if (!fullNote) {
+        setNoteLoadError("Couldn't load this note. Try refreshing.");
+      }
+    } else {
+      setNoteLoadError(null);
+    }
 
     if (fullNote) {
       setSelectedNote((current) => (
@@ -283,14 +302,13 @@ export function useNotesSelection({
     setUrl(`/notes/${note.slug}`);
   }, [persistDesktopSelection]);
 
-  const selectedSlugForSidebar = isMobile
-    ? (selectedNote?.slug ?? null)
-    : (selectedNote?.slug ?? getNotesSelectedSlugMemory() ?? loadNotesSelectedSlug() ?? null);
+  const selectedSlugForSidebar = selectedNote?.slug ?? null;
 
   return {
     handleBackToSidebar,
     handleNoteCreated,
     handleNoteSelect,
+    noteLoadError,
     selectedNote,
     selectedSlugForSidebar,
   };

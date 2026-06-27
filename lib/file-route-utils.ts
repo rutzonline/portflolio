@@ -8,31 +8,10 @@ export const PROJECTS_DIR = `${HOME_DIR}/Projects`;
 
 export const INTRO_DOC_PATH = `${HOME_DIR}/Documents/intro.txt`;
 export const LLMS_DOC_PATH = `${HOME_DIR}/Documents/llms.txt`;
-export const CURSOR_DOWNLOAD_PATH = `${HOME_DIR}/Downloads/Cursor.txt`;
+export const CURSOR_DOWNLOAD_PATH = `${HOME_DIR}/Downloads/Cursor.app`;
+export const CURSOR_APP_LAUNCH_ID = "cursor-download";
 
-export const CURSOR_APP_DETAILS = `Cursor
-═══════════════════════════════════════
-
-AI-powered code editor for building software with AI.
-
-Website: https://cursor.com
-Docs: https://docs.cursor.com
-
-Highlights
-──────────
-• Composer — multi-file edits from natural language
-• Tab — inline autocomplete across your codebase
-• Agent — autonomous tasks with repo context
-• MCP — connect external tools and data sources
-
-Install
-───────
-1. Download Cursor for macOS from cursor.com
-2. Drag Cursor.app into Applications
-3. Sign in and open your project folder
-
-This portfolio was built and iterated in Cursor.
-`;
+export const CURSOR_APP_ICON = "/cursor.png";
 
 export const INTRO_DOC_CONTENT = INTRO_DOC_BASELINE;
 export const LLMS_DOC_CONTENT = LLMS_DOC_BASELINE;
@@ -42,8 +21,9 @@ export type LocalSampleFileKind = "text" | "preview";
 
 export interface LocalFinderItem {
   name: string;
-  type: "file" | "dir";
+  type: "file" | "dir" | "app";
   path: string;
+  icon?: string;
 }
 
 interface LocalSampleFile {
@@ -89,12 +69,6 @@ const LOCAL_SAMPLE_FILES: LocalSampleFile[] = [
     kind: "text",
     path: `${HOME_DIR}/Documents/hello.md`,
   },
-  {
-    content: CURSOR_APP_DETAILS,
-    directoryPath: `${HOME_DIR}/Downloads`,
-    kind: "text",
-    path: CURSOR_DOWNLOAD_PATH,
-  },
 ];
 
 const LOCAL_SAMPLE_FILE_MAP = Object.fromEntries(
@@ -119,13 +93,14 @@ export const LOCAL_FINDER_FILES: Record<string, LocalFinderItem[]> = {
     type: "file" as const,
     path: file.path,
   })),
-  [`${HOME_DIR}/Downloads`]: LOCAL_SAMPLE_FILES.filter(
-    (file) => file.directoryPath === `${HOME_DIR}/Downloads`
-  ).map((file) => ({
-    name: file.path.split("/").pop() ?? file.path,
-    type: "file" as const,
-    path: file.path,
-  })),
+  [`${HOME_DIR}/Downloads`]: [
+    {
+      name: "Cursor.app",
+      type: "app",
+      path: `/${CURSOR_APP_LAUNCH_ID}`,
+      icon: CURSOR_APP_ICON,
+    },
+  ],
 };
 
 export function getDocumentAppFinderTarget(appId: DocumentAppId): string {

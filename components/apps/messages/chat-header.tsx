@@ -231,7 +231,7 @@ function RecipientSearch({
                   ref={selectedIndex === index ? selectedItemRef : null}
                   className={`p-2 cursor-pointer rounded-md ${
                     selectedIndex === index
-                      ? "bg-[#0A7CFF] can-hover:hover:bg-[#0A7CFF]"
+                      ? "bg-accent-blue can-hover:hover:bg-accent-blue"
                       : ""
                   }`}
                   onMouseDown={(e) => {
@@ -250,7 +250,7 @@ function RecipientSearch({
                       className={`text-sm ${
                         selectedIndex === index
                           ? "text-white"
-                          : "text-[#0A7CFF]"
+                          : "text-accent-blue"
                       }`}
                     >
                       {person.name}
@@ -292,7 +292,7 @@ function MobileAvatars({
           {recipient.avatar ? (
             <Image
               src={recipient.avatar}
-              alt=""
+              alt={`${recipient.name} avatar`}
               width={40}
               height={40}
               className="w-full h-full object-cover"
@@ -692,7 +692,7 @@ export function ChatHeader({
               >
                 <Icons.back size={32} />
                 {unreadCount ? (
-                  <div className="bg-[#0A7CFF] text-white rounded-full min-w-[20px] h-5 px-1.5 flex items-center justify-center text-xs font-medium -ml-4">
+                  <div className="bg-accent-blue text-white rounded-full min-w-[20px] h-5 px-1.5 flex items-center justify-center text-xs font-medium -ml-4">
                     {unreadCount}
                   </div>
                 ) : null}

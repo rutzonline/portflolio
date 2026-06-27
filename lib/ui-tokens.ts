@@ -1,0 +1,42 @@
+/** macOS system accent blue — single source for inline styles (must match globals.css `--accent-blue`). */
+export const ACCENT_BLUE_HEX = "#007AFF";
+
+export const ACCENT_BLUE_CLASS = "text-accent-blue";
+export const ACCENT_BLUE_BG_CLASS = "bg-accent-blue";
+export const ACCENT_BLUE_RING_CLASS = "ring-accent-blue";
+
+/** Desktop sidebar row when the current section is selected. */
+export const SIDEBAR_ITEM_ACTIVE_CLASS =
+  "bg-[var(--sidebar-active-bg)] text-accent-blue opacity-100 [&_svg]:text-accent-blue [&_svg]:opacity-100 [&_span]:text-accent-blue";
+
+/** Finder / Resume file list row when selected (solid accent fill). */
+export const FILE_LIST_ROW_SELECTED_CLASS = "bg-accent-blue text-white";
+
+/** Standard width for desktop nav sidebars (Notes, Messages, desk, photos, Resume). */
+export const DESKTOP_NAV_SIDEBAR_WIDTH_CLASS = "w-52";
+
+/** Section intro line under desk (misc) library headings. */
+export const SECTION_SUBTEXT_CLASS = "text-sm text-muted-foreground mb-6";
+
+/** Interactive media tile in desk library grids (browse, campaigns, products). */
+export const DESK_MEDIA_CARD_CLASS =
+  "group flex flex-col rounded-xl overflow-hidden bg-muted/50 border border-border/50 can-hover:hover:border-border transition-all can-hover:hover:shadow-lg";
+
+/** Text-first tile in desk library (newsletters). */
+export const DESK_TEXT_CARD_CLASS =
+  "group flex flex-col p-4 rounded-xl bg-muted/50 border border-border/50 can-hover:hover:border-border can-hover:hover:bg-muted/70 transition-all min-w-0";
+
+/** Outer frame for a selected thumbnail — ring sits outside a padded inset. */
+export const SELECTION_FRAME_CLASS =
+  "rounded-xl p-1 transition-all ring-2 ring-accent-blue ring-offset-2 ring-offset-background";
+
+/** Quiet inline caption row — flex wrapper for line + text. */
+export const CAPTION_ANNOTATION_ROW_CLASS = "flex w-full items-stretch gap-3";
+
+/** Thin left accent line, vertically spans the caption text block. */
+export const CAPTION_ACCENT_LINE_CLASS =
+  "w-0.5 shrink-0 self-stretch rounded-full bg-accent-blue";
+
+/** Caption text beside the accent line. */
+export const CAPTION_ANNOTATION_TEXT_CLASS =
+  "text-sm leading-relaxed text-muted-foreground text-left";

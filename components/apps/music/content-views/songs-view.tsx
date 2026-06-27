@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { SECTION_SUBTEXT_CLASS, DESK_MEDIA_CARD_CLASS } from "@/lib/ui-tokens";
+import { ContentFetchError } from "@/components/shared/content-fetch-error";
 import { createClient } from "@/utils/supabase/client";
 import { ExternalLink } from "lucide-react";
 
@@ -24,6 +25,7 @@ interface ProductsViewProps {
 export function SongsView({ isMobileView }: ProductsViewProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -35,8 +37,10 @@ export function SongsView({ isMobileView }: ProductsViewProps) {
           .order("created_at", { ascending: true });
         if (error) throw error;
         setProducts(data || []);
+        setFetchError(null);
       } catch (err) {
         console.error("Failed to fetch products:", err);
+        setFetchError("Couldn't load products. Try refreshing.");
       } finally {
         setLoading(false);
       }
@@ -45,12 +49,11 @@ export function SongsView({ isMobileView }: ProductsViewProps) {
   }, []);
 
   return (
-    <ScrollArea className="h-full" bottomMargin="0">
-      <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
-        {!isMobileView && (
-          <h2 className="text-lg font-semibold mb-6">Products & Packaging</h2>
-        )}
-
+    <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
+        <p className={SECTION_SUBTEXT_CLASS}>
+          welp! the ads got me
+        </p>
+        {fetchError && <ContentFetchError message={fetchError} />}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -68,7 +71,7 @@ export function SongsView({ isMobileView }: ProductsViewProps) {
                 href={product.url || undefined}
                 target={product.url ? "_blank" : undefined}
                 rel="noopener noreferrer"
-                className="group flex flex-col rounded-lg overflow-hidden bg-muted/40 border border-border/40 hover:border-border hover:bg-muted/70 transition-all min-w-0"
+                className={cn(DESK_MEDIA_CARD_CLASS, "min-w-0 can-hover:hover:bg-muted/70")}
               >
                 <div className="relative aspect-[4/3] bg-muted">
                   {product.image_url ? (
@@ -76,6 +79,7 @@ export function SongsView({ isMobileView }: ProductsViewProps) {
                       src={product.image_url}
                       alt={product.name}
                       fill
+                      sizes="(max-width: 768px) 100vw, 25vw"
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                       unoptimized
                     />
@@ -107,7 +111,6 @@ export function SongsView({ isMobileView }: ProductsViewProps) {
             ))}
           </div>
         )}
-      </div>
-    </ScrollArea>
+    </div>
   );
 }

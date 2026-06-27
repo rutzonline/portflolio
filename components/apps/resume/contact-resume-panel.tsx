@@ -1,6 +1,12 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { ContactFooterPlayground } from "./contact-footer-playground";
+import {
+  RESUME_PANEL_CARD_CLASS,
+  RESUME_SECTION_HEADING_CLASS,
+  resumePanelScrollClass,
+} from "./resume-panel-styles";
 
 const CONTACT_LINKS = [
   {
@@ -17,26 +23,25 @@ const CONTACT_LINKS = [
   },
 ] as const;
 
-export function ContactResumePanel() {
+export function ContactResumePanel({ isMobileView = false }: { isMobileView?: boolean }) {
   return (
-    <div className="flex-1 overflow-y-auto p-6">
-      <div className="max-w-lg space-y-6">
+    <div className={resumePanelScrollClass(isMobileView, "pt-12")}>
+      <div className="max-w-3xl space-y-14">
         <div>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-3 px-1 leading-relaxed">
-            If you&apos;d like to work together, please say hi :)
+          <p className={cn(RESUME_SECTION_HEADING_CLASS, "mb-4")}>
+            if you&apos;d like to work together, say hi! i&apos;d love to connect
           </p>
-          <div className="inline-flex w-fit max-w-full rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 overflow-hidden">
-            {CONTACT_LINKS.map((link, idx) => (
+          <div className="flex flex-wrap gap-3 ml-3">
+            {CONTACT_LINKS.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 target={link.href.startsWith("mailto:") ? undefined : "_blank"}
                 rel={link.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
                 className={cn(
+                  RESUME_PANEL_CARD_CLASS,
                   "px-3.5 py-2 text-sm text-center text-zinc-800 dark:text-zinc-100 whitespace-nowrap",
-                  "hover:bg-zinc-100 dark:hover:bg-zinc-700/40 transition-colors",
-                  idx < CONTACT_LINKS.length - 1 &&
-                    "border-r border-zinc-200 dark:border-zinc-700/60"
+                  "can-hover:hover:bg-zinc-200/70 dark:can-hover:hover:bg-zinc-700/50 transition-colors"
                 )}
               >
                 {link.label}
@@ -44,6 +49,8 @@ export function ContactResumePanel() {
             ))}
           </div>
         </div>
+
+        <ContactFooterPlayground />
       </div>
     </div>
   );

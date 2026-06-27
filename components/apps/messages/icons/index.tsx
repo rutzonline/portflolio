@@ -48,7 +48,7 @@ export const Icons = {
     <PenSquare className="text-muted-foreground" size={size} {...props} />
   ),
   back: ({ size = 16, ...props }: IconProps) => (
-    <ChevronLeft className="text-[#0A7CFF]" size={size} {...props} />
+    <ChevronLeft className="text-accent-blue" size={size} {...props} />
   ),
   sun: ({ size = 16, ...props }: IconProps) => (
     <Sun className="text-muted-foreground" size={size} {...props} />

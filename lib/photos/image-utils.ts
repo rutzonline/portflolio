@@ -1,36 +1,23 @@
-/**
- * Transform a Supabase storage URL to use image transformations.
- * Changes /object/ to /render/image/ and adds size parameters.
- *
- * @param url - Original Supabase public URL
- * @param width - Desired width in pixels
- * @param quality - Image quality (1-100), defaults to 80
- * @returns Transformed URL that serves an optimized image
- */
-export function getOptimizedImageUrl(
-  url: string,
-  width: number,
-  quality: number = 80
-): string {
-  if (!url.includes("/storage/v1/object/public/")) {
-    return url;
-  }
-
-  const transformedUrl = url.replace(
-    "/storage/v1/object/public/",
-    "/storage/v1/render/image/public/"
-  );
-
-  const separator = transformedUrl.includes("?") ? "&" : "?";
-  return `${transformedUrl}${separator}width=${width}&resize=contain&quality=${quality}`;
+export function isVideoUrl(url: string): boolean {
+  const lower = url.toLowerCase();
+  return lower.endsWith(".mp4") || lower.endsWith(".mov") || lower.endsWith(".webm");
 }
 
-/** Grid thumbnails — ~400px covers 5-column layout at 2× density. */
+/** Normalize Supabase storage URLs to direct object/public paths. */
+export function getOriginalImageUrl(url: string): string {
+  return url
+    .replace("/storage/v1/render/image/public/", "/storage/v1/object/public/")
+    .replace(/\?.*$/, "");
+}
+
+/** Grid thumbnails — Next.js Image optimizer handles small widths. */
 export function getThumbnailUrl(url: string): string {
-  return getOptimizedImageUrl(url, 400, 75);
+  if (isVideoUrl(url)) return url;
+  return getOriginalImageUrl(url);
 }
 
-/** Viewer — large but not full original unless already smaller. */
+/** Viewer — load the public URL directly (optimizer fails on large originals). */
 export function getViewerUrl(url: string): string {
-  return getOptimizedImageUrl(url, 1600, 82);
+  if (isVideoUrl(url)) return url;
+  return getOriginalImageUrl(url);
 }

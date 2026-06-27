@@ -30,10 +30,11 @@ a macos sierra 10.12 themed desktop with:
 - command menu (⌘K) with keyboard shortcuts
 - focus mode integration (mutes notifications)
 
-**iterm** - terminal emulator
-- real file system navigation
-- github integration (browse your repos)
-- basic shell commands (ls, cd, cat, pwd, clear, etc.)
+**iterm** - *(removed)* legacy route redirects to Finder
+
+**resume** - work portfolio (Finder-style shell)
+- case study cards with in-app markdown detail
+- work timeline, education, skills, tools, certifications, contact, and FAQs
 
 **textedit** - plain text editor
 - opens existing text files in their own windows
@@ -80,6 +81,13 @@ a macos sierra 10.12 themed desktop with:
 - current conditions with hourly forecast
 - non-dock app (appears in dock only while open)
 - shared weather scene renderer and palettes documented in `docs/weather-scenes.md`
+
+**misc (desk)** - marketing curations
+- brands, campaigns, products, newsletters, cool websites, and beyond-the-desk interests
+- route: `/misc` (legacy `/desk` and `/music` redirect here)
+
+**now playing** - audio mini player
+- menu bar widget and optional window for site background track
 
 ### mobile
 
@@ -225,7 +233,7 @@ REVALIDATE_TOKEN="<your-revalidate-token>"
 ```
 
 **notes:**
-- `GITHUB_TOKEN` is optional but helps avoid rate limits when using iterm/finder github integration
+- `GITHUB_TOKEN` is optional but helps avoid rate limits when using Finder GitHub integration
 - `SUPABASE_SERVICE_ROLE_KEY` is needed for photo uploads (bypasses RLS)
 - `OPENAI_API_KEY` is used for ai photo categorization
 

@@ -2,6 +2,7 @@
 
 import { RefObject } from "react";
 import { Note as NoteType } from "@/lib/notes/types";
+import { ContentFetchError } from "@/components/shared/content-fetch-error";
 import Sidebar from "../sidebar";
 import Note from "../note";
 import { Icons } from "../icons";
@@ -12,6 +13,7 @@ interface NotesMobilePresenterProps {
   handleNoteCreated: (note: NoteType) => void;
   handleNoteSelect: (note: NoteType) => Promise<void>;
   loading: boolean;
+  noteLoadError: string | null;
   notes: NoteType[];
   selectedNote: NoteType | null;
   selectedSlugForSidebar: string | null;
@@ -24,6 +26,7 @@ export function NotesMobilePresenter({
   handleNoteCreated,
   handleNoteSelect,
   loading,
+  noteLoadError,
   notes,
   selectedNote,
   selectedSlugForSidebar,
@@ -59,10 +62,14 @@ export function NotesMobilePresenter({
           )}
           {!selectedNote && (
             <div className="h-full p-3">
-              <button onClick={handleBackToSidebar} className="pt-2 flex items-center">
-                <Icons.back />
-                <span className="text-[#e2a727] text-base ml-1">Notes</span>
-              </button>
+              {noteLoadError ? (
+                <ContentFetchError message={noteLoadError} />
+              ) : (
+                <button onClick={handleBackToSidebar} className="pt-2 flex items-center">
+                  <Icons.back />
+                  <span className="text-[#e2a727] text-base ml-1">Notes</span>
+                </button>
+              )}
             </div>
           )}
         </div>

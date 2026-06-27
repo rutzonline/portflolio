@@ -71,7 +71,7 @@ function createWorkMarkdownComponents(): Components {
     ),
     li: ({ children }) => <li className="pl-0.5 marker:text-zinc-500">{children}</li>,
     blockquote: ({ children }) => (
-      <blockquote className="m-0 mb-6 rounded-lg border border-blue-500/20 bg-blue-500/8 px-4 py-3.5 text-[13px] leading-[1.65] text-zinc-200 last:mb-0 [&_p]:mb-2 [&_p:last-child]:mb-0">
+      <blockquote className="m-0 mb-6 rounded-lg border border-accent-blue/20 bg-accent-blue/8 px-4 py-3.5 text-[13px] leading-[1.65] text-zinc-200 last:mb-0 [&_p]:mb-2 [&_p:last-child]:mb-0">
         {children}
       </blockquote>
     ),

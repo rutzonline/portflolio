@@ -434,7 +434,7 @@ export function TimeGrid({
                 {/* Drag selection preview */}
                 {dragState && dragState.columnIndex === columnIndex && (
                   <div
-                    className="absolute left-1 right-1 bg-blue-500/30 border border-blue-500 rounded pointer-events-none"
+                    className="absolute left-1 right-1 bg-accent-blue/30 border border-accent-blue rounded pointer-events-none"
                     style={{
                       top: Math.min(dragState.startY, dragState.currentY) + gridPaddingTop,
                       height: Math.abs(dragState.currentY - dragState.startY),

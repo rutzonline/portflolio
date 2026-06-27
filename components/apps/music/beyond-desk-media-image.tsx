@@ -37,6 +37,7 @@ export function BeyondDeskMediaImage({
         src={remoteUrl!}
         alt={alt}
         fill
+        sizes="(max-width: 768px) 50vw, 25vw"
         className={className}
         unoptimized
         onError={() => {

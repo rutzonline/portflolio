@@ -5,6 +5,6 @@ type PageProps = {
   searchParams?: SearchParams;
 };
 
-export default function ITermCatchAllPage({ searchParams }: PageProps) {
-  return <RouteRedirect basePath="/iterm" search={getSearchString(searchParams)} />;
+export default function MiscCatchAllPage({ searchParams }: PageProps) {
+  return <RouteRedirect basePath="/misc" search={getSearchString(searchParams)} />;
 }

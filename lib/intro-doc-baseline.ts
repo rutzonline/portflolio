@@ -31,46 +31,52 @@ export const INTRO_README_TABS: IntroReadmeTab[] = [
 >>
 **hi, i'm rutuja**
 
-ever since i was a little girl i knew i wanted to have a website of my own to attract pre-pmf fable (rip) 5-coded b2b ai saas startup founders in the valley in order to make their cap table happy <3 so they can continue posting about some 'day 475283 of building your mom ai' on x. ok that's a bit of a stretch.
+ever since i was a little girl i knew i wanted to have a website of my own to attract pre-pmf fable (rip) 5-coded b2b disruptive ai saas stanford dropout startup founders in the valley in order to revenuemaxx so they can continue posting about some 'day 4752831 of building [highkey another llm wrapper].ai' on x. 
 
-now you might look around and go, "ok, but what the fork does this person actually do?"
+ok, that's a stretch. but you might look around and go, "what the fork does this person actually do?"
 
-um, marketing & growth & content, that's the tl;dr. 
+marketing & growth. that's the job.
 
-but more specifically, 
+more specifically, 
 
-- i'm a marketing generalist with a love for storytelling and all things creative. 
-- i've worked from strategy to execution, across a variety of industries (f&b, fintech, b2b saas).
+- i'm a marketing generalist with a love for storytelling.  
+- i've worked on all things content & creative across platforms (social, email, ads, offline etc.)
+- i've worked from strategy to execution, and have built 0-1 growth systems from scratch.
+- i have been a part of early stage growth teams across d2c f&b, fintech and b2b saas.
 
-also a semi-profesh vibe coder and ai tinkerer. hoping this website acts as a testament to that.
+also a semi-profesh vibe coder and ai curious person. hoping this website acts as a testament to that.
 
 that's about the work. as for the details and site navigation, we'll get to that in the next tab.
 
-and contrary to popular belief, i am not a yapper irl so consider this website an extensive documentation of me and my work (this is what my dates get sent as well!) oh hey aditya, if you're still wondering what my favorite color is... it's blue, in case you couldn't already tell and no we cannot netflix and chill jeez ....`,
+contrary to popular belief, i am not a yapper irl so consider this website an extensive documentation of me and my work. (and no, i don't send this link to my dates... that's weird)
+
+in case you were wondering... my favorite color is #0c121f`,
   },
   {
     id: "the-site",
     label: "the site",
-    content: `anyway so more about the site so you know exactly what you're looking at
+    content: `anyway, here is a quick tour so you know exactly what you're looking at
 ------------
 
 ---------------
 
-- so first up on the dock is **finder**, where you can browse the files and projects i've worked on.
+so first up, the dock as it appears: 
 
-- next up is the **notes** app, which is a true reflection of me and my very intellectual thoughts.
+- **finder**, where you can browse the files and projects i've worked on.
 
-- then there's the **messages** app, where you'll find very personal chats with close family and friends.
+- **notes**, which is a true reflection of me and my very intellectual thoughts.
 
-- in the **photos** app, you'll find a video introduction of me, along with a few pictures.
+- **messages**, a sample of how i write and communicate — curated threads, not private DMs.
 
-- now we have the **resume** app, where you'll find my work timeline, skills, educations, yada yada.
+- **photos**, you'll find a video introduction of me, along with a few pictures.
+
+- **resume**, where you'll find my work timeline, skills, educations, yada yada.
 
 - the **calendar** like icon? that's where you'll find a log of things i've read, watched, listened to, etc.
 
-- ok but what is **'beyond the desk'**? well, it's kinda like a curation of all things marketing that i loveee.
+- what is **misc**? well, it's kinda like a curation of all things marketing that i loveee.
 
-- then there's the **settings** app, where you can change the appearance of the site and other settings.
+- **settings**, where you can change the appearance of the site and other settings.
 
 finally, there's **trash**... you know? for the trash files...
 
@@ -92,8 +98,6 @@ to know more about the site build, check out the next tab.`,
 
 **technical stack**
 
-----
-
 -  framework - next.js 15 
 -  language - typescript 
 -  database - supabase 
@@ -106,7 +110,8 @@ to know more about the site build, check out the next tab.`,
 - design language: inspired by apple's sierra macOS.
 - built with: littlebird (context-aware logic), claude (structural architecture), and cursor/vs code.
 - couldn't have done it without the girls - canva, pinterest and spotify :)
-- putting it all together with github and vercel <3`,
+- putting it all together with github and vercel <3
+`,
   },
 ];
 
