@@ -18,10 +18,8 @@ function IosAppHostContent({ renderApp }: { renderApp: (appId: string) => React.
   const app = APPS.find((entry) => entry.id === stack.currentAppId);
 
   return (
-    <div className="flex min-h-full flex-col bg-background">
-      <div className={cn("min-h-0 flex-1 overflow-y-auto", IOS_STATUS_BAR_OFFSET_CLASS)}>
-        <div className="min-h-full">{renderApp(stack.currentAppId)}</div>
-      </div>
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-background">
+      <div className="min-h-0 flex-1 overflow-hidden">{renderApp(stack.currentAppId)}</div>
       <span className="sr-only">{app?.name ?? "App"}</span>
     </div>
   );
@@ -34,7 +32,9 @@ export function IosAppHost({ stack, renderApp }: IosAppHostProps) {
     <div className="fixed inset-0 z-50 flex flex-col bg-background">
       <IosStatusBar tone="app" />
       <MobileAppStackProvider value={stack}>
-        <IosAppHostContent renderApp={renderApp} />
+        <div className={cn("flex min-h-0 flex-1 flex-col overflow-hidden", IOS_STATUS_BAR_OFFSET_CLASS)}>
+          <IosAppHostContent renderApp={renderApp} />
+        </div>
       </MobileAppStackProvider>
     </div>
   );

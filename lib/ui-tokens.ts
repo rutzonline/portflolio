@@ -40,3 +40,31 @@ export const CAPTION_ACCENT_LINE_CLASS =
 /** Caption text beside the accent line. */
 export const CAPTION_ANNOTATION_TEXT_CLASS =
   "text-sm leading-relaxed text-muted-foreground text-left";
+
+/** iOS-style grouped list screen background (mobile only). */
+export const IOS_MOBILE_LIST_SCREEN_CLASS = "bg-muted/30";
+
+/** Large navigation title for mobile list screens (iOS large-title style). */
+export const IOS_MOBILE_LARGE_TITLE_CLASS =
+  "px-4 pt-2 pb-3 text-[34px] font-bold leading-tight tracking-tight text-foreground";
+
+/** Grouped inset list card container. */
+export const IOS_MOBILE_LIST_GROUP_CLASS =
+  "rounded-xl overflow-hidden bg-background border border-border/50";
+
+/** Compact tappable row (~44px). */
+export const IOS_MOBILE_LIST_ROW_CLASS =
+  "flex min-h-11 w-full items-center gap-3 px-4 py-2 text-left transition-colors active:bg-muted/60 can-hover:hover:bg-muted/40";
+
+/** Primary row label on mobile lists. */
+export const IOS_MOBILE_LIST_ROW_TITLE_CLASS = "text-[17px] leading-snug text-foreground";
+
+/** Secondary row label on mobile lists. */
+export const IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS = "text-[13px] leading-snug text-muted-foreground";
+
+/** Section header above a grouped list block. */
+export const IOS_MOBILE_LIST_SECTION_LABEL_CLASS =
+  "px-4 pb-1.5 pt-5 first:pt-2 text-[13px] font-normal uppercase text-muted-foreground";
+
+/** Trailing disclosure chevron on tappable rows. */
+export const IOS_MOBILE_LIST_CHEVRON_CLASS = "h-[13px] w-[13px] shrink-0 text-muted-foreground/70";

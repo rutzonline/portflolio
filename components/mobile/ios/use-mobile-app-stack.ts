@@ -2,6 +2,30 @@
 
 import { useCallback, useState } from "react";
 import { getMobileShellFallbackAppId, isAppSupportedOnMobile } from "@/lib/app-availability";
+import { getShellUrlForApp, isNotesDetailPathname } from "@/lib/shell-routing";
+import { setUrl } from "@/lib/set-url";
+
+function syncMobileShellUrl(appId: string | null) {
+  if (typeof window === "undefined") return;
+
+  if (!appId) {
+    setUrl("/");
+    return;
+  }
+
+  if (appId === "notes" && isNotesDetailPathname(window.location.pathname)) {
+    return;
+  }
+
+  if (appId === "messages" && window.location.pathname.startsWith("/messages")) {
+    return;
+  }
+
+  const nextUrl = getShellUrlForApp(appId, { context: "mobile" });
+  if (nextUrl && window.location.pathname !== nextUrl) {
+    setUrl(nextUrl);
+  }
+}
 
 export function resolveInitialMobileApp(appId?: string): string | null {
   if (!appId) return null;
@@ -15,6 +39,9 @@ export function resolveInitialMobileApp(appId?: string): string | null {
 export function useMobileAppStack(initialAppId?: string) {
   const [stack, setStack] = useState<string[]>(() => {
     const resolved = resolveInitialMobileApp(initialAppId);
+    if (resolved) {
+      syncMobileShellUrl(resolved);
+    }
     return resolved ? [resolved] : [];
   });
 
@@ -27,14 +54,24 @@ export function useMobileAppStack(initialAppId?: string) {
       if (current[current.length - 1] === appId) return current;
       return [...current, appId];
     });
+    syncMobileShellUrl(appId);
   }, []);
 
   const pop = useCallback(() => {
-    setStack((current) => (current.length <= 1 ? [] : current.slice(0, -1)));
+    setStack((current) => {
+      if (current.length <= 1) {
+        syncMobileShellUrl(null);
+        return [];
+      }
+      const next = current.slice(0, -1);
+      syncMobileShellUrl(next[next.length - 1] ?? null);
+      return next;
+    });
   }, []);
 
   const popToHome = useCallback(() => {
     setStack([]);
+    syncMobileShellUrl(null);
   }, []);
 
   return {

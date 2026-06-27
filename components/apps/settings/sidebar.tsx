@@ -8,6 +8,19 @@ import { SettingsCategory, SettingsPanel } from "./settings-app";
 import { SidebarNav } from "./sidebar-nav";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getHeadshotSrc } from "@/config/site";
+import {
+  IosMobileLargeTitle,
+  IosMobileListGroup,
+  IosMobileListRowSubtitle,
+  IosMobileListRowTitle,
+} from "@/components/mobile/ios/ios-mobile-list";
+import {
+  IOS_MOBILE_LIST_CHEVRON_CLASS,
+  IOS_MOBILE_LIST_ROW_CLASS,
+  IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS,
+  IOS_MOBILE_LIST_ROW_TITLE_CLASS,
+  IOS_MOBILE_LIST_SCREEN_CLASS,
+} from "@/lib/ui-tokens";
 
 interface SidebarProps {
   selectedCategory: SettingsCategory;
@@ -92,15 +105,13 @@ export function Sidebar({
   // Mobile layout - iOS style
   if (isMobile) {
     return (
-      <div className="flex flex-col h-full select-none w-full bg-background">
-        {/* Nav with window controls */}
+      <div className={cn("flex flex-col h-full select-none w-full", IOS_MOBILE_LIST_SCREEN_CLASS)}>
         <SidebarNav isMobile={isMobile} isScrolled={isScrolled} isDesktop={isDesktop} />
 
-        {/* Scrollable content */}
         <div className="flex-1 min-h-0 overflow-hidden">
           <ScrollArea
             className="h-full"
-            viewportClassName="bg-background"
+            viewportClassName={IOS_MOBILE_LIST_SCREEN_CLASS}
             onScrollCapture={(e: React.UIEvent<HTMLDivElement>) => {
               const viewport = e.currentTarget.querySelector(
                 "[data-radix-scroll-area-viewport]"
@@ -113,7 +124,6 @@ export function Sidebar({
             bottomMargin="0px"
           >
             <div className="px-4 pt-2 pb-8 min-h-full">
-              {/* Search bar */}
               <div className="px-0 pb-4">
                 <div className="relative">
                   <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -136,33 +146,33 @@ export function Sidebar({
                 </div>
               </div>
 
+              <IosMobileLargeTitle className="px-0">Settings</IosMobileLargeTitle>
+
               <div>
-                {/* Apple Account card */}
                 {showAppleAccount && (
-                  <button
-                    onClick={onAccountClick}
-                    className="w-full flex items-center gap-3 p-3 rounded-xl bg-background mb-4"
-                  >
-                    <Image
-                      src={getHeadshotSrc()}
-                      alt="Rutuja Rochkari"
-                      width={56}
-                      height={56}
-                      className="rounded-full object-cover"
-                      unoptimized
-                    />
-                    <div className="text-left flex-1">
-                      <div className="font-semibold text-lg">Rutuja Rochkari</div>
-                      <div className="text-sm text-muted-foreground">
-                        Apple Account, iCloud+, and more
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                  </button>
+                  <IosMobileListGroup className="mb-4">
+                    <button
+                      onClick={onAccountClick}
+                      className={cn(IOS_MOBILE_LIST_ROW_CLASS, "can-hover:hover:bg-muted/40")}
+                    >
+                      <Image
+                        src={getHeadshotSrc()}
+                        alt="Rutuja Rochkari"
+                        width={40}
+                        height={40}
+                        className="rounded-full object-cover shrink-0"
+                        unoptimized
+                      />
+                      <span className="min-w-0 flex-1 text-left">
+                        <IosMobileListRowTitle>Rutuja Rochkari</IosMobileListRowTitle>
+                        <IosMobileListRowSubtitle>Apple Account, iCloud+, and more</IosMobileListRowSubtitle>
+                      </span>
+                      <ChevronRight className={IOS_MOBILE_LIST_CHEVRON_CLASS} aria-hidden />
+                    </button>
+                  </IosMobileListGroup>
                 )}
 
-                {/* Connectivity section */}
-                <div className="rounded-xl bg-background overflow-hidden mb-4">
+                <IosMobileListGroup className="mb-4">
                   {connectivityItems.map((item, index) => {
                     const isNav = item.type === "nav";
                     const Wrapper = isNav ? "button" : "div";
@@ -171,72 +181,78 @@ export function Sidebar({
                         key={item.id}
                         onClick={isNav ? () => onCategorySelect("bluetooth") : undefined}
                         className={cn(
-                          "w-full flex items-center gap-3 px-3 py-3",
+                          IOS_MOBILE_LIST_ROW_CLASS,
                           index < connectivityItems.length - 1 && "border-b border-border/50",
-                          isNav && "can-hover:hover:bg-muted/50"
+                          isNav && "can-hover:hover:bg-muted/40"
                         )}
                       >
                         <span
                           className={cn(
-                            "flex items-center justify-center w-8 h-8 rounded-lg",
+                            "flex items-center justify-center w-7 h-7 rounded-lg shrink-0",
                             item.iconBg
                           )}
                         >
                           {item.icon}
                         </span>
-                        <span className="flex-1 text-left text-base">{item.name}</span>
+                        <span className="min-w-0 flex-1 text-left">
+                          <span className={IOS_MOBILE_LIST_ROW_TITLE_CLASS}>{item.name}</span>
+                        </span>
                         {item.type === "toggle" && (
                           <button
                             onClick={() => setAirplaneMode(!airplaneMode)}
                             className={cn(
-                              "w-12 h-7 rounded-full relative transition-colors",
+                              "w-12 h-7 rounded-full relative transition-colors shrink-0",
                               airplaneMode ? "bg-green-500" : "bg-gray-300"
                             )}
                           >
-                            <div className={cn(
-                              "absolute top-0.5 w-6 h-6 rounded-full bg-white shadow transition-transform",
-                              airplaneMode ? "translate-x-5" : "translate-x-0.5"
-                            )} />
+                            <div
+                              className={cn(
+                                "absolute top-0.5 w-6 h-6 rounded-full bg-white shadow transition-transform",
+                                airplaneMode ? "translate-x-5" : "translate-x-0.5"
+                              )}
+                            />
                           </button>
                         )}
                         {item.type === "value" && (
-                          <span className="text-muted-foreground text-base">{item.value}</span>
+                          <span className={IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS}>{item.value}</span>
                         )}
                         {item.type === "nav" && (
-                          <div className="flex items-center gap-1">
-                            <span className="text-muted-foreground text-base">{item.value}</span>
-                            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                          <div className="flex items-center gap-1 shrink-0">
+                            <span className={IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS}>{item.value}</span>
+                            <ChevronRight className={IOS_MOBILE_LIST_CHEVRON_CLASS} aria-hidden />
                           </div>
                         )}
                       </Wrapper>
                     );
                   })}
-                </div>
+                </IosMobileListGroup>
 
-                {/* Categories in grouped container */}
-                <div className="rounded-xl bg-background overflow-hidden">
+                <IosMobileListGroup>
                   {filteredCategories.map((category, index) => (
                     <button
                       key={category.id}
                       onClick={() => onCategorySelect(category.id)}
                       className={cn(
-                        "w-full flex items-center gap-3 px-3 py-3 text-base transition-colors can-hover:hover:bg-muted/50",
+                        IOS_MOBILE_LIST_ROW_CLASS,
+                        "can-hover:hover:bg-muted/40",
                         index < filteredCategories.length - 1 && "border-b border-border/50"
                       )}
                     >
                       <span
                         className={cn(
-                          "flex items-center justify-center w-8 h-8 rounded-lg",
+                          "flex items-center justify-center w-7 h-7 rounded-lg shrink-0",
                           category.iconBg
                         )}
                       >
                         {category.icon}
                       </span>
-                      <span className="flex-1 text-left">{category.name}</span>
-                      <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                      <span className={cn(IOS_MOBILE_LIST_ROW_TITLE_CLASS, "flex-1 text-left")}>
+                        {category.name}
+                      </span>
+                      <ChevronRight className={IOS_MOBILE_LIST_CHEVRON_CLASS} aria-hidden />
                     </button>
                   ))}
-                </div>
+                </IosMobileListGroup>
               </div>
             </div>
           </ScrollArea>

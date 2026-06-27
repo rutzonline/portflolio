@@ -5,6 +5,7 @@ import { getFinderFileSlug, resolveFinderFileParam } from "@/lib/finder-file-slu
 export const SHELL_DEFAULT_APP_ID = "notes";
 export const SHELL_DEFAULT_NOTE_SLUG = "about-me";
 export const SHELL_NOTES_ROOT_PATH = "/notes";
+export const SHELL_CALENDAR_ROOT_PATH = "/calendar";
 export const SHELL_README_PATH = "/readme";
 
 const APP_ROUTE_SEGMENTS = {
@@ -16,6 +17,7 @@ const APP_ROUTE_SEGMENTS = {
   calendar: "calendar",
   weather: "weather",
   misc: "desk",
+  desk: "desk",
   resume: "resume",
   textedit: "textedit",
   preview: "preview",
@@ -117,6 +119,10 @@ export function getShellUrlForApp(appId: string, options: ShellUrlOptions = {}):
     }
 
     return getNotesRoute(options.noteSlug);
+  }
+
+  if (appId === "calendar") {
+    return SHELL_CALENDAR_ROOT_PATH;
   }
 
   if (FILE_QUERY_PARAM_APPS.has(appId)) {

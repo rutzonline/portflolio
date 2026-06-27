@@ -49,7 +49,7 @@ export function NotesApp({
     supabase,
   });
 
-  const showSidebar = isMobile && !initialSlug;
+  const showSidebar = isMobile && !selectedNote;
 
   if (isMobile) {
     return (

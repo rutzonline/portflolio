@@ -29,6 +29,8 @@ import { cn } from "@/lib/utils";
 import { useFileMenu } from "@/lib/file-menu-context";
 import { ContentFetchError } from "@/components/shared/content-fetch-error";
 import { createNote } from "@/lib/notes/create-note";
+import { IosMobileLargeTitle } from "@/components/mobile/ios/ios-mobile-list";
+import { IOS_MOBILE_LIST_SCREEN_CLASS } from "@/lib/ui-tokens";
 
 const labels = {
   pinned: (
@@ -494,7 +496,7 @@ export default function Sidebar({
       className={cn(
         "flex flex-col h-full",
         isMobile
-          ? "w-full max-w-full bg-background"
+          ? cn("w-full max-w-full", IOS_MOBILE_LIST_SCREEN_CLASS)
           : "w-[320px] border-r border-muted-foreground/20 bg-muted"
       )}
     >
@@ -529,7 +531,7 @@ export default function Sidebar({
       >
         <div ref={scrollViewportRef} className="flex flex-col w-full">
           <SessionId setSessionId={setSessionId} />
-          <div className={`${isMobile ? "w-full" : "w-[320px]"} px-2`}>
+          <div className={cn(isMobile ? "w-full px-4" : "w-[320px] px-2")}>
             <SearchBar
               notes={notes}
               onSearchResults={setLocalSearchResults}
@@ -540,6 +542,7 @@ export default function Sidebar({
               setHighlightedIndex={setHighlightedIndex}
               clearSearch={clearSearch}
             />
+            {isMobile && <IosMobileLargeTitle className="px-0 pt-1 pb-2">Notes</IosMobileLargeTitle>}
             <SidebarContent
               groupedNotes={groupedNotes}
               selectedNoteSlug={selectedNoteSlug}

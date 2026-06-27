@@ -5,7 +5,8 @@ import Image from "next/image";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { useRecents } from "@/lib/recents-context";
 import { cn } from "@/lib/utils";
-import { SIDEBAR_ITEM_ACTIVE_CLASS, ACCENT_BLUE_CLASS, FILE_LIST_ROW_SELECTED_CLASS, DESKTOP_NAV_SIDEBAR_WIDTH_CLASS } from "@/lib/ui-tokens";
+import { SIDEBAR_ITEM_ACTIVE_CLASS, ACCENT_BLUE_CLASS, FILE_LIST_ROW_SELECTED_CLASS, DESKTOP_NAV_SIDEBAR_WIDTH_CLASS, IOS_MOBILE_LIST_CHEVRON_CLASS, IOS_MOBILE_LIST_ROW_CLASS, IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS, IOS_MOBILE_LIST_ROW_TITLE_CLASS, IOS_MOBILE_LIST_SCREEN_CLASS } from "@/lib/ui-tokens";
+import { IosMobileLargeTitle, IosMobileListGroup } from "@/components/mobile/ios/ios-mobile-list";
 import { FinderNav, FinderSidebarMobileNav } from "../finder/nav";
 import type { SidebarItem } from "../finder/sidebar-types";
 import { getSearchSectionForSidebar, STATIC_SIDEBAR_PANELS } from "../finder/sidebar-types";
@@ -1020,27 +1021,29 @@ export function ResumeApp({
     // Mobile sidebar - iOS Files style with cards
     if (isMobile) {
       return (
-        <div className="flex-1 overflow-y-auto px-4 pt-6 pb-8 bg-background">
-          <div className="rounded-xl bg-white dark:bg-zinc-800 overflow-hidden">
+        <div className={cn("flex-1 overflow-y-auto px-4 pt-2 pb-8", IOS_MOBILE_LIST_SCREEN_CLASS)}>
+          <IosMobileLargeTitle className="px-0">Resume</IosMobileLargeTitle>
+          <IosMobileListGroup>
             {SIDEBAR_ITEMS.map((item, index) => (
               <button
                 key={item.id}
                 onClick={() => handleSidebarSelect(item.id)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-3 py-3 text-base transition-colors can-hover:hover:bg-zinc-50 dark:can-hover:hover:bg-zinc-700",
-                  index < SIDEBAR_ITEMS.length - 1 && "border-b border-zinc-200 dark:border-zinc-700"
+                  IOS_MOBILE_LIST_ROW_CLASS,
+                  "can-hover:hover:bg-muted/40",
+                  index < SIDEBAR_ITEMS.length - 1 && "border-b border-border/50"
                 )}
               >
-                <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-accent-blue">
-                  <SidebarIcon icon={item.icon} className="w-5 h-5 text-white" />
+                <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-accent-blue shrink-0">
+                  <SidebarIcon icon={item.icon} className="w-4 h-4 text-white" />
                 </span>
-                <span className="flex-1 text-left text-zinc-900 dark:text-white">{item.label}</span>
-                <svg className="w-5 h-5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <span className={cn(IOS_MOBILE_LIST_ROW_TITLE_CLASS, "flex-1 text-left")}>{item.label}</span>
+                <svg className={IOS_MOBILE_LIST_CHEVRON_CLASS} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
                   <path d="M9 18l6-6-6-6" />
                 </svg>
               </button>
             ))}
-          </div>
+          </IosMobileListGroup>
         </div>
       );
     }
@@ -1211,20 +1214,21 @@ export function ResumeApp({
 
   // Skeleton loading for mobile list view
   const renderMobileListSkeleton = () => (
-    <div className="px-4 pt-2 pb-8 animate-pulse">
-      <div className="rounded-xl bg-white dark:bg-zinc-800 overflow-hidden">
+    <div className={cn("px-4 pt-2 pb-8 animate-pulse", IOS_MOBILE_LIST_SCREEN_CLASS)}>
+      <div className="h-9 w-32 rounded bg-muted mb-4" />
+      <div className="rounded-xl overflow-hidden border border-border/50 bg-background">
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
             className={cn(
-              "flex items-center gap-3 px-3 py-3",
-              i < 5 && "border-b border-zinc-200 dark:border-zinc-700"
+              "flex min-h-11 items-center gap-3 px-4 py-2",
+              i < 5 && "border-b border-border/50"
             )}
           >
-            <div className="w-10 h-10 rounded bg-zinc-200 dark:bg-zinc-700 flex-shrink-0" />
-            <div className="flex-1 min-w-0 space-y-2">
-              <div className="h-4 rounded bg-zinc-200 dark:bg-zinc-700" style={{ width: `${100 + (i * 23) % 60}px` }} />
-              <div className="h-3 w-12 rounded bg-zinc-200 dark:bg-zinc-700" />
+            <div className="w-7 h-7 rounded-lg bg-muted flex-shrink-0" />
+            <div className="flex-1 min-w-0 space-y-1.5">
+              <div className="h-4 rounded bg-muted" style={{ width: `${100 + (i * 23) % 60}px` }} />
+              <div className="h-3 w-16 rounded bg-muted" />
             </div>
           </div>
         ))}
@@ -1319,8 +1323,8 @@ export function ResumeApp({
 
   // Render file list (mobile)
   const renderFileList = () => (
-    <div className="px-4 pt-2 pb-8">
-      <div className="rounded-xl bg-white dark:bg-zinc-800 overflow-hidden">
+    <div className={cn("px-4 pt-2 pb-8", IOS_MOBILE_LIST_SCREEN_CLASS)}>
+      <IosMobileListGroup>
         {files.map((file, index) => {
           const isNavigable = file.type === "dir" || file.type === "app";
           return (
@@ -1333,29 +1337,29 @@ export function ResumeApp({
                 }
               }}
               className={cn(
-                "w-full flex items-center gap-3 px-3 py-3 text-left",
-                isNavigable && "transition-colors can-hover:hover:bg-zinc-50 dark:can-hover:hover:bg-zinc-700",
-                index < files.length - 1 && "border-b border-zinc-200 dark:border-zinc-700"
+                IOS_MOBILE_LIST_ROW_CLASS,
+                isNavigable && "can-hover:hover:bg-muted/40",
+                index < files.length - 1 && "border-b border-border/50"
               )}
             >
-              <FileIcon type={file.type} name={file.name} icon={file.icon} className="w-10 h-10 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <div className="text-base text-zinc-900 dark:text-white truncate">
+              <FileIcon type={file.type} name={file.name} icon={file.icon} className="w-7 h-7 flex-shrink-0" />
+              <div className="flex-1 min-w-0 text-left">
+                <div className={cn(IOS_MOBILE_LIST_ROW_TITLE_CLASS, "truncate")}>
                   {file.displayName || file.name}
                 </div>
-                <div className="text-sm text-zinc-500 dark:text-zinc-400">
+                <div className={IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS}>
                   {file.type === "dir" ? "Folder" : file.type === "app" ? "Application" : "File"}
                 </div>
               </div>
               {isNavigable && (
-                <svg className="w-5 h-5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className={IOS_MOBILE_LIST_CHEVRON_CLASS} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
                   <path d="M9 18l6-6-6-6" />
                 </svg>
               )}
             </button>
           );
         })}
-      </div>
+      </IosMobileListGroup>
       {files.length === 0 && !loading && (
         <div className="text-center text-sm text-zinc-400 dark:text-zinc-500 py-8">
           This folder is empty

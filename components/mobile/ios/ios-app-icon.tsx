@@ -19,7 +19,7 @@ export function IosAppIcon({ app, onOpen, size = "grid", className }: IosAppIcon
       type="button"
       onClick={() => onOpen(app.id)}
       className={cn(
-        "flex flex-col items-center gap-1.5 active:scale-95 transition-transform",
+        "flex w-full flex-col items-center gap-1 active:scale-95 transition-transform",
         className
       )}
     >
@@ -28,14 +28,11 @@ export function IosAppIcon({ app, onOpen, size = "grid", className }: IosAppIcon
         alt=""
         width={iconSize}
         height={iconSize}
-        className={cn(
-          "rounded-[22%] shadow-[0_8px_24px_rgba(0,0,0,0.35)]",
-          size === "dock" && "shadow-[0_10px_28px_rgba(0,0,0,0.45)]"
-        )}
+        className="rounded-[22%]"
         unoptimized
       />
       {size === "grid" ? (
-        <span className="max-w-[76px] truncate text-center text-[11px] font-medium leading-tight text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.55)]">
+        <span className="w-full max-w-[72px] text-center text-[10px] font-normal leading-[13px] tracking-tight text-white/95">
           {app.name}
         </span>
       ) : null}

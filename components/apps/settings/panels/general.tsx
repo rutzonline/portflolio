@@ -3,6 +3,12 @@
 import { Info, Download, HardDrive, ChevronRight } from "lucide-react";
 import { SettingsPanel, SettingsCategory } from "../settings-app";
 import { cn } from "@/lib/utils";
+import { IosMobileListGroup } from "@/components/mobile/ios/ios-mobile-list";
+import {
+  IOS_MOBILE_LIST_CHEVRON_CLASS,
+  IOS_MOBILE_LIST_ROW_CLASS,
+  IOS_MOBILE_LIST_ROW_TITLE_CLASS,
+} from "@/lib/ui-tokens";
 
 interface GeneralPanelProps {
   onPanelSelect: (panel: SettingsPanel) => void;
@@ -39,16 +45,40 @@ export function GeneralPanel({ onPanelSelect, onCategorySelect, isMobile = false
     if (itemId === "about") {
       onPanelSelect("about");
     } else if (itemId === "software-update") {
-      // Navigate to Appearance category and scroll to OS version
       onCategorySelect?.("appearance", { scrollToOSVersion: true });
     } else if (itemId === "storage") {
       onPanelSelect("storage");
     }
   };
 
+  if (isMobile) {
+    return (
+      <IosMobileListGroup>
+        {items.map((item, index) => (
+          <button
+            key={item.id}
+            onClick={() => item.navigable && handleItemClick(item.id)}
+            disabled={!item.navigable}
+            className={cn(
+              IOS_MOBILE_LIST_ROW_CLASS,
+              item.navigable ? "can-hover:hover:bg-muted/40 cursor-pointer" : "cursor-default",
+              index !== items.length - 1 && "border-b border-border/50"
+            )}
+          >
+            <span className={cn("flex items-center justify-center w-7 h-7 rounded-lg shrink-0", item.iconBg)}>
+              {item.icon}
+            </span>
+            <span className={cn(IOS_MOBILE_LIST_ROW_TITLE_CLASS, "flex-1 text-left")}>{item.name}</span>
+            {item.navigable && <ChevronRight className={IOS_MOBILE_LIST_CHEVRON_CLASS} aria-hidden />}
+          </button>
+        ))}
+      </IosMobileListGroup>
+    );
+  }
+
   return (
-    <div className={isMobile ? "" : "space-y-1"}>
-      <div className={cn("rounded-xl overflow-hidden", isMobile ? "bg-background" : "bg-muted/50")}>
+    <div className="space-y-1">
+      <div className="rounded-xl overflow-hidden bg-muted/50">
         {items.map((item, index) => (
           <button
             key={item.id}
@@ -61,21 +91,18 @@ export function GeneralPanel({ onPanelSelect, onCategorySelect, isMobile = false
             )}
           >
             <div className="flex items-center gap-3">
-              <span className={cn(
-                "flex items-center justify-center w-7 h-7 rounded-md",
-                isMobile ? item.iconBg : "bg-muted-foreground/10"
-              )}>
-                {isMobile ? item.icon : (
-                  item.id === "about" ? <Info className="w-5 h-5" /> :
-                  item.id === "software-update" ? <Download className="w-5 h-5" /> :
+              <span className="flex items-center justify-center w-7 h-7 rounded-md bg-muted-foreground/10">
+                {item.id === "about" ? (
+                  <Info className="w-5 h-5" />
+                ) : item.id === "software-update" ? (
+                  <Download className="w-5 h-5" />
+                ) : (
                   <HardDrive className="w-5 h-5" />
                 )}
               </span>
-              <span className={isMobile ? "text-base" : "text-xs"}>{item.name}</span>
+              <span className="text-xs">{item.name}</span>
             </div>
-            {item.navigable && (
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            )}
+            {item.navigable && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
           </button>
         ))}
       </div>

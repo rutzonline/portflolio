@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { cn } from "@/lib/utils";
 import { ConsumptionAppNav } from "./consumption-app-nav";
 import { ConsumptionShell } from "./consumption/consumption-shell";
 import { CalEmbed } from "./booking/cal-embed";
@@ -59,12 +60,14 @@ export function CalendarApp({ isMobile = false, inShell = false }: CalendarAppPr
       onMouseDown={() => containerRef.current?.focus()}
       className="calendar-app h-full flex flex-col bg-background text-foreground relative outline-none overflow-hidden"
     >
-      <ConsumptionAppNav
-        appMode={appMode}
-        onAppModeChange={handleAppModeChange}
-        inShell={inShell}
-        isMobile={isMobile}
-      />
+      <div className={cn(isMobile && "shrink-0")}>
+        <ConsumptionAppNav
+          appMode={appMode}
+          onAppModeChange={handleAppModeChange}
+          inShell={inShell}
+          isMobile={isMobile}
+        />
+      </div>
 
       <div className="flex-1 min-h-0 overflow-hidden">
         {appMode === "booking" ? (

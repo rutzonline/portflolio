@@ -30,18 +30,9 @@ export function ConsumptionAppNav({
     return (
       <WindowNavShell
         isMobile={true}
+        className="shrink-0 z-10 bg-background"
         onMouseDown={nav.onDragStart}
-        left={
-          <WindowControls
-            inShell={nav.inShell}
-            className="p-2"
-            onClose={nav.onClose}
-            onMinimize={nav.onMinimize}
-            onToggleMaximize={nav.onToggleMaximize}
-            isMaximized={nav.isMaximized}
-            closeLabel={nav.closeLabel}
-          />
-        }
+        left={nav.navLeft}
         right={<WindowNavSpacer isMobile={true} />}
       />
     );

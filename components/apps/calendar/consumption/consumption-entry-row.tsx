@@ -1,18 +1,56 @@
 "use client";
 
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ConsumptionLog } from "@/types/consumption";
 import { getCategoryColor, getCategoryLabel, categoryDotClassName } from "./category-styles";
 import { openConsumptionUrl } from "./logs-to-events";
+import {
+  IOS_MOBILE_LIST_CHEVRON_CLASS,
+  IOS_MOBILE_LIST_ROW_CLASS,
+  IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS,
+  IOS_MOBILE_LIST_ROW_TITLE_CLASS,
+} from "@/lib/ui-tokens";
 
 interface ConsumptionEntryRowProps {
   log: ConsumptionLog;
+  isMobileView?: boolean;
+  showDivider?: boolean;
 }
 
-export function ConsumptionEntryRow({ log }: ConsumptionEntryRowProps) {
+export function ConsumptionEntryRow({
+  log,
+  isMobileView = false,
+  showDivider = false,
+}: ConsumptionEntryRowProps) {
   const color = getCategoryColor(log.category);
   const subtitle = [getCategoryLabel(log.category), log.platform].filter(Boolean).join(" · ");
+
+  if (isMobileView) {
+    return (
+      <button
+        type="button"
+        onClick={() => openConsumptionUrl(log.url)}
+        className={cn(
+          IOS_MOBILE_LIST_ROW_CLASS,
+          showDivider && "border-b border-border/50"
+        )}
+      >
+        <span
+          className={cn("h-2.5 w-2.5 shrink-0 rounded-full", categoryDotClassName(color))}
+          style={{ backgroundColor: color }}
+          aria-hidden
+        />
+        <span className="min-w-0 flex-1 text-left">
+          <span className={cn(IOS_MOBILE_LIST_ROW_TITLE_CLASS, "block truncate")}>{log.title}</span>
+          {subtitle ? (
+            <span className={cn(IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS, "block truncate")}>{subtitle}</span>
+          ) : null}
+        </span>
+        <ChevronRight className={IOS_MOBILE_LIST_CHEVRON_CLASS} aria-hidden />
+      </button>
+    );
+  }
 
   return (
     <button

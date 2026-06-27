@@ -190,13 +190,27 @@ export function useNotesSelection({
       if (isCancelled()) return;
 
       if (fullNoteError) {
-        console.error("Failed to load note:", fullNoteError);
+        if (!listNote) {
+          console.error("Failed to load note:", fullNoteError);
+        }
       }
 
       if (fullNote) {
         setNoteLoadError(null);
         persistDesktopSelection(targetSlug);
         setSelectedNote(withDisplayCreatedAt(fullNote as NoteType));
+        if (!isMobile) {
+          const expectedPath = `/notes/${encodeURIComponent(targetSlug)}`;
+          if (window.location.pathname !== expectedPath) {
+            safeSetNotesUrl(expectedPath);
+          }
+        }
+        return;
+      }
+
+      if (listNote) {
+        setNoteLoadError(null);
+        setSelectedNote(withDisplayCreatedAt(listNote));
         if (!isMobile) {
           const expectedPath = `/notes/${encodeURIComponent(targetSlug)}`;
           if (window.location.pathname !== expectedPath) {
@@ -237,8 +251,6 @@ export function useNotesSelection({
         if (fullNoteError) {
           setNoteLoadError("Couldn't load this note. Try refreshing.");
         }
-      } else if (fullNoteError) {
-        setNoteLoadError(null);
       }
     }
 
@@ -262,29 +274,30 @@ export function useNotesSelection({
     selectedSlugRef.current = note.slug;
     persistDesktopSelection(note.slug);
     setUrl(`/notes/${note.slug}`);
-    setSelectedNote(withDisplayCreatedAt(note));
+    const listNote = withDisplayCreatedAt(note);
+    setSelectedNote(listNote);
+    setNoteLoadError(null);
 
     const { data: fullNote, error: fullNoteError } = await supabase
       .rpc("select_note", { note_slug_arg: note.slug })
       .single();
 
-    if (fullNoteError) {
-      console.error("Failed to load note:", fullNoteError);
-      if (!fullNote) {
-        setNoteLoadError("Couldn't load this note. Try refreshing.");
+    if (fullNoteError && !fullNote) {
+      if (!isMobile) {
+        console.error("Failed to load note:", fullNoteError);
       }
-    } else {
-      setNoteLoadError(null);
+      return;
     }
 
     if (fullNote) {
+      setNoteLoadError(null);
       setSelectedNote((current) => (
         current?.slug === note.slug
           ? withDisplayCreatedAt(fullNote as NoteType)
           : current
       ));
     }
-  }, [persistDesktopSelection, supabase]);
+  }, [isMobile, persistDesktopSelection, supabase]);
 
   const handleBackToSidebar = useCallback(() => {
     syncCancelledRef.current = true;

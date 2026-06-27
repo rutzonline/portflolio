@@ -136,6 +136,77 @@ export function ChatArea({
     return false;
   };
 
+  if (isMobileView) {
+    return (
+      <div className="flex h-full min-h-0 flex-col overflow-hidden">
+        <div className="shrink-0">
+          <ChatHeader
+            isNewChat={showRecipientInput}
+            recipientInput={recipientInput}
+            setRecipientInput={setRecipientInput}
+            onBack={onBack}
+            isMobileView={isMobileView}
+            activeConversation={activeConversation}
+            onUpdateRecipients={
+              onUpdateConversationRecipients && conversationId
+                ? (recipients) =>
+                    onUpdateConversationRecipients(conversationId, recipients)
+                : undefined
+            }
+            onCreateConversation={onCreateConversation}
+            onUpdateConversationName={onUpdateConversationName}
+            onHideAlertsChange={onHideAlertsChange}
+            unreadCount={unreadCount}
+            showCompactNewChat={showCompactNewChat}
+            setShowCompactNewChat={setShowCompactNewChat}
+            isDesktop={isDesktop}
+          />
+        </div>
+        <ScrollArea
+          className="min-h-0 flex-1"
+          isMobile={isMobileView}
+          withVerticalMargins={false}
+          bottomMargin="0px"
+        >
+          <div className="flex min-h-full flex-col px-3 pt-1 pb-1">
+            <MessageList
+              messages={activeConversation?.messages || []}
+              conversation={activeConversation}
+              typingStatus={
+                typingStatus?.conversationId === conversationId
+                  ? typingStatus
+                  : null
+              }
+              onReaction={(messageId, reaction) => {
+                onReaction?.(messageId, reaction);
+              }}
+              conversationId={conversationId}
+              messageInputRef={messageInputRef}
+              isMobileView={isMobileView}
+              focusModeActive={focusModeActive}
+              isWindowFocused={isWindowFocused}
+              justSentMessageId={justSentMessageId}
+            />
+          </div>
+        </ScrollArea>
+        <div className="shrink-0 border-t border-border/40 bg-background/75 backdrop-blur-xl pb-[env(keyboard-inset-height,0px)]">
+          <MessageInput
+            key={messageInputKey}
+            ref={messageInputRef}
+            message={messageDraft}
+            setMessage={handleMessageChange}
+            handleSend={handleSend}
+            disabled={isNewChat && !recipientInput}
+            recipients={conversationRecipients}
+            isMobileView={isMobileView}
+            conversationId={conversationId || undefined}
+            isNewChat={isNewChat}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full relative flex flex-col overflow-x-hidden">
       <div className="absolute top-0 left-0 right-0 z-50">

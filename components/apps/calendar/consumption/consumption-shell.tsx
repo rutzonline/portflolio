@@ -177,8 +177,13 @@ export function ConsumptionShell({ currentDate, onDateChange, isMobileView = fal
   }
 
   return (
-    <div className={cn("flex flex-col h-full min-h-0 bg-background text-foreground font-[system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro',sans-serif]", isMobileView && "pb-20")}>
-      <div className="px-4 pt-3 pb-2 border-b border-border/80 bg-muted/20 backdrop-blur-xl shrink-0">
+    <div className={cn("flex flex-col h-full min-h-0 bg-background text-foreground font-[system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro',sans-serif]", isMobileView && "pb-2")}>
+      <div
+        className={cn(
+          "px-4 border-b border-border/80 bg-muted/20 backdrop-blur-xl shrink-0",
+          isMobileView ? "pt-2 pb-2" : "pt-3 pb-2"
+        )}
+      >
         <p className="text-sm text-muted-foreground">
           using this space to keep track of things I&apos;ve read (updated weekly)
           {(usingFallback || allUsingFallback) && (
@@ -292,6 +297,7 @@ export function ConsumptionShell({ currentDate, onDateChange, isMobileView = fal
             loading={allLoading}
             error={allError}
             highlightDate={highlightDate}
+            isMobileView={isMobileView}
           />
         ) : calendarView === "month" ? (
           <ConsumptionMonthView

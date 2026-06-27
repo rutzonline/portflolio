@@ -327,7 +327,7 @@ export function Sidebar({
           withVerticalMargins={false}
           bottomMargin="0px"
         >
-          <div className={`${isMobileView ? "w-full" : "w-[320px]"} px-2`}>
+          <div className={cn(isMobileView ? "w-full px-3" : "w-[320px] px-2")}>
             <SearchBar value={searchTerm} onChange={onSearchChange} />
             <div className="w-full">
               {filteredConversations.length === 0 && searchTerm ? (
