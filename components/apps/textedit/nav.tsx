@@ -1,6 +1,5 @@
 "use client";
 
-import { WindowControls } from "@/components/window-controls";
 import { WindowNavShell } from "@/components/window-nav-shell";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
 
@@ -18,18 +17,7 @@ export function Nav({ isMobile, isDesktop = false, fileName }: NavProps) {
       isMobile={isMobile}
       onMouseDown={nav.onDragStart}
       className="min-w-0"
-      left={
-        <WindowControls
-          inShell={nav.inShell}
-          showWhenNotInShell={!isDesktop}
-          className="p-2"
-          onClose={nav.onClose}
-          onMinimize={nav.onMinimize}
-          onToggleMaximize={nav.onToggleMaximize}
-          isMaximized={nav.isMaximized}
-          closeLabel={nav.closeLabel}
-        />
-      }
+      left={nav.navLeft}
       center={
         <span className="block truncate text-muted-foreground text-sm">
           {fileName || "Untitled"}

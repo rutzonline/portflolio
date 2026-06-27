@@ -1,6 +1,5 @@
 import { Icons } from "./icons";
 import { useEffect } from "react";
-import { WindowControls } from "@/components/window-controls";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { WindowNavShell } from "@/components/window-nav-shell";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
@@ -55,18 +54,7 @@ export function Nav({ onNewChat, isMobileView, isScrolled, isDesktop = false }: 
       isMobile={isMobileView}
       isScrolled={isScrolled}
       onMouseDown={nav.onDragStart}
-      left={
-        <WindowControls
-          inShell={nav.inShell}
-          showWhenNotInShell={!isDesktop}
-          className="p-2"
-          onClose={nav.onClose}
-          onMinimize={nav.onMinimize}
-          onToggleMaximize={nav.onToggleMaximize}
-          isMaximized={nav.isMaximized}
-          closeLabel={nav.closeLabel}
-        />
-      }
+      left={nav.navLeft}
       right={
         <button
           className={`desktop:p-2 hover:bg-muted-foreground/10 rounded-lg ${

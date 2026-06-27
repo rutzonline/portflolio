@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
+export const IOS_STATUS_BAR_OFFSET_CLASS =
+  "pt-[calc(max(env(safe-area-inset-top),10px)+28px)]";
+
 function formatStatusTime(date: Date): string {
   return date.toLocaleTimeString(undefined, {
     hour: "numeric",
@@ -43,10 +46,13 @@ function BatteryGlyph({ className }: { className?: string }) {
   );
 }
 
-export function IosStatusBar() {
-  const [timeLabel, setTimeLabel] = useState(() => formatStatusTime(new Date()));
+export function IosStatusBar({ tone = "wallpaper" }: { tone?: "wallpaper" | "app" }) {
+  const [mounted, setMounted] = useState(false);
+  const [timeLabel, setTimeLabel] = useState("");
 
   useEffect(() => {
+    setMounted(true);
+
     const sync = () => setTimeLabel(formatStatusTime(new Date()));
     sync();
 
@@ -70,11 +76,12 @@ export function IosStatusBar() {
       className={cn(
         "pointer-events-none fixed inset-x-0 top-0 z-50",
         "flex items-center justify-between px-5 pt-[max(env(safe-area-inset-top),10px)] pb-1.5",
-        "text-[13px] font-semibold tracking-tight text-white"
+        "text-[13px] font-semibold tracking-tight",
+        tone === "wallpaper" ? "text-white" : "text-foreground"
       )}
       aria-hidden
     >
-      <span className="tabular-nums">{timeLabel}</span>
+      <span className="tabular-nums min-w-[2.75rem]">{mounted ? timeLabel : null}</span>
       <div className="flex items-center gap-1.5">
         <WifiGlyph />
         <BatteryGlyph />

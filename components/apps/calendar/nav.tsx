@@ -41,17 +41,7 @@ export function Nav({
       <WindowNavShell
         isMobile={true}
         onMouseDown={nav.onDragStart}
-        left={
-          <WindowControls
-            inShell={nav.inShell}
-            className="p-2"
-            onClose={nav.onClose}
-            onMinimize={nav.onMinimize}
-            onToggleMaximize={nav.onToggleMaximize}
-            isMaximized={nav.isMaximized}
-            closeLabel={nav.closeLabel}
-          />
-        }
+        left={nav.navLeft}
         right={<WindowNavSpacer isMobile={true} />}
       />
     );

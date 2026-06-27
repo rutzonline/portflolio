@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WindowNavShell } from "@/components/window-nav-shell";
+import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
 
 interface NavProps {
@@ -26,19 +27,11 @@ export function Nav({ canGoBack, canGoForward, onBack, onForward, isMobile, isDe
         isMobile={true}
         onMouseDown={nav.onDragStart}
         left={
-          <button
-            onClick={onBack}
-            onMouseDown={(e) => e.stopPropagation()}
-            disabled={!canGoBack}
-            className={cn(
-              "flex items-center gap-1 rounded-lg px-1 py-1 transition-colors text-accent-blue",
-              canGoBack ? "can-hover:hover:bg-muted-foreground/10" : "opacity-0 pointer-events-none"
-            )}
-            aria-label="Go back"
-          >
-            <ChevronLeft className="w-6 h-6" />
-            {backTitle && <span className="text-sm">{backTitle}</span>}
-          </button>
+          canGoBack ? (
+            <IosWindowNavBack canGoBack onBack={onBack} backTitle={backTitle} />
+          ) : (
+            nav.navLeft
+          )
         }
         center={<span className="text-sm font-medium text-foreground truncate">{title || ""}</span>}
         centerClassName="px-2 text-center"

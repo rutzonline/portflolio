@@ -1,6 +1,5 @@
 import NewNote from "./new-note";
 import { Note } from "@/lib/notes/types";
-import { WindowControls } from "@/components/window-controls";
 import { WindowNavShell } from "@/components/window-nav-shell";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
 
@@ -34,17 +33,7 @@ export function Nav({
       isMobile={isMobile}
       isScrolled={isScrolled}
       onMouseDown={nav.onDragStart}
-      left={
-        <WindowControls
-          inShell={nav.inShell}
-          className="p-2"
-          onClose={nav.onClose}
-          onMinimize={nav.onMinimize}
-          onToggleMaximize={nav.onToggleMaximize}
-          isMaximized={nav.isMaximized}
-          closeLabel={nav.closeLabel}
-        />
-      }
+      left={nav.navLeft}
       right={
         <div onMouseDown={(e) => e.stopPropagation()}>
           <NewNote

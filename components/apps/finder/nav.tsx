@@ -32,15 +32,12 @@ const stopDragPropagation: MouseEventHandler<HTMLElement> = (event) => {
 };
 
 export function FinderSidebarMobileNav() {
+  const nav = useWindowNavBehavior({ isMobile: true });
+
   return (
     <WindowNavShell
       isMobile={true}
-      left={
-        <WindowControls
-          inShell={false}
-          className="p-2"
-        />
-      }
+      left={nav.navLeft}
       right={<WindowNavSpacer isMobile={true} />}
     />
   );
