@@ -36,7 +36,6 @@ export function NotesApp({
     handleBackToSidebar,
     handleNoteCreated,
     handleNoteSelect,
-    noteLoadError,
     selectedNote,
     selectedSlugForSidebar,
   } = useNotesSelection({
@@ -49,7 +48,7 @@ export function NotesApp({
     supabase,
   });
 
-  const showSidebar = isMobile && !selectedNote;
+  const showSidebar = isMobile && !initialSlug;
 
   if (isMobile) {
     return (
@@ -63,7 +62,6 @@ export function NotesApp({
           handleNoteCreated={handleNoteCreated}
           handleNoteSelect={handleNoteSelect}
           loading={loading}
-          noteLoadError={noteLoadError}
           notes={notes}
           selectedNote={selectedNote}
           selectedSlugForSidebar={selectedSlugForSidebar}
@@ -87,7 +85,6 @@ export function NotesApp({
         handleNoteCreated={handleNoteCreated}
         handleNoteSelect={handleNoteSelect}
         inShell={inShell}
-        noteLoadError={noteLoadError}
         notes={notes}
         selectedNote={selectedNote}
         selectedSlugForSidebar={selectedSlugForSidebar}

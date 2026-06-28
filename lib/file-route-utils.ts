@@ -8,10 +8,28 @@ export const PROJECTS_DIR = `${HOME_DIR}/Projects`;
 
 export const INTRO_DOC_PATH = `${HOME_DIR}/Documents/intro.txt`;
 export const LLMS_DOC_PATH = `${HOME_DIR}/Documents/llms.txt`;
-export const CURSOR_DOWNLOAD_PATH = `${HOME_DIR}/Downloads/Cursor.app`;
+export const CURSOR_DOWNLOAD_PATH = `${HOME_DIR}/Downloads/Cursor`;
 export const CURSOR_APP_LAUNCH_ID = "cursor-download";
-
 export const CURSOR_APP_ICON = "/cursor.png";
+
+export interface FinderDownloadApp {
+  name: string;
+  launchId: string;
+  icon: string;
+  url: string;
+}
+
+export const FINDER_DOWNLOAD_APPS: FinderDownloadApp[] = [
+  { name: "Cursor", launchId: CURSOR_APP_LAUNCH_ID, icon: CURSOR_APP_ICON, url: "https://cursor.com" },
+  { name: "Claude", launchId: "claude-download", icon: "/claude.png", url: "https://claude.ai" },
+  { name: "Figma", launchId: "figma-download", icon: "/figma.png", url: "https://figma.com" },
+  { name: "Spotify", launchId: "spotify-download", icon: "/spotify.png", url: "https://spotify.com" },
+  { name: "Canva", launchId: "canva-download", icon: "/canva.png", url: "https://canva.com" },
+];
+
+export const FINDER_DOWNLOAD_APP_URLS: Record<string, string> = Object.fromEntries(
+  FINDER_DOWNLOAD_APPS.map((app) => [app.launchId, app.url])
+);
 
 export const INTRO_DOC_CONTENT = INTRO_DOC_BASELINE;
 export const LLMS_DOC_CONTENT = LLMS_DOC_BASELINE;
@@ -93,14 +111,12 @@ export const LOCAL_FINDER_FILES: Record<string, LocalFinderItem[]> = {
     type: "file" as const,
     path: file.path,
   })),
-  [`${HOME_DIR}/Downloads`]: [
-    {
-      name: "Cursor.app",
-      type: "app",
-      path: `/${CURSOR_APP_LAUNCH_ID}`,
-      icon: CURSOR_APP_ICON,
-    },
-  ],
+  [`${HOME_DIR}/Downloads`]: FINDER_DOWNLOAD_APPS.map((app) => ({
+    name: app.name,
+    type: "app" as const,
+    path: `/${app.launchId}`,
+    icon: app.icon,
+  })),
 };
 
 export function getDocumentAppFinderTarget(appId: DocumentAppId): string {

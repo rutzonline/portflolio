@@ -14,7 +14,7 @@ import { APPS } from "@/lib/app-config";
 import {
   HOME_DIR,
   LOCAL_FINDER_FILES,
-  CURSOR_APP_LAUNCH_ID,
+  FINDER_DOWNLOAD_APP_URLS,
   getLocalTextFileContent,
   PROJECTS_DIR,
 } from "@/lib/file-route-utils";
@@ -74,7 +74,7 @@ const SIDEBAR_ITEMS: { id: SidebarItem; label: string; icon: string }[] = [
   { id: "education", label: "Education", icon: "desktop" },
   { id: "skills", label: "Skills", icon: "grid" },
   { id: "tools", label: "Tools & Stack", icon: "code" },
-  { id: "certifications", label: "Certifications", icon: "award" },
+  { id: "certifications", label: "Certifications", icon: "certification" },
   { id: "selected-work", label: "Selected Work", icon: "folder" },
   { id: "contact", label: "Contact", icon: "phone" },
   { id: "faqs", label: "FAQs", icon: "help" },
@@ -212,9 +212,10 @@ function SidebarIcon({ icon, className }: { icon: string; className?: string }) 
         <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
       </svg>
     ),
-    certificate: (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M17 15.245v6.872l-5-2-5 2v-6.872A8 8 0 1 1 17 15.245zM12 4a6 6 0 1 0 0 12A6 6 0 0 0 12 4zm0 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/>
+    certification: (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="6" y="4" width="12" height="16" rx="1" />
+        <line x1="8.5" y1="8" x2="14" y2="8" strokeWidth="2.25" />
       </svg>
     ),
     award: (
@@ -743,8 +744,9 @@ export function ResumeApp({
       setSelectedFile(null);
     } else if (file.type === "app") {
       const appId = file.path.replace("/", "");
-      if (appId === CURSOR_APP_LAUNCH_ID) {
-        window.open("https://cursor.com", "_blank", "noopener,noreferrer");
+      const downloadUrl = FINDER_DOWNLOAD_APP_URLS[appId];
+      if (downloadUrl) {
+        window.open(downloadUrl, "_blank", "noopener,noreferrer");
         return;
       }
       if (onOpenApp) {

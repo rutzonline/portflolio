@@ -10,7 +10,11 @@ const FINDER_HOME_DIR = "/Users/rutujarochkari";
 const STATIC_FILE_SLUGS: Record<string, string> = {
   [`${FINDER_HOME_DIR}/Documents/llms.txt`]: "llms",
   [`${FINDER_HOME_DIR}/Documents/hello.md`]: "hello",
-  [`${FINDER_HOME_DIR}/Downloads/Cursor.app`]: "cursor",
+  [`${FINDER_HOME_DIR}/Downloads/Cursor`]: "cursor",
+  [`${FINDER_HOME_DIR}/Downloads/Claude`]: "claude",
+  [`${FINDER_HOME_DIR}/Downloads/Figma`]: "figma",
+  [`${FINDER_HOME_DIR}/Downloads/Spotify`]: "spotify",
+  [`${FINDER_HOME_DIR}/Downloads/Canva`]: "canva",
 };
 
 const STATIC_SLUG_TO_PATH: Record<string, string> = Object.fromEntries(

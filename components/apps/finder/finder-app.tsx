@@ -11,7 +11,7 @@ import { APPS } from "@/lib/app-config";
 import {
   HOME_DIR,
   LOCAL_FINDER_FILES,
-  CURSOR_APP_LAUNCH_ID,
+  FINDER_DOWNLOAD_APP_URLS,
   getLocalTextFileContent,
   PROJECTS_DIR,
 } from "@/lib/file-route-utils";
@@ -661,8 +661,9 @@ export function FinderApp({
       setSelectedFile(null);
     } else if (file.type === "app") {
       const appId = file.path.replace("/", "");
-      if (appId === CURSOR_APP_LAUNCH_ID) {
-        window.open("https://cursor.com", "_blank", "noopener,noreferrer");
+      const downloadUrl = FINDER_DOWNLOAD_APP_URLS[appId];
+      if (downloadUrl) {
+        window.open(downloadUrl, "_blank", "noopener,noreferrer");
         return;
       }
       if (onOpenApp) {

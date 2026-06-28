@@ -1,9 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { RecentsProvider } from "@/lib/recents-context";
 import type { Note as NoteType } from "@/lib/notes/types";
+import { APP_SHELL_URL_CHANGE_EVENT } from "@/lib/set-url";
+import { getNoteSlugFromShellPathname } from "@/lib/shell-routing";
 import { IosShell } from "./ios/ios-shell";
 
 const NotesApp = dynamic(() => import("@/components/apps/notes/notes-app").then((mod) => mod.NotesApp), {
@@ -42,7 +44,29 @@ interface MobileShellProps {
   initialNote?: NoteType;
 }
 
+function readActiveNoteSlugFromLocation(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  return getNoteSlugFromShellPathname(window.location.pathname);
+}
+
 export function MobileShell({ initialApp, initialNoteSlug, initialNote }: MobileShellProps) {
+  const [activeNoteSlug, setActiveNoteSlug] = useState<string | undefined>(initialNoteSlug);
+
+  useEffect(() => {
+    const syncNoteSlugFromLocation = () => {
+      setActiveNoteSlug(readActiveNoteSlugFromLocation());
+    };
+
+    syncNoteSlugFromLocation();
+    window.addEventListener(APP_SHELL_URL_CHANGE_EVENT, syncNoteSlugFromLocation);
+    window.addEventListener("popstate", syncNoteSlugFromLocation);
+
+    return () => {
+      window.removeEventListener(APP_SHELL_URL_CHANGE_EVENT, syncNoteSlugFromLocation);
+      window.removeEventListener("popstate", syncNoteSlugFromLocation);
+    };
+  }, []);
+
   const renderApp = useCallback(
     (appId: string) => {
       switch (appId) {
@@ -50,9 +74,9 @@ export function MobileShell({ initialApp, initialNoteSlug, initialNote }: Mobile
           return (
             <NotesApp
               isMobile={true}
-              inShell={false}
-              initialSlug={initialNoteSlug}
-              initialNote={initialNoteSlug === initialNoteSlug ? initialNote : undefined}
+              inShell={true}
+              initialSlug={activeNoteSlug}
+              initialNote={activeNoteSlug === initialNoteSlug ? initialNote : undefined}
             />
           );
         case "messages":
@@ -73,7 +97,7 @@ export function MobileShell({ initialApp, initialNoteSlug, initialNote }: Mobile
           return null;
       }
     },
-    [initialNoteSlug, initialNote]
+    [activeNoteSlug, initialNoteSlug, initialNote]
   );
 
   return (
