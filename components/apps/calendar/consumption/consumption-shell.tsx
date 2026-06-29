@@ -39,6 +39,8 @@ interface ConsumptionShellProps {
   currentDate: Date;
   onDateChange: (date: Date) => void;
   isMobileView?: boolean;
+  subview?: ConsumptionSubview;
+  onSubviewChange?: (next: ConsumptionSubview) => void;
 }
 
 const SUBVIEW_OPTIONS: { value: ConsumptionSubview; label: string }[] = [
@@ -85,14 +87,26 @@ function buildFetchRange(date: Date): { start: string; end: string } {
   return { start: `${year}-01-01`, end: `${year}-12-31` };
 }
 
-export function ConsumptionShell({ currentDate, onDateChange, isMobileView = false }: ConsumptionShellProps) {
-  const [subview, setSubview] = useState<ConsumptionSubview>("calendar");
+export function ConsumptionShell({
+  currentDate,
+  onDateChange,
+  isMobileView = false,
+  subview: controlledSubview,
+  onSubviewChange,
+}: ConsumptionShellProps) {
+  const [uncontrolledSubview, setUncontrolledSubview] = useState<ConsumptionSubview>("calendar");
   const [calendarView, setCalendarView] = useState<ConsumptionCalendarView>("month");
   const [highlightDate, setHighlightDate] = useState<string | null>(null);
   const [prefsLoaded, setPrefsLoaded] = useState(false);
+  const subview = controlledSubview ?? uncontrolledSubview;
 
   useEffect(() => {
-    setSubview(loadConsumptionSubview());
+    const savedSubview = loadConsumptionSubview();
+    if (controlledSubview == null) {
+      setUncontrolledSubview(savedSubview);
+    } else {
+      onSubviewChange?.(savedSubview);
+    }
     setCalendarView(loadConsumptionCalendarView());
     setPrefsLoaded(true);
   }, []);
@@ -125,7 +139,11 @@ export function ConsumptionShell({ currentDate, onDateChange, isMobileView = fal
   }, [highlightDate]);
 
   const handleSubviewChange = (next: ConsumptionSubview) => {
-    setSubview(next);
+    if (controlledSubview == null) {
+      setUncontrolledSubview(next);
+    } else {
+      onSubviewChange?.(next);
+    }
     saveConsumptionSubview(next);
     if (next === "calendar") {
       setHighlightDate(null);
@@ -156,10 +174,10 @@ export function ConsumptionShell({ currentDate, onDateChange, isMobileView = fal
       const dateKey = format(date, "yyyy-MM-dd");
       onDateChange(date);
       setHighlightDate(dateKey);
-      setSubview("list");
+      handleSubviewChange("list");
       saveConsumptionSubview("list");
     },
-    [onDateChange]
+    [handleSubviewChange, onDateChange]
   );
 
   const handleMonthClick = useCallback(

@@ -9,8 +9,12 @@ import {
   loadCalendarAppMode,
   saveCalendarAppMode,
   saveConsumptionMonth,
+  loadConsumptionSubview,
+  saveConsumptionSubview,
   type CalendarAppMode,
+  type ConsumptionSubview,
 } from "@/lib/sidebar-persistence";
+import { useMobileAppStackContext } from "@/components/mobile/ios/mobile-app-stack-context";
 
 interface CalendarAppProps {
   isMobile?: boolean;
@@ -23,13 +27,18 @@ function toMonthKey(date: Date): string {
 
 export function CalendarApp({ isMobile = false, inShell = false }: CalendarAppProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const mobileStack = useMobileAppStackContext();
   const [appMode, setAppMode] = useState<CalendarAppMode>("consumption");
   const [currentDate, setCurrentDate] = useState(() => new Date());
+  const [mobileSubview, setMobileSubview] = useState<ConsumptionSubview>("calendar");
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     setAppMode(loadCalendarAppMode());
     setCurrentDate(new Date());
+    if (isMobile) {
+      setMobileSubview(loadConsumptionSubview());
+    }
     setIsLoaded(true);
   }, []);
 
@@ -47,6 +56,18 @@ export function CalendarApp({ isMobile = false, inShell = false }: CalendarAppPr
   const handleDateChange = useCallback((date: Date) => {
     setCurrentDate(date);
   }, []);
+
+  const handleMobileBack = useCallback(() => {
+    if (!isMobile) return;
+
+    if (mobileSubview === "list") {
+      setMobileSubview("calendar");
+      saveConsumptionSubview("calendar");
+      return;
+    }
+
+    mobileStack?.popToHome();
+  }, [isMobile, mobileStack, mobileSubview]);
 
   if (!isLoaded) {
     return <div className="h-full bg-background" />;
@@ -66,6 +87,7 @@ export function CalendarApp({ isMobile = false, inShell = false }: CalendarAppPr
           onAppModeChange={handleAppModeChange}
           inShell={inShell}
           isMobile={isMobile}
+          onMobileBack={isMobile ? handleMobileBack : undefined}
         />
       </div>
 
@@ -73,7 +95,13 @@ export function CalendarApp({ isMobile = false, inShell = false }: CalendarAppPr
         {appMode === "booking" ? (
           <CalEmbed />
         ) : (
-          <ConsumptionShell currentDate={currentDate} onDateChange={handleDateChange} isMobileView={isMobile} />
+          <ConsumptionShell
+            currentDate={currentDate}
+            onDateChange={handleDateChange}
+            isMobileView={isMobile}
+            subview={isMobile ? mobileSubview : undefined}
+            onSubviewChange={isMobile ? setMobileSubview : undefined}
+          />
         )}
       </div>
     </div>
