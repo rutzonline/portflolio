@@ -47,25 +47,11 @@ export default function App({ isDesktop = false }: AppProps) {
   const [showContent, setShowContent] = useState(initialState.showContent);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const mobileEntryInitializedRef = useRef(false);
 
   useEffect(() => {
     setIsMobileView(!isDesktop);
     setIsLayoutInitialized(true);
   }, [isDesktop]);
-
-  // Mobile-only: always enter the app in Home content first.
-  // Back from Home should return to the sections list (sidebar), not exit the app.
-  useEffect(() => {
-    if (!isMobileView) return;
-    if (!isLayoutInitialized) return;
-    if (mobileEntryInitializedRef.current) return;
-    mobileEntryInitializedRef.current = true;
-
-    setActiveView("home");
-    setSelectedPlaylistId(null);
-    setShowContent(true);
-  }, [isLayoutInitialized, isMobileView]);
 
   useEffect(() => {
     saveMusicState(activeView, selectedPlaylistId);

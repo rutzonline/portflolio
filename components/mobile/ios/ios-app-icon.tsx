@@ -5,29 +5,6 @@ import { CalendarDockIcon } from "@/components/apps/calendar/calendar-dock-icon"
 import { cn } from "@/lib/utils";
 import type { AppConfig } from "@/types/apps";
 
-function getMobileOverrideIconSrc(appId: string): string | null {
-  switch (appId) {
-    case "notes":
-      return "/xnotes.png";
-    case "photos":
-      return "/xphotos.png";
-    case "messages":
-      return "/xmessages.png";
-    case "desk":
-      return "/misc.png";
-    case "resume":
-      return "/xresume.png";
-    case "settings":
-      return "/xsettings.png";
-    case "finder":
-      return "/xfinder.png";
-    case "weather":
-      return "/xweather.png";
-    default:
-      return null;
-  }
-}
-
 interface IosAppIconProps {
   app: AppConfig;
   onOpen: (appId: string) => void;
@@ -38,7 +15,6 @@ interface IosAppIconProps {
 export function IosAppIcon({ app, onOpen, size = "grid", className }: IosAppIconProps) {
   const iconSize = size === "dock" ? 62 : 60;
   const isCalendar = app.id === "calendar";
-  const iconSrc = getMobileOverrideIconSrc(app.id) ?? app.icon;
 
   return (
     <button
@@ -54,7 +30,7 @@ export function IosAppIcon({ app, onOpen, size = "grid", className }: IosAppIcon
         <CalendarDockIcon size={iconSize} />
       ) : (
         <Image
-          src={iconSrc}
+          src={app.icon}
           alt=""
           width={iconSize}
           height={iconSize}

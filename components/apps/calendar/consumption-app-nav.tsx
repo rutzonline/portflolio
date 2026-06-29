@@ -4,7 +4,6 @@ import { WindowControls } from "@/components/window-controls";
 import { cn } from "@/lib/utils";
 import { WindowNavShell, WindowNavSpacer } from "@/components/window-nav-shell";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
-import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
 import type { CalendarAppMode } from "@/lib/sidebar-persistence";
 
 interface ConsumptionAppNavProps {
@@ -12,7 +11,6 @@ interface ConsumptionAppNavProps {
   onAppModeChange: (mode: CalendarAppMode) => void;
   inShell?: boolean;
   isMobile?: boolean;
-  onMobileBack?: () => void;
 }
 
 const MODE_OPTIONS: { value: CalendarAppMode; label: string }[] = [
@@ -25,7 +23,6 @@ export function ConsumptionAppNav({
   onAppModeChange,
   inShell = false,
   isMobile = false,
-  onMobileBack,
 }: ConsumptionAppNavProps) {
   const nav = useWindowNavBehavior({ isDesktop: inShell, isMobile });
 
@@ -35,11 +32,7 @@ export function ConsumptionAppNav({
         isMobile={true}
         className="shrink-0 z-10 bg-background"
         onMouseDown={nav.onDragStart}
-        left={
-          onMobileBack
-            ? <IosWindowNavBack canGoBack={true} onBack={onMobileBack} backTitle="Home" />
-            : nav.navLeft
-        }
+        left={nav.navLeft}
         right={<WindowNavSpacer isMobile={true} />}
       />
     );

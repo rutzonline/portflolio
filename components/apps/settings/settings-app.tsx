@@ -94,12 +94,6 @@ export function SettingsApp({ isMobile = false, inShell = false, initialPanel, i
       // On mobile, back behavior is simpler:
       // If on a sub-panel (like About), go back to the category
       if (selectedPanel !== null) {
-        // Special-case: Apple ID / profile should return to the Settings root list.
-        if (selectedPanel === "personal-info") {
-          setShowSidebar(true);
-          return;
-        }
-
         // Go back to category page
         const newHistory = history.slice(0, historyIndex + 1);
         newHistory.push({ category: selectedCategory, panel: null });

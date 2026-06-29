@@ -47,24 +47,12 @@ export default function App({ isDesktop = false }: AppProps) {
   const [selectedInGridId, setSelectedInGridId] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const mobileEntryInitializedRef = useRef(false);
 
   // Mobile layout is determined by shell context, not viewport width
   useEffect(() => {
     setIsMobileView(!isDesktop);
     setIsLayoutInitialized(true);
   }, [isDesktop]);
-
-  // Mobile-only: open directly into Library grid (skip sidebar landing).
-  useEffect(() => {
-    if (!isMobileView) return;
-    if (!isLayoutInitialized) return;
-    if (mobileEntryInitializedRef.current) return;
-    mobileEntryInitializedRef.current = true;
-
-    setActiveView("library");
-    setShowGrid(true);
-  }, [isLayoutInitialized, isMobileView]);
 
   // Mark view as loaded after first render
   useEffect(() => {

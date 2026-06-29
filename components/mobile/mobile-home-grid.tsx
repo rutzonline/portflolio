@@ -6,29 +6,6 @@ import { X } from "lucide-react";
 import { APPS } from "@/lib/app-config";
 import { Button } from "@/components/ui/button";
 
-function getMobileOverrideIconSrc(appId: string, fallback: string): string {
-  switch (appId) {
-    case "notes":
-      return "/xnotes.png";
-    case "photos":
-      return "/xphotos.png";
-    case "messages":
-      return "/xmessages.png";
-    case "desk":
-      return "/misc.png";
-    case "resume":
-      return "/xresume.png";
-    case "settings":
-      return "/xsettings.png";
-    case "finder":
-      return "/xfinder.png";
-    case "weather":
-      return "/xweather.png";
-    default:
-      return fallback;
-  }
-}
-
 const MOBILE_GRID_APP_IDS = [
   "finder",
   "notes",
@@ -77,7 +54,7 @@ export function MobileHomeGrid({ renderApp }: MobileHomeGridProps) {
               className="flex flex-col items-center gap-2 can-hover:hover:opacity-90 active:scale-95 transition-transform"
             >
               <Image
-                src={getMobileOverrideIconSrc(app.id, app.icon)}
+                src={app.icon}
                 alt={app.name}
                 width={56}
                 height={56}
