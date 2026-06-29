@@ -67,7 +67,23 @@ const categories: { id: SettingsCategory; name: string; icon: React.ReactNode; i
 const connectivityItems = [
   { id: "airplane", name: "Airplane Mode", icon: <Plane className="w-5 h-5 text-white" />, iconBg: "bg-orange-500", type: "toggle" as const, value: false },
   { id: "wifi", name: "Wi-Fi", icon: <Wifi className="w-5 h-5 text-white" />, iconBg: "bg-accent-blue", type: "value" as const, value: "basecase" },
-  { id: "bluetooth", name: "Bluetooth", icon: <Bluetooth className="w-5 h-5 text-white" />, iconBg: "bg-accent-blue", type: "nav" as const, value: "On" },
+  {
+    id: "bluetooth",
+    name: "Bluetooth",
+    icon: (
+      <Image
+        src="/xbluetooth.png"
+        alt=""
+        width={20}
+        height={20}
+        className="h-5 w-5 object-contain"
+        unoptimized
+      />
+    ),
+    iconBg: "bg-accent-blue",
+    type: "nav" as const,
+    value: "On",
+  },
   { id: "cellular", name: "Cellular", icon: <Radio className="w-5 h-5 text-white" />, iconBg: "bg-green-500", type: "static" as const },
   { id: "hotspot", name: "Personal Hotspot", icon: <Link2 className="w-5 h-5 text-white" />, iconBg: "bg-green-500", type: "value" as const, value: "Off" },
   { id: "battery", name: "Battery", icon: <Battery className="w-5 h-5 text-white" />, iconBg: "bg-green-500", type: "static" as const },
