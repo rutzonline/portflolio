@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { LEARNING_ITEMS, type LearningItemIcon } from "./data";
 import {
-  RESUME_PANEL_CARD_OVERFLOW_CLASS,
+  resumePanelCardOverflowClass,
   RESUME_PANEL_TOP_DIVIDER,
   RESUME_SECTION_HEADING_CLASS,
   resumePanelScrollClass,
@@ -92,7 +92,7 @@ export function LearningCardsPanel({ isMobileView = false }: { isMobileView?: bo
           return (
             <div
               key={item.id}
-              className={RESUME_PANEL_CARD_OVERFLOW_CLASS}
+              className={resumePanelCardOverflowClass(isMobileView)}
             >
               <div className="relative aspect-video bg-zinc-200/50 dark:bg-zinc-800/40">
                 <LearningCardImage id={item.id} alt={item.title} />

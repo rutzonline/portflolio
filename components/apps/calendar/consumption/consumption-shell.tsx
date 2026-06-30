@@ -90,20 +90,25 @@ function buildFetchRange(date: Date): { start: string; end: string } {
 function getMobileToolbarTitle(
   currentDate: Date,
   subview: ConsumptionSubview,
-  calendarView: ConsumptionCalendarView
+  calendarView: ConsumptionCalendarView,
+  isMobileView: boolean
 ): string | null {
   if (subview === "list") return null;
 
   switch (calendarView) {
     case "week": {
       const weekDays = getWeekDays(currentDate);
-      return `${format(weekDays[0], "MMM d")} – ${format(weekDays[6], "MMM d, yyyy")}`;
+      return isMobileView
+        ? `${format(weekDays[0], "MMM d")} – ${format(weekDays[6], "MMM d")}`
+        : `${format(weekDays[0], "MMM d")} – ${format(weekDays[6], "MMM d, yyyy")}`;
     }
     case "year":
       return String(currentDate.getFullYear());
     case "month":
     default:
-      return format(currentDate, "MMMM yyyy");
+      return isMobileView
+        ? format(currentDate, "MMMM").toLowerCase()
+        : format(currentDate, "MMMM yyyy");
   }
 }
 
@@ -210,8 +215,8 @@ export function ConsumptionShell({
   );
 
   const mobileToolbarTitle = useMemo(
-    () => getMobileToolbarTitle(currentDate, subview, calendarView),
-    [currentDate, subview, calendarView]
+    () => getMobileToolbarTitle(currentDate, subview, calendarView, isMobileView),
+    [currentDate, subview, calendarView, isMobileView]
   );
 
   if (!prefsLoaded) {
@@ -222,8 +227,8 @@ export function ConsumptionShell({
     <div className={cn("flex flex-col h-full min-h-0 bg-background text-foreground font-[system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro',sans-serif]", isMobileView && "pb-2 max-w-full overflow-x-hidden")}>
       <div
         className={cn(
-          "border-b border-border/80 bg-muted/20 backdrop-blur-xl shrink-0 min-w-0",
-          isMobileView ? "px-3 pt-2 pb-2" : "px-4 pt-3 pb-2"
+          "border-b border-border/80 shrink-0 min-w-0",
+          isMobileView ? "bg-background px-3 pt-2 pb-2" : "bg-muted/20 backdrop-blur-xl px-4 pt-3 pb-2"
         )}
       >
         {!isMobileView && (
@@ -243,43 +248,70 @@ export function ConsumptionShell({
         )}
         <div
           className={cn(
-            isMobileView ? "mt-2 flex flex-col gap-2" : "mt-3 flex items-center justify-between gap-2"
+            isMobileView ? "mt-2" : "mt-3 flex items-center justify-between gap-2"
           )}
         >
           {isMobileView ? (
-            <>
-              {mobileToolbarTitle && (
-                <h1 className="font-semibold text-xl text-center truncate px-2">
-                  {mobileToolbarTitle}
-                </h1>
-              )}
-              <div
-                className="flex items-center justify-between gap-3"
-                onMouseDown={(e) => e.stopPropagation()}
-              >
-                <div className="flex items-center bg-background/50 rounded-lg p-0.5 border border-border/50 backdrop-blur-md shrink-0">
-                  {SUBVIEW_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => handleSubviewChange(option.value)}
-                      className={cn(
-                        "font-medium rounded-md transition-colors px-3 py-1.5 text-sm",
-                        subview === option.value
-                          ? "bg-background text-foreground shadow-sm"
-                          : "text-muted-foreground can-hover:hover:text-foreground"
-                      )}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-9 px-3 text-sm shrink-0">
-                      Categories
-                    </Button>
-                  </PopoverTrigger>
+            <div
+              className="grid grid-cols-[auto_1fr_auto] items-center gap-2 w-full"
+              onMouseDown={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center bg-background/50 rounded-lg p-0.5 border border-border/50 backdrop-blur-md shrink-0">
+                {SUBVIEW_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => handleSubviewChange(option.value)}
+                    className={cn(
+                      "font-medium rounded-md transition-colors px-3 py-1.5 text-sm",
+                      subview === option.value
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground can-hover:hover:text-foreground"
+                    )}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex min-w-0 items-center justify-center">
+                {mobileToolbarTitle ? (
+                  subview === "calendar" && calendarView === "month" ? (
+                    <div className="flex w-full max-w-full items-center justify-center gap-0.5">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleNavigate("prev")}
+                        className="h-8 w-8 shrink-0"
+                        aria-label="Previous month"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <h1 className="min-w-0 flex-1 truncate px-1 text-center text-base font-semibold capitalize">
+                        {mobileToolbarTitle}
+                      </h1>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleNavigate("next")}
+                        className="h-8 w-8 shrink-0"
+                        aria-label="Next month"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <h1 className="min-w-0 truncate px-1 text-center text-base font-semibold capitalize">
+                      {mobileToolbarTitle}
+                    </h1>
+                  )
+                ) : null}
+              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-9 px-3 text-sm shrink-0">
+                    Categories
+                  </Button>
+                </PopoverTrigger>
                   <PopoverContent side="bottom" align="end" className="w-auto p-3">
                     <div className="flex flex-col gap-1.5">
                       {CONSUMPTION_CATEGORIES.map((category) => {
@@ -302,7 +334,6 @@ export function ConsumptionShell({
                   </PopoverContent>
                 </Popover>
               </div>
-            </>
           ) : (
           <>
           <div
@@ -422,7 +453,7 @@ export function ConsumptionShell({
         ) : calendarView === "month" ? (
           <ConsumptionMonthView
             currentDate={currentDate}
-            events={visibleEvents}
+            events={isMobileView ? consumptionEvents : visibleEvents}
             calendars={CONSUMPTION_CALENDARS}
             onDayClick={handleDayClick}
             isMobileView={isMobileView}

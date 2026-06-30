@@ -10,6 +10,7 @@ import { BluetoothPanel } from "./panels/bluetooth";
 import { WifiPanel } from "./panels/wifi";
 import { StoragePanel } from "./panels/storage";
 import { cn } from "@/lib/utils";
+import { IOS_MOBILE_LIST_SCREEN_CLASS } from "@/lib/ui-tokens";
 
 interface ContentProps {
   selectedCategory: SettingsCategory;
@@ -66,7 +67,7 @@ export function Content({
   // Show sub-panel if selected
   if (selectedPanel === "about") {
     return (
-      <div className={cn("flex-1 overflow-y-auto", isMobile ? "bg-muted/30" : "bg-background")}>
+      <div className={cn("flex-1 overflow-y-auto", isMobile ? IOS_MOBILE_LIST_SCREEN_CLASS : "bg-background")}>
         <AboutPanel isMobile={isMobile} onCategorySelect={onCategorySelect} />
       </div>
     );
@@ -82,7 +83,7 @@ export function Content({
 
   if (selectedPanel === "storage") {
     return (
-      <div className={cn("flex-1 overflow-y-auto", isMobile ? "bg-muted/30" : "bg-background")}>
+      <div className={cn("flex-1 overflow-y-auto", isMobile ? IOS_MOBILE_LIST_SCREEN_CLASS : "bg-background")}>
         <StoragePanel isMobile={isMobile} />
       </div>
     );
@@ -91,7 +92,7 @@ export function Content({
   // Bluetooth has its own full mobile layout
   if (selectedCategory === "bluetooth" && isMobile) {
     return (
-      <div className="flex-1 overflow-y-auto bg-muted/30">
+      <div className={cn("flex-1 overflow-y-auto", isMobile ? IOS_MOBILE_LIST_SCREEN_CLASS : "bg-background")}>
         <BluetoothPanel isMobile={isMobile} />
       </div>
     );
@@ -111,12 +112,12 @@ export function Content({
   }
 
   return (
-    <div className={cn("flex-1 overflow-y-auto", isMobile ? "bg-muted/30" : "bg-background")}>
+    <div className={cn("flex-1 overflow-y-auto", isMobile ? IOS_MOBILE_LIST_SCREEN_CLASS : "bg-background")}>
       {isMobile ? (
         // Mobile: iOS-style layout with card containing icon, title, description
         <div className="px-4 py-4 space-y-4">
           {/* Header card */}
-          <div className="rounded-xl bg-background p-4">
+          <div className="rounded-xl bg-card border border-border/50 p-4">
             <div className={cn("flex items-center justify-center w-12 h-12 rounded-xl mb-3", iconBgColor)}>
               {selectedCategory === "general" ? (
                 <Settings className="w-7 h-7 text-white" />

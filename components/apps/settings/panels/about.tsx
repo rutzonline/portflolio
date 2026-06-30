@@ -29,7 +29,7 @@ export function AboutPanel({ isMobile = false, onCategorySelect }: AboutPanelPro
     return (
       <div className="px-4 py-4 space-y-6">
         {/* Device Info */}
-        <div className="rounded-xl bg-background overflow-hidden">
+        <div className="rounded-xl bg-card border border-border/50 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
             <span className="text-base">Name</span>
             <div className="flex items-center gap-1">
@@ -60,7 +60,7 @@ export function AboutPanel({ isMobile = false, onCategorySelect }: AboutPanelPro
 
         {/* AppleCare+ */}
         <div>
-          <div className="rounded-xl bg-background overflow-hidden">
+          <div className="rounded-xl bg-card border border-border/50 overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
               <span className="text-base">AppleCare+</span>
               <div className="flex items-center gap-1">
@@ -78,7 +78,7 @@ export function AboutPanel({ isMobile = false, onCategorySelect }: AboutPanelPro
         </div>
 
         {/* Storage Stats */}
-        <div className="rounded-xl bg-background overflow-hidden">
+        <div className="rounded-xl bg-card border border-border/50 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
             <span className="text-base">Songs</span>
             <span className="text-base text-muted-foreground">0</span>

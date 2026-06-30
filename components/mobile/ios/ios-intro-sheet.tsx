@@ -3,7 +3,7 @@
 import { INTRO_README_TABS } from "@/lib/intro-doc-baseline";
 import { IntroReadmeContent } from "@/components/apps/textedit/intro-readme-content";
 import { cn } from "@/lib/utils";
-import { IOS_MOBILE_ICON_HIT_AREA_CLASS, IOS_MOBILE_TOUCH_ACTIVE_CLASS } from "@/lib/ui-tokens";
+import { IOS_MOBILE_TOUCH_ACTIVE_CLASS } from "@/lib/ui-tokens";
 import { X } from "lucide-react";
 
 const MOBILE_NAV_SECTION = `
@@ -80,28 +80,40 @@ export function IosIntroSheet({ open, onContinue }: IosIntroSheetProps) {
           onClick={onContinue}
           aria-label="Close readme"
           className={cn(
-            "absolute right-2 top-2 z-20 rounded-full border border-[#0A84FF] bg-transparent",
-            IOS_MOBILE_ICON_HIT_AREA_CLASS,
+            "absolute right-1 top-1 z-20 flex min-h-11 min-w-11 items-center justify-center",
             IOS_MOBILE_TOUCH_ACTIVE_CLASS
           )}
         >
-          <X className="h-3.5 w-3.5 text-[#0A84FF]" strokeWidth={2.5} aria-hidden />
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black/10 dark:bg-white/10">
+            <X className="h-[17px] w-[17px] text-[#0A84FF]" strokeWidth={3.5} aria-hidden />
+          </span>
         </button>
 
         {/* Pinned header — stays put while the body scrolls behind it. */}
-        <div className="relative z-10 shrink-0 border-b border-black/10 bg-[#F2F2F2] pb-3 pl-4 pr-12 pt-4 dark:border-white/10 dark:bg-background">
+        <div className="relative z-10 shrink-0 border-b border-black/10 bg-[#F2F2F2] pb-3 pl-4 pr-11 pt-4 dark:border-white/10 dark:bg-background">
           <div className="min-w-0">
-            <p className="text-[15px] font-normal leading-snug text-zinc-900 dark:text-zinc-100">
+            <p className="text-[15px] font-semibold leading-snug text-zinc-900 dark:text-zinc-100">
               hi, i&apos;m rutuja
             </p>
-            <p className="mt-1 text-[15px] font-bold leading-snug text-zinc-900 dark:text-zinc-100">
+            <p className="mt-1 text-[15px] font-semibold leading-snug text-zinc-900 dark:text-zinc-100">
               i work in marketing &amp; growth
             </p>
           </div>
         </div>
 
         {/* Scrollable body — only this region scrolls. */}
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-5 pt-3 [&_.readme-markdown]:text-[15px]">
+        <div
+          className={cn(
+            "min-h-0 flex-1 overflow-y-auto px-4 pb-5 pt-3",
+            "[&_.readme-markdown]:text-[15px] [&_.readme-markdown]:font-medium [&_.readme-markdown]:text-zinc-800",
+            "[&_.readme-markdown_p]:mb-5 [&_.readme-markdown_p]:leading-[1.75] [&_.readme-markdown_p]:last:mb-0",
+            "[&_.readme-markdown_ul]:mb-5 [&_.readme-markdown_ul]:space-y-2 [&_.readme-markdown_ul]:leading-[1.7]",
+            "[&_.readme-markdown_ol]:mb-5 [&_.readme-markdown_ol]:space-y-2 [&_.readme-markdown_ol]:leading-[1.7]",
+            "[&_.readme-markdown_li]:leading-[1.7]",
+            "[&_.readme-markdown_hr]:my-5",
+            "dark:[&_.readme-markdown]:text-zinc-50"
+          )}
+        >
           <IntroReadmeContent text={introBodyMarkdown} linkAppNames={false} />
         </div>
       </div>

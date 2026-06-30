@@ -355,9 +355,16 @@ export function useAllConsumptionLogs() {
   return { logs, loading, error, usingFallback };
 }
 
-export function formatConsumptionDateHeader(dateStr: string): string {
+export function formatConsumptionDateHeader(
+  dateStr: string,
+  isMobileView = false
+): string {
   try {
-    return format(parseISO(dateStr), "EEEE, MMMM d, yyyy").toUpperCase();
+    const date = parseISO(dateStr);
+    if (isMobileView) {
+      return format(date, "dd/MM/yy");
+    }
+    return format(date, "EEEE, MMMM d, yyyy").toUpperCase();
   } catch {
     return dateStr;
   }

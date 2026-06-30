@@ -106,7 +106,7 @@ export function ConsumptionList({
               )}
             >
               <IosMobileListSectionLabel className="px-0 first:pt-0">
-                {formatConsumptionDateHeader(dateKey)}
+                {formatConsumptionDateHeader(dateKey, true)}
               </IosMobileListSectionLabel>
               <IosMobileListGroup>
                 {dayLogs.map((log, index) => (

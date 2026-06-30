@@ -1015,7 +1015,12 @@ export function ResumeApp({
     // Mobile sidebar - iOS Files style with cards
     if (isMobile) {
       return (
-        <div className={cn("flex-1 overflow-y-auto px-4 pt-1 pb-8", IOS_MOBILE_LIST_SCREEN_CLASS)}>
+        <div
+          className={cn(
+            "flex flex-1 min-h-0 flex-col justify-center overflow-y-auto px-4 pb-8 pt-4",
+            IOS_MOBILE_LIST_SCREEN_CLASS
+          )}
+        >
           <IosMobileListGroup>
             {SIDEBAR_ITEMS.map((item, index) => (
               <button
@@ -1672,7 +1677,7 @@ export function ResumeApp({
         ) : (
           <>
             {renderMobileContentNav(getMobileBackTitle())}
-            <div className="flex-1 overflow-y-auto">
+            <div className={cn("flex-1 overflow-y-auto", IOS_MOBILE_LIST_SCREEN_CLASS)}>
               {STATIC_PANEL_ITEMS.has(selectedSidebar) ? (
                 renderStaticPanel()
               ) : isSelectedWorkView ? (

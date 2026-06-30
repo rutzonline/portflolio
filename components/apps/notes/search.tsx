@@ -3,7 +3,7 @@ import { Note } from "@/lib/notes/types";
 import { Icons } from "./icons";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { cn } from "@/lib/utils";
-import { IOS_MOBILE_SEARCH_INPUT_CLASS, IOS_MOBILE_SEARCH_WRAPPER_CLASS } from "@/lib/ui-tokens";
+import { IOS_MOBILE_SEARCH_INPUT_CLASS, IOS_MOBILE_SEARCH_WRAPPER_CLASS, IOS_MOBILE_SEARCH_FIELD_CLASS, IOS_MOBILE_SEARCH_ICON_CLASS } from "@/lib/ui-tokens";
 
 interface SearchBarProps {
   notes: Note[];
@@ -74,7 +74,7 @@ export function SearchBar({
     <div className={cn(isMobile ? IOS_MOBILE_SEARCH_WRAPPER_CLASS : "p-2")}>
       <div className="relative">
         <div className={cn("absolute inset-y-0 left-0 flex items-center pointer-events-none", isMobile ? "pl-3" : "pl-3")}>
-          <Icons.search className="text-muted-foreground" />
+          <Icons.search className={cn(isMobile ? IOS_MOBILE_SEARCH_ICON_CLASS : "text-muted-foreground")} />
         </div>
         <input
           id="search"
@@ -85,7 +85,7 @@ export function SearchBar({
           className={cn(
             "w-full pl-8 pr-8 focus:outline-none border border-muted-foreground/20 dark:border-none dark:bg-[#353533]",
             isMobile
-              ? cn(IOS_MOBILE_SEARCH_INPUT_CLASS, "rounded-[10px] placeholder:text-[#8E8E93] bg-[#1C1C1E]")
+              ? cn(IOS_MOBILE_SEARCH_INPUT_CLASS, IOS_MOBILE_SEARCH_FIELD_CLASS, "rounded-[10px] pl-9 pr-9")
               : "py-0.5 rounded-lg text-base desktop:text-sm placeholder:text-sm"
           )}
           aria-label="Search notes"

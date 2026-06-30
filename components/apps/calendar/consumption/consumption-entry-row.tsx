@@ -8,7 +8,6 @@ import { openConsumptionUrl } from "./logs-to-events";
 import {
   IOS_MOBILE_LIST_CHEVRON_CLASS,
   IOS_MOBILE_LIST_ROW_CLASS,
-  IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS,
   IOS_MOBILE_LIST_ROW_TITLE_CLASS,
 } from "@/lib/ui-tokens";
 
@@ -41,11 +40,8 @@ export function ConsumptionEntryRow({
           style={{ backgroundColor: color }}
           aria-hidden
         />
-        <span className="min-w-0 flex-1 text-left">
-          <span className={cn(IOS_MOBILE_LIST_ROW_TITLE_CLASS, "block truncate")}>{log.title}</span>
-          {subtitle ? (
-            <span className={cn(IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS, "block truncate")}>{subtitle}</span>
-          ) : null}
+        <span className={cn(IOS_MOBILE_LIST_ROW_TITLE_CLASS, "min-w-0 flex-1 truncate text-left")}>
+          {log.title}
         </span>
         <ChevronRight className={IOS_MOBILE_LIST_CHEVRON_CLASS} aria-hidden />
       </button>

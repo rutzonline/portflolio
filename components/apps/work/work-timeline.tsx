@@ -8,7 +8,7 @@ import { STATE_PLATE_BODY } from "./case-studies/fallback-data";
 import { WorkMarkdown } from "./work-markdown";
 import { WorkStintHeader } from "./work-stint-header";
 import { useWorkStintMedia, WorkStintGallery } from "./work-stint-media";
-import { RESUME_PANEL_CARD_CLASS } from "@/components/apps/resume/resume-panel-styles";
+import { resumePanelCardClass } from "@/components/apps/resume/resume-panel-styles";
 
 export interface WorkStint {
   id: string;
@@ -30,7 +30,6 @@ export const WORK_PAGE_INTRO =
 /** Stint detail pages stay off until long-form write-ups are ready; cards render as static summaries. */
 export const WORK_STINT_DETAILS_ENABLED = false;
 
-const STINT_CARD_CLASS = cn(RESUME_PANEL_CARD_CLASS, "p-4");
 
 export const ALL_WORK_STINTS: WorkStint[] = [
   {
@@ -118,32 +117,45 @@ const PROJECTS = ALL_WORK_STINTS.filter((s) => s.type === "project");
 function StintCard({
   stint,
   onSelect,
+  isMobileView = false,
 }: {
   stint: WorkStint;
   onSelect?: (stint: WorkStint) => void;
+  isMobileView?: boolean;
 }) {
   const navigable = WORK_STINT_DETAILS_ENABLED && stint.type === "work" && onSelect;
+  const labelClass = isMobileView ? "text-sm" : "text-xs";
+  const companyClass = isMobileView ? "text-base font-semibold" : "text-sm font-medium";
+  const bodyClass = isMobileView ? "text-base leading-relaxed" : "text-sm leading-relaxed";
 
   const content = (
     <>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">{stint.role}</p>
-          <p className="mt-0.5 text-sm font-medium leading-tight text-zinc-900 dark:text-zinc-100">
+          <p className={cn(labelClass, "text-zinc-500 dark:text-zinc-400")}>{stint.role}</p>
+          <p className={cn(companyClass, "mt-0.5 leading-tight text-zinc-900 dark:text-zinc-100")}>
             {stint.company}
           </p>
         </div>
-        <span className="flex-shrink-0 pt-0.5 text-xs text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
+        <span
+          className={cn(
+            labelClass,
+            "flex-shrink-0 pt-0.5 whitespace-nowrap text-zinc-500 dark:text-zinc-400"
+          )}
+        >
           {stint.timeline}
         </span>
       </div>
-      <p className="text-sm text-zinc-700 dark:text-zinc-300 mt-2 leading-relaxed">{stint.summary}</p>
+      <p className={cn(bodyClass, "mt-2 text-zinc-700 dark:text-zinc-300")}>{stint.summary}</p>
       {(stint.highlights?.length ?? 0) > 0 && (
         <ul className="mt-3 space-y-2 pt-1">
           {stint.highlights!.map((item) => (
             <li
               key={item}
-              className="flex items-start gap-2 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300"
+              className={cn(
+                bodyClass,
+                "flex items-start gap-2 text-zinc-700 dark:text-zinc-300"
+              )}
             >
               <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-500" />
               <span>{item}</span>
@@ -161,8 +173,8 @@ function StintCard({
           type="button"
           onClick={() => onSelect!(stint)}
           className={cn(
-            STINT_CARD_CLASS,
-            "group w-full text-left transition-colors can-hover:hover:border-zinc-300 dark:can-hover:hover:border-zinc-600"
+            resumePanelCardClass(isMobileView),
+            "p-4 group w-full text-left transition-colors can-hover:hover:border-zinc-300 dark:can-hover:hover:border-zinc-600"
           )}
         >
           {content}
@@ -173,7 +185,7 @@ function StintCard({
 
   return (
     <div className="mb-4">
-      <div className={STINT_CARD_CLASS}>{content}</div>
+      <div className={cn(resumePanelCardClass(isMobileView), "p-4")}>{content}</div>
     </div>
   );
 }
@@ -182,19 +194,31 @@ function TimelineSection({
   title,
   stints,
   onSelect,
+  isMobileView = false,
 }: {
   title: string;
   stints: WorkStint[];
   onSelect?: (stint: WorkStint) => void;
+  isMobileView?: boolean;
 }) {
   return (
     <div className="mb-8">
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2 px-1">
+      <h3
+        className={cn(
+          "mb-2 px-1 font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500",
+          isMobileView ? "text-sm" : "text-xs"
+        )}
+      >
         {title}
       </h3>
       <div>
         {stints.map((stint) => (
-          <StintCard key={stint.id} stint={stint} onSelect={onSelect} />
+          <StintCard
+            key={stint.id}
+            stint={stint}
+            onSelect={onSelect}
+            isMobileView={isMobileView}
+          />
         ))}
       </div>
     </div>
@@ -278,7 +302,12 @@ export function WorkTimeline({ isMobileView = false, onSelect }: WorkTimelinePro
     <ScrollArea className="h-full" bottomMargin="0">
       <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
         <div className="mb-8">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2 px-1">
+          <h3
+            className={cn(
+              "mb-2 px-1 font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500",
+              isMobileView ? "text-sm" : "text-xs"
+            )}
+          >
             professional summary
           </h3>
           <p
@@ -290,9 +319,9 @@ export function WorkTimeline({ isMobileView = false, onSelect }: WorkTimelinePro
             {WORK_PAGE_INTRO}
           </p>
         </div>
-        <TimelineSection title="Experience" stints={WORK_STINTS} onSelect={onSelect} />
-        <TimelineSection title="Volunteering & Community" stints={VOLUNTEERING} />
-        <TimelineSection title="Projects" stints={PROJECTS} />
+        <TimelineSection title="Experience" stints={WORK_STINTS} onSelect={onSelect} isMobileView={isMobileView} />
+        <TimelineSection title="Volunteering & Community" stints={VOLUNTEERING} isMobileView={isMobileView} />
+        <TimelineSection title="Projects" stints={PROJECTS} isMobileView={isMobileView} />
       </div>
     </ScrollArea>
   );

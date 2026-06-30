@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Icons } from "./icons";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { cn } from "@/lib/utils";
-import { IOS_MOBILE_SEARCH_INPUT_CLASS, IOS_MOBILE_SEARCH_WRAPPER_CLASS } from "@/lib/ui-tokens";
+import { IOS_MOBILE_SEARCH_INPUT_CLASS, IOS_MOBILE_SEARCH_WRAPPER_CLASS, IOS_MOBILE_SEARCH_FIELD_CLASS, IOS_MOBILE_SEARCH_ICON_CLASS } from "@/lib/ui-tokens";
 
 interface SearchBarProps {
   value: string;
@@ -48,7 +48,7 @@ export function SearchBar({ value, onChange, isMobileView = false }: SearchBarPr
         <Icons.search
           className={cn(
             "absolute left-3 top-1/2 transform -translate-y-1/2",
-            isMobileView ? "text-[#8E8E93]" : "text-muted-foreground"
+            isMobileView ? IOS_MOBILE_SEARCH_ICON_CLASS : "text-muted-foreground"
           )}
         />
         <input
@@ -74,13 +74,14 @@ export function SearchBar({ value, onChange, isMobileView = false }: SearchBarPr
             isMobileView
               ? cn(
                   IOS_MOBILE_SEARCH_INPUT_CLASS,
-                  "pl-9 pr-9 bg-[#1C1C1E] placeholder:text-[#8E8E93] text-foreground"
+                  IOS_MOBILE_SEARCH_FIELD_CLASS,
+                  "pl-9 pr-9"
                 )
               : "pl-8 pr-8 py-0.5 rounded-lg text-base desktop:text-sm placeholder:text-sm placeholder:text-muted-foreground bg-[#E8E8E7] dark:bg-[#353533]"
           )}
         />
         {isMobileView ? (
-          <Icons.mic className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8E8E93]" />
+          <Icons.mic className={cn("absolute right-3 top-1/2 transform -translate-y-1/2", IOS_MOBILE_SEARCH_ICON_CLASS)} />
         ) : (
           value && (
             <button

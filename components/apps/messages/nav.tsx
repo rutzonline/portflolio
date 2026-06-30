@@ -75,7 +75,7 @@ export function Nav({
           onMouseDown={(e) => e.stopPropagation()}
           aria-label="New conversation (n)"
         >
-          <Icons.new />
+          <Icons.new size={isMobileView ? 22 : undefined} />
         </button>
       }
     />

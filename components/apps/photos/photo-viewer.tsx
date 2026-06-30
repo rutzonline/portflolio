@@ -11,6 +11,7 @@ import { format, parseISO } from "date-fns";
 import Image from "next/image";
 import { getViewerUrl } from "@/lib/photos/image-utils";
 import { getPhotoAlt } from "@/lib/photos/photo-alt";
+import { IOS_MOBILE_APP_BACKGROUND_CLASS } from "@/lib/ui-tokens";
 
 function isVideo(url: string): boolean {
   const lower = url.toLowerCase();
@@ -137,7 +138,10 @@ export function PhotoViewer({
 
       <div
         {...swipeHandlers}
-        className="flex-1 flex items-center justify-center min-h-0 bg-muted/30"
+        className={cn(
+          "flex-1 flex items-center justify-center min-h-0",
+          isMobileView ? IOS_MOBILE_APP_BACKGROUND_CLASS : "bg-muted/30"
+        )}
       >
         <div className="relative w-full h-full">
           {isVideo(photo.url) ? (

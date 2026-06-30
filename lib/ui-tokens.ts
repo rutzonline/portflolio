@@ -41,16 +41,26 @@ export const CAPTION_ACCENT_LINE_CLASS =
 export const CAPTION_ANNOTATION_TEXT_CLASS =
   "text-sm leading-relaxed text-muted-foreground text-left";
 
-/** iOS-style grouped list screen background (mobile only). */
-export const IOS_MOBILE_LIST_SCREEN_CLASS = "bg-muted/30";
+/**
+ * Universal mobile app page background.
+ * Dark: #0A0A0A via html.mobile-shell-ready.dark in globals.css (--background).
+ * Light: unchanged (theme white).
+ */
+export const IOS_MOBILE_APP_BACKGROUND_CLASS = "bg-background";
+
+/**
+ * Grouped list / settings / resume screen background (mobile only).
+ * Matches IOS_MOBILE_APP_BACKGROUND_CLASS — cards use bg-card for lift.
+ */
+export const IOS_MOBILE_LIST_SCREEN_CLASS = IOS_MOBILE_APP_BACKGROUND_CLASS;
 
 /** Large navigation title for mobile list screens (iOS large-title style). */
 export const IOS_MOBILE_LARGE_TITLE_CLASS =
   "px-4 pt-2 pb-3 text-[34px] font-bold leading-tight tracking-tight text-foreground";
 
-/** Grouped inset list card container. */
+/** Grouped inset list card container — uses --card on mobile dark (see globals.css). */
 export const IOS_MOBILE_LIST_GROUP_CLASS =
-  "rounded-xl overflow-hidden bg-background border border-border/50";
+  "rounded-xl overflow-hidden bg-card border border-border/50";
 
 /** Compact tappable row (~44px). */
 export const IOS_MOBILE_LIST_ROW_CLASS =
@@ -95,6 +105,13 @@ export function iosMobileSwipeOffsetPx(actionCount: number): number {
 /** Shared mobile search field height and padding. */
 export const IOS_MOBILE_SEARCH_INPUT_CLASS =
   "h-10 w-full rounded-[10px] text-base focus:outline-none";
+
+/** Theme-aware mobile search field fill and placeholder colors. */
+export const IOS_MOBILE_SEARCH_FIELD_CLASS =
+  "bg-[#E8E8E7] text-foreground placeholder:text-[#8E8E93] dark:bg-[#1C1C1E] dark:text-foreground dark:placeholder:text-[#8E8E93]";
+
+/** Theme-aware mobile search icon tint. */
+export const IOS_MOBILE_SEARCH_ICON_CLASS = "text-[#8E8E93]";
 
 /** Horizontal inset for mobile search bars — slightly narrower than screen edges for a wider field. */
 export const IOS_MOBILE_SEARCH_WRAPPER_CLASS = "px-2 py-2";

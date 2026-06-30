@@ -321,7 +321,7 @@ export function AppearancePanel({ isMobile = false, scrollToOSVersion, onScrollC
         </p>
 
         {/* Theme cards in rounded container */}
-        <div className="rounded-xl bg-background p-6">
+        <div className="rounded-xl bg-card border border-border/50 p-6">
           <div className="flex justify-center gap-12">
             <ThemeCard
               theme="light"
@@ -341,7 +341,7 @@ export function AppearancePanel({ isMobile = false, scrollToOSVersion, onScrollC
         </div>
 
         {/* Automatic toggle */}
-        <div className="rounded-xl bg-background">
+        <div className="rounded-xl bg-card border border-border/50">
           <div className="flex items-center justify-between p-4">
             <span className="text-base">Automatic</span>
             <button
@@ -367,7 +367,7 @@ export function AppearancePanel({ isMobile = false, scrollToOSVersion, onScrollC
             Wallpaper
           </p>
         </div>
-        <div className="rounded-xl bg-background p-4">
+        <div className="rounded-xl bg-card border border-border/50 p-4">
           <div className="grid grid-cols-2 gap-3">
             {MOBILE_WALLPAPERS.map((wallpaper) => (
               <MobileWallpaperCard

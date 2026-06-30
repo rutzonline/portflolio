@@ -589,3 +589,30 @@ html.shell-ready .desktop-landing-first-paint {
 html.mobile-shell-ready .mobile-landing-first-paint {
   display: none !important;
 }
+
+/*
+ * Mobile shell dark theme — near-black base (#0A0A0A) with lifted surfaces.
+ * Scoped to html.mobile-shell-ready.dark so desktop .dark tokens are unchanged.
+ */
+html.mobile-shell-ready.dark {
+  --background: 0 0% 3.922%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 11%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 11%;
+  --popover-foreground: 0 0% 98%;
+  --muted: 0 0% 13%;
+  --muted-foreground: 0 0% 63.9%;
+  --secondary: 0 0% 11%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 0 0% 14%;
+  --accent-foreground: 0 0% 98%;
+  --border: 0 0% 16%;
+  --input: 0 0% 16%;
+  --sidebar-active-bg: rgb(39 39 42 / 0.7);
+}
+
+/* Elevated cards/panels on mobile dark — rounded surfaces using bg-background → card token */
+html.mobile-shell-ready.dark :where(.rounded-xl, .rounded-2xl)[class*="bg-background"] {
+  background-color: hsl(var(--card));
+}

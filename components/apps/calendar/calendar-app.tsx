@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { startOfMonth } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ConsumptionAppNav } from "./consumption-app-nav";
 import { ConsumptionShell } from "./consumption/consumption-shell";
@@ -36,7 +37,7 @@ export function CalendarApp({ isMobile = false, inShell = false }: CalendarAppPr
 
   useEffect(() => {
     setAppMode(loadCalendarAppMode());
-    setCurrentDate(new Date());
+    setCurrentDate(isMobile ? startOfMonth(new Date()) : new Date());
     if (isMobile) {
       setMobileSubview(loadConsumptionSubview());
     }

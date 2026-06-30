@@ -1,11 +1,31 @@
 import { cn } from "@/lib/utils";
 
-/** Subtle filled fill used by every resume card/block + the contact inputs. */
+/** Subtle filled fill used by every resume card/block + the contact inputs (desktop). */
 export const RESUME_PANEL_FILL_CLASS = "bg-zinc-100/70 dark:bg-zinc-800/40";
 
-/** Resume list/card chrome — shared across work + static panels. */
+/** Mobile shell card fill — uses theme --card (see globals.css mobile-shell-ready.dark). */
+export const RESUME_PANEL_FILL_CLASS_MOBILE = "bg-card";
+
+/** Resume list/card chrome — shared across work + static panels (desktop). */
 export const RESUME_PANEL_CARD_CLASS =
   `rounded-lg border border-zinc-200/80 dark:border-zinc-700/45 ${RESUME_PANEL_FILL_CLASS}`;
+
+export function resumePanelFillClass(isMobileView = false) {
+  return isMobileView ? RESUME_PANEL_FILL_CLASS_MOBILE : RESUME_PANEL_FILL_CLASS;
+}
+
+export function resumePanelCardClass(isMobileView = false) {
+  return cn(
+    "rounded-lg border",
+    isMobileView
+      ? "border-border/50 bg-card"
+      : "border-zinc-200/80 dark:border-zinc-700/45 bg-zinc-100/70 dark:bg-zinc-800/40"
+  );
+}
+
+export function resumePanelCardOverflowClass(isMobileView = false) {
+  return cn(resumePanelCardClass(isMobileView), "overflow-hidden");
+}
 
 export const RESUME_PANEL_CARD_OVERFLOW_CLASS = `${RESUME_PANEL_CARD_CLASS} overflow-hidden`;
 

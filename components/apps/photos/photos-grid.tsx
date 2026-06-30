@@ -114,16 +114,6 @@ export function PhotosGrid({
     return groups;
   }, [photos, timeFilter, isMobileView, activeView]);
 
-  const dateRange = useMemo(() => {
-    if (photos.length === 0) return "";
-    // Photos are sorted oldest first
-    const earliest = toZonedTime(parseISO(photos[0].timestamp), "America/Los_Angeles");
-    const latest = toZonedTime(parseISO(photos[photos.length - 1].timestamp), "America/Los_Angeles");
-    const earliestStr = format(earliest, "MMM d, yyyy");
-    const latestStr = format(latest, "MMM d, yyyy");
-    return earliestStr === latestStr ? earliestStr : `${earliestStr} - ${latestStr}`;
-  }, [photos]);
-
   const getViewTitle = () => {
     if (activeView === "library") return "Library";
     if (activeView === "favorites") return "Favorites";
@@ -152,9 +142,6 @@ export function PhotosGrid({
           )}
           <div>
             <h1 className="text-lg font-semibold">{getViewTitle()}</h1>
-            {dateRange && (
-              <p className="text-xs text-muted-foreground">{dateRange}</p>
-            )}
           </div>
         </div>
 

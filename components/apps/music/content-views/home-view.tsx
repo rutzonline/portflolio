@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { SECTION_SUBTEXT_CLASS } from "@/lib/ui-tokens";
 import { ContentFetchError } from "@/components/shared/content-fetch-error";
 import { createClient } from "@/utils/supabase/client";
 import { getCachedValue, getOrFetch } from "@/lib/mobile-supabase-cache";
@@ -130,7 +129,6 @@ export function HomeView({
   return (
     <div className="overflow-x-hidden">
       <div className={cn("p-6", isMobileView && "p-4 pb-20", isWindowExpanded && "p-8")}>
-        <p className={SECTION_SUBTEXT_CLASS}>beyond the desk</p>
         {fetchError && <ContentFetchError message={fetchError} />}
 
         {isWindowExpanded && !isMobileView ? (
@@ -143,13 +141,18 @@ export function HomeView({
             <div className="mb-6">{banner}</div>
             {about}
             {isMobileView && onOpenLibrary ? (
-              <button
-                type="button"
-                onClick={onOpenLibrary}
-                className="mt-5 text-[17px] font-bold text-[#0A84FF] active:opacity-70"
-              >
-                Library
-              </button>
+              <div className="mt-6 flex justify-center">
+                <button
+                  type="button"
+                  onClick={onOpenLibrary}
+                  className={cn(
+                    "rounded-xl border border-border bg-muted/50 px-8 py-2.5",
+                    "text-[17px] font-semibold text-[#0A84FF] active:opacity-70"
+                  )}
+                >
+                  take a look →
+                </button>
+              </div>
             ) : null}
           </>
         )}

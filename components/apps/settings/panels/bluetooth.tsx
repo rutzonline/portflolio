@@ -114,7 +114,7 @@ export function BluetoothPanel({ isMobile = false }: BluetoothPanelProps) {
     return (
       <div className="px-4 py-4 space-y-4">
         {/* Header card */}
-        <div className="rounded-xl bg-background p-4">
+        <div className="rounded-xl bg-card border border-border/50 p-4">
           <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-accent-blue mb-3">
             <Bluetooth className="w-7 h-7 text-white" />
           </div>
@@ -154,7 +154,7 @@ export function BluetoothPanel({ isMobile = false }: BluetoothPanelProps) {
           <p className="text-sm text-muted-foreground uppercase tracking-wide px-2 mb-2">
             My Devices
           </p>
-          <div className="rounded-xl bg-background overflow-hidden">
+          <div className="rounded-xl bg-card border border-border/50 overflow-hidden">
             {myDevicesMobile.map((device, index) => (
               <div
                 key={device.name}

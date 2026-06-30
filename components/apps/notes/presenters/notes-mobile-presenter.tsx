@@ -5,6 +5,7 @@ import { Note as NoteType } from "@/lib/notes/types";
 import Sidebar from "../sidebar";
 import Note from "../note";
 import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
+import { WindowNavShell, WindowNavSpacer } from "@/components/window-nav-shell";
 import { MobileListBodySkeleton } from "@/components/mobile/ios/mobile-app-skeleton";
 
 interface NotesMobilePresenterProps {
@@ -52,11 +53,25 @@ export function NotesMobilePresenter({
           />
         )
       ) : (
-        <div className="h-full">
+        <div className="flex h-full flex-col">
           {selectedNote && (
-            <div className="h-full p-3">
-              <Note key={selectedNote.id} note={selectedNote} isMobile={true} onBack={handleBackToSidebar} />
-            </div>
+            <>
+              <WindowNavShell
+                isMobile={true}
+                className="shrink-0 bg-background"
+                left={
+                  <IosWindowNavBack
+                    canGoBack
+                    onBack={handleBackToSidebar}
+                    backTitle="Notes"
+                  />
+                }
+                right={<WindowNavSpacer isMobile={true} />}
+              />
+              <div className="min-h-0 flex-1 overflow-hidden">
+                <Note key={selectedNote.id} note={selectedNote} isMobile={true} onBack={handleBackToSidebar} />
+              </div>
+            </>
           )}
           {!selectedNote && (
             <div className="h-full p-3">

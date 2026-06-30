@@ -8,7 +8,7 @@ import { useMusic } from "@/lib/music/use-music";
 import { loadMusicState, saveMusicState } from "@/lib/sidebar-persistence";
 import { MusicView } from "./types";
 import { Sidebar } from "./sidebar";
-import { Nav, DeskTopNav } from "./nav";
+import { DeskTopNav } from "./nav";
 import { useMobileAppStackContext } from "@/components/mobile/ios/mobile-app-stack-context";
 import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
 import { IosMobileNavTitle } from "@/components/mobile/ios/ios-mobile-nav-title";
@@ -88,6 +88,11 @@ export default function App({ isDesktop = false }: AppProps) {
 
   const handleBack = useCallback(() => {
     setShowContent(false);
+  }, []);
+
+  const handleBackToMiscHome = useCallback(() => {
+    setShowContent(true);
+    setActiveView("home");
   }, []);
 
   // Section titles shown in the content header (desktop) and mobile header.
@@ -179,6 +184,22 @@ export default function App({ isDesktop = false }: AppProps) {
               : "hidden"
           )}
         >
+          {isMobileView && !showContent && (
+            <WindowNavShell
+              isMobile={true}
+              isScrolled={isScrolled}
+              className="shrink-0 bg-background"
+              left={
+                <IosWindowNavBack
+                  canGoBack
+                  onBack={handleBackToMiscHome}
+                  backTitle="misc"
+                />
+              }
+              center={<IosMobileNavTitle>misc</IosMobileNavTitle>}
+              right={<WindowNavSpacer isMobile={true} />}
+            />
+          )}
           <Sidebar
             playlists={playlists}
             activeView={activeView}
@@ -187,13 +208,7 @@ export default function App({ isDesktop = false }: AppProps) {
             isMobileView={isMobileView}
             onScroll={setIsScrolled}
           >
-            {isMobileView ? (
-              <Nav
-                isMobileView={isMobileView}
-                isScrolled={isScrolled}
-                isDesktop={isDesktop}
-              />
-            ) : null}
+            {null}
           </Sidebar>
         </div>
 

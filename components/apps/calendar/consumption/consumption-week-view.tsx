@@ -54,7 +54,12 @@ export function ConsumptionWeekView({
         </div>
       )}
 
-      <div className="grid grid-cols-7 border-b border-border bg-muted/30 shrink-0 min-w-0">
+      <div
+        className={cn(
+          "grid grid-cols-7 border-b border-border shrink-0 min-w-0",
+          isMobileView ? "bg-background" : "bg-muted/30"
+        )}
+      >
         {weekDays.map((date) => {
           const dayIsToday = isToday(date);
           return (

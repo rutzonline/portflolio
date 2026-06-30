@@ -11,8 +11,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { getHeadshotSrc } from "@/config/site";
 import {
   IosMobileListGroup,
-  IosMobileListRowSubtitle,
-  IosMobileListRowTitle,
 } from "@/components/mobile/ios/ios-mobile-list";
 import {
   IOS_MOBILE_LIST_CHEVRON_CLASS,
@@ -20,6 +18,9 @@ import {
   IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS,
   IOS_MOBILE_LIST_ROW_TITLE_CLASS,
   IOS_MOBILE_LIST_SCREEN_CLASS,
+  IOS_MOBILE_SEARCH_FIELD_CLASS,
+  IOS_MOBILE_SEARCH_ICON_CLASS,
+  IOS_MOBILE_SEARCH_INPUT_CLASS,
 } from "@/lib/ui-tokens";
 
 interface SidebarProps {
@@ -131,13 +132,17 @@ export function Sidebar({
             <div className="px-3 pt-2 pb-6 min-h-full">
               <div className="px-0 pb-3">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Search className={cn("absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4", IOS_MOBILE_SEARCH_ICON_CLASS)} />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search"
-                    className="w-full pl-9 pr-9 rounded-[10px] text-base placeholder:text-sm placeholder:text-muted-foreground focus:outline-none bg-[#E8E8E7] dark:bg-[#353533] h-10"
+                    className={cn(
+                      IOS_MOBILE_SEARCH_INPUT_CLASS,
+                      IOS_MOBILE_SEARCH_FIELD_CLASS,
+                      "pl-9 pr-9"
+                    )}
                   />
                   {searchQuery && (
                     <button
@@ -156,19 +161,25 @@ export function Sidebar({
                   <IosMobileListGroup className="mb-3">
                     <button
                       onClick={onAccountClick}
-                      className={cn(IOS_MOBILE_LIST_ROW_CLASS, "can-hover:hover:bg-muted/40")}
+                      className={cn(IOS_MOBILE_LIST_ROW_CLASS, "can-hover:hover:bg-muted/40 py-4")}
                     >
-                      <Image
-                        src={getHeadshotSrc()}
-                        alt="Rutuja Rochkari"
-                        width={40}
-                        height={40}
-                        className="rounded-full object-cover shrink-0"
-                        unoptimized
-                      />
+                      <div className="h-[52px] w-[52px] shrink-0 overflow-hidden rounded-full">
+                        <Image
+                          src={getHeadshotSrc()}
+                          alt="Rutuja Rochkari"
+                          width={52}
+                          height={52}
+                          className="h-full w-full rounded-full object-cover"
+                          unoptimized
+                        />
+                      </div>
                       <span className="min-w-0 flex-1 text-left">
-                        <IosMobileListRowTitle>Rutuja Rochkari</IosMobileListRowTitle>
-                        <IosMobileListRowSubtitle>Apple Account, iCloud+, and more</IosMobileListRowSubtitle>
+                        <span className={cn(IOS_MOBILE_LIST_ROW_TITLE_CLASS, "block text-[20px] font-semibold")}>
+                          Rutuja Rochkari
+                        </span>
+                        <span className={cn(IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS, "block text-[15px]")}>
+                          Apple Account, iCloud+, and more
+                        </span>
                       </span>
                       <ChevronRight className={IOS_MOBILE_LIST_CHEVRON_CLASS} aria-hidden />
                     </button>

@@ -140,13 +140,13 @@ export const ConversationItem = memo(function ConversationItem({
       aria-current={activeConversation === conversation.id ? "true" : undefined}
       className={cn(
         "w-full text-left relative flex items-center",
-        isMobileView ? "h-[72px] active:bg-white/5" : "h-[70px] py-2",
+        isMobileView ? "h-[76px] active:bg-white/5" : "h-[70px] py-2",
         activeConversation === conversation.id && !isMobileView
           ? "bg-accent-blue text-white rounded-md"
           : "",
         showDivider &&
           (isMobileView
-            ? 'after:content-[""] after:absolute after:bottom-0 after:left-[78px] after:right-0 after:border-t-[0.5px] after:border-[rgba(255,255,255,0.1)]'
+            ? 'after:content-[""] after:absolute after:bottom-0 after:left-[82px] after:right-0 after:border-t-[0.5px] after:border-[rgba(255,255,255,0.1)]'
             : 'after:content-[""] after:absolute after:bottom-0 after:left-[56px] after:right-4 after:border-t after:border-muted-foreground/20')
       )}
     >
@@ -165,7 +165,7 @@ export const ConversationItem = memo(function ConversationItem({
         <div
           className={cn(
             "rounded-full overflow-hidden flex-shrink-0 relative",
-            isMobileView ? "w-[50px] h-[50px]" : "w-10 h-10"
+            isMobileView ? "w-[54px] h-[54px]" : "w-10 h-10"
           )}
         >
           {conversation.recipients[0].avatar ? (
@@ -173,7 +173,7 @@ export const ConversationItem = memo(function ConversationItem({
               src={conversation.recipients[0].avatar}
               alt={`${conversation.recipients[0].name} avatar`}
               fill
-              sizes={isMobileView ? "50px" : "40px"}
+              sizes={isMobileView ? "54px" : "40px"}
               className="object-cover"
               unoptimized
             />
@@ -201,7 +201,7 @@ export const ConversationItem = memo(function ConversationItem({
               {conversation.lastMessageTime && (
                 <span
                   className={cn(
-                    isMobileView ? "text-[13px] text-[#8E8E93]" : "text-xs ml-2",
+                    isMobileView ? "text-[15px] text-[#8E8E93]" : "text-xs ml-2",
                     !isMobileView &&
                       (activeConversation === conversation.id
                         ? "text-white/80"
@@ -217,7 +217,7 @@ export const ConversationItem = memo(function ConversationItem({
             className={cn(
               "flex items-start justify-between",
               isMobileView
-                ? "text-[15px] leading-5 text-[#8E8E93] mt-0.5"
+                ? "text-[17px] leading-5 text-[#8E8E93] mt-0.5"
                 : "text-xs h-8",
               !isMobileView &&
                 (activeConversation === conversation.id

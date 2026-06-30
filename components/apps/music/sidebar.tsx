@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { SIDEBAR_ITEM_ACTIVE_CLASS, DESKTOP_NAV_SIDEBAR_WIDTH_CLASS } from "@/lib/ui-tokens";
+import { SIDEBAR_ITEM_ACTIVE_CLASS, DESKTOP_NAV_SIDEBAR_WIDTH_CLASS, IOS_MOBILE_LIST_ROW_TITLE_CLASS } from "@/lib/ui-tokens";
 import { MusicView, Playlist } from "./types";
 import { Home, Compass, User, Disc3, Music, ListMusic, BookOpen, Coffee } from "lucide-react";
 
@@ -152,15 +152,15 @@ function SidebarItem({
     <button
       onClick={onClick}
       className={cn(
-        "w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors text-left",
+        "w-full flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors text-left",
         isActive && !isMobileView
           ? SIDEBAR_ITEM_ACTIVE_CLASS
           : "text-foreground",
-        isMobileView && "py-3"
+        isMobileView ? "py-3 text-base" : "text-sm"
       )}
     >
       {icon}
-      <span className="truncate">{label}</span>
+      <span className={cn("truncate", isMobileView && IOS_MOBILE_LIST_ROW_TITLE_CLASS)}>{label}</span>
     </button>
   );
 }
