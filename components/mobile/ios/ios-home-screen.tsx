@@ -8,14 +8,14 @@ import { getMobileWallpaperPath } from "@/lib/mobile-wallpapers";
 import { getMessagesUnreadCount } from "@/lib/messages/unread-count";
 import { preloadIosHomeIcons } from "@/lib/ios-app-icons";
 import { getIosHomeGridApps } from "@/lib/ios-home-apps";
-import { IosStatusBar, IOS_STATUS_BAR_OFFSET_CLASS } from "./ios-status-bar";
+import { IOS_STATUS_BAR_OFFSET_CLASS } from "./ios-status-bar";
 import { IosAppIcon } from "./ios-app-icon";
 import { IosDock } from "./ios-dock";
 import { IosIntroSheet } from "./ios-intro-sheet";
 import { IosReadmeIcon } from "./ios-readme-icon";
 import { isIosIntroDismissed, markIosIntroDismissed } from "./ios-session-state";
 
-const IOS_INTRO_AUTO_OPEN_MS = 1000;
+const IOS_INTRO_AUTO_OPEN_MS = 800;
 
 interface IosHomeScreenProps {
   onOpenApp: (appId: string) => void;
@@ -81,8 +81,6 @@ export function IosHomeScreen({ onOpenApp, enableIntroAutoOpen = false }: IosHom
         unoptimized
       />
       <div className="absolute inset-0 bg-black/10" aria-hidden />
-
-      <IosStatusBar />
 
       <div className={cn("relative z-10 flex min-h-0 flex-1 flex-col", IOS_STATUS_BAR_OFFSET_CLASS)}>
         <div className="flex-1 overflow-y-auto px-3 pb-3 pt-3">

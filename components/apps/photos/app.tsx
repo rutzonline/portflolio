@@ -10,6 +10,7 @@ import { Nav } from "./nav";
 import { Photo, PhotosView, TimeFilter } from "@/types/photos";
 import { usePhotos } from "@/lib/photos/use-photos";
 import { loadPhotosView, savePhotosView, loadPhotosSelectedId, savePhotosSelectedId } from "@/lib/sidebar-persistence";
+import { MobileAppShellSkeleton } from "@/components/mobile/ios/mobile-app-skeleton";
 
 function isVideoUrl(url: string): boolean {
   const lower = url.toLowerCase();
@@ -163,7 +164,7 @@ export default function App({ isDesktop = false }: AppProps) {
   }, [selectedPhotoIndex, filteredPhotos]);
 
   if (!isLayoutInitialized) {
-    return <div className="h-full bg-background" />;
+    return !isDesktop ? <MobileAppShellSkeleton variant="grid" /> : <div className="h-full bg-background" />;
   }
 
   if (isMobileView) {

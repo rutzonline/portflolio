@@ -2,7 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { getCachedValue, getOrFetch, setCachedValue } from "@/lib/mobile-supabase-cache";
 import { Photo, Collection } from "@/types/photos";
+
+const PHOTOS_CACHE_KEY = "photos:select_photos";
 
 const FAVORITES_STORAGE_KEY = "photosFavorites";
 
@@ -57,33 +60,38 @@ function saveFavorites(favorites: Set<string>): void {
 
 export function usePhotos(options?: UsePhotosOptions): UsePhotosResult {
   const enabled = options?.enabled ?? true;
-  const [photos, setPhotos] = useState<Photo[]>([]);
-  const [loading, setLoading] = useState(enabled);
+  const cachedPhotos = enabled ? getCachedValue<Photo[]>(PHOTOS_CACHE_KEY) : null;
+  const [photos, setPhotos] = useState<Photo[]>(cachedPhotos ?? []);
+  const [loading, setLoading] = useState(enabled && !cachedPhotos);
   const [error, setError] = useState<string | null>(null);
 
   const fetchPhotos = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
-      const supabase = createClient();
-
-      const { data, error: fetchError } = await supabase.rpc("select_photos");
-
-      if (fetchError) {
-        throw new Error(fetchError.message);
+      if (!getCachedValue<Photo[]>(PHOTOS_CACHE_KEY)) {
+        setLoading(true);
       }
+      setError(null);
 
-      // Transform photos and merge with local favorites
-      const currentFavorites = loadFavorites();
-      const transformedPhotos = (data as PhotoRow[]).map((row): Photo => ({
-        id: row.id,
-        filename: row.filename,
-        url: row.url,
-        timestamp: row.timestamp,
-        isFavorite: currentFavorites.has(row.id),
-        collections: row.collections || [],
-      }));
+      const { promise } = getOrFetch(PHOTOS_CACHE_KEY, async () => {
+        const supabase = createClient();
+        const { data, error: fetchError } = await supabase.rpc("select_photos");
 
+        if (fetchError) {
+          throw new Error(fetchError.message);
+        }
+
+        const currentFavorites = loadFavorites();
+        return (data as PhotoRow[]).map((row): Photo => ({
+          id: row.id,
+          filename: row.filename,
+          url: row.url,
+          timestamp: row.timestamp,
+          isFavorite: currentFavorites.has(row.id),
+          collections: row.collections || [],
+        }));
+      });
+
+      const transformedPhotos = await promise;
       setPhotos(transformedPhotos);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to fetch photos";
@@ -118,6 +126,16 @@ export function usePhotos(options?: UsePhotosOptions): UsePhotosResult {
           : photo
       )
     );
+
+    const cached = getCachedValue<Photo[]>(PHOTOS_CACHE_KEY);
+    if (cached) {
+      setCachedValue(
+        PHOTOS_CACHE_KEY,
+        cached.map((photo) =>
+          photo.id === photoId ? { ...photo, isFavorite: !photo.isFavorite } : photo
+        )
+      );
+    }
   }, []);
 
   return {

@@ -32,22 +32,22 @@ export function WindowNavShell({
         className={cn(IOS_MOBILE_NAV_BAR_CLASS, "sticky top-0", className)}
         onMouseDown={onMouseDown}
       >
-        <div className="flex h-11 w-full items-center justify-between">
+        <div className="relative flex h-12 w-full items-center justify-between">
           <div className="z-[1] flex shrink-0 items-center">{left}</div>
           <div className={cn("z-[1] flex shrink-0 items-center", IOS_MOBILE_NAV_SIDE_RIGHT_CLASS)}>
             {right}
           </div>
+          {center ? (
+            <div
+              className={cn(
+                "pointer-events-none absolute inset-0 flex items-center justify-center px-16",
+                centerClassName
+              )}
+            >
+              {center}
+            </div>
+          ) : null}
         </div>
-        {center ? (
-          <div
-            className={cn(
-              "pointer-events-none absolute inset-0 flex items-center justify-center px-16",
-              centerClassName
-            )}
-          >
-            {center}
-          </div>
-        ) : null}
       </div>
     );
   }
@@ -75,8 +75,8 @@ export function WindowNavShell({
 export function WindowNavSpacer({ isMobile }: { isMobile: boolean }) {
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className={cn("desktop:p-2 rounded-lg", isMobile && "h-11 w-11")}>
-        <div className={cn(isMobile ? "h-[22px] w-[22px]" : "w-4 h-4")} />
+      <div className={cn("desktop:p-2 rounded-lg", isMobile && "h-12 w-12")}>
+        <div className={cn(isMobile ? "h-[24px] w-[24px]" : "w-4 h-4")} />
       </div>
     </div>
   );

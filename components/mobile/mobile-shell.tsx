@@ -7,36 +7,44 @@ import type { Note as NoteType } from "@/lib/notes/types";
 import { APP_SHELL_URL_CHANGE_EVENT } from "@/lib/set-url";
 import { getNoteSlugFromShellPathname } from "@/lib/shell-routing";
 import { MessagesAppSkeleton } from "@/components/apps/messages/messages-app-skeleton";
+import {
+  MobileAppShellSkeleton,
+} from "@/components/mobile/ios/mobile-app-skeleton";
 import { IosShell } from "./ios/ios-shell";
 
+const mobileDynamic = { ssr: false as const };
+
 const NotesApp = dynamic(() => import("@/components/apps/notes/notes-app").then((mod) => mod.NotesApp), {
-  ssr: false,
+  ...mobileDynamic,
+  loading: () => <MobileAppShellSkeleton variant="list" />,
 });
 const MessagesApp = dynamic(
   () => import("@/components/apps/messages/messages-app").then((mod) => mod.MessagesApp),
-  { ssr: false, loading: () => <MessagesAppSkeleton /> }
+  { ...mobileDynamic, loading: () => <MessagesAppSkeleton /> }
 );
 const SettingsApp = dynamic(
   () => import("@/components/apps/settings/settings-app").then((mod) => mod.SettingsApp),
-  { ssr: false }
+  { ...mobileDynamic, loading: () => <MobileAppShellSkeleton variant="list" /> }
 );
 const FinderApp = dynamic(
   () => import("@/components/apps/finder/finder-app").then((mod) => mod.FinderApp),
-  { ssr: false }
+  { ...mobileDynamic, loading: () => <MobileAppShellSkeleton variant="list" /> }
 );
 const PhotosApp = dynamic(() => import("@/components/apps/photos/photos-app").then((mod) => mod.PhotosApp), {
-  ssr: false,
+  ...mobileDynamic,
+  loading: () => <MobileAppShellSkeleton variant="grid" />,
 });
 const CalendarApp = dynamic(
   () => import("@/components/apps/calendar/calendar-app").then((mod) => mod.CalendarApp),
-  { ssr: false }
+  { ...mobileDynamic, loading: () => <MobileAppShellSkeleton variant="content" /> }
 );
 const MusicApp = dynamic(() => import("@/components/apps/music/music-app").then((mod) => mod.MusicApp), {
-  ssr: false,
+  ...mobileDynamic,
+  loading: () => <MobileAppShellSkeleton variant="content" />,
 });
 const ResumeApp = dynamic(
   () => import("@/components/apps/work/resume-app").then((mod) => mod.ResumeApp),
-  { ssr: false }
+  { ...mobileDynamic, loading: () => <MobileAppShellSkeleton variant="list" /> }
 );
 
 interface MobileShellProps {

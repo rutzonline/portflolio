@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { IOS_MOBILE_NAV_TITLE_CLASS } from "@/lib/ios-nav-back-styles";
 
-/** Centered mobile app title — pairs with `WindowNavShell` absolute center layout. */
+/** Centered mobile app title — vertically aligned with back/right controls in `WindowNavShell`. */
 export function IosMobileNavTitle({
   children,
   className,

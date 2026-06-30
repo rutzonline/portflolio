@@ -5,6 +5,7 @@ import { Note as NoteType } from "@/lib/notes/types";
 import Sidebar from "../sidebar";
 import Note from "../note";
 import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
+import { MobileListBodySkeleton } from "@/components/mobile/ios/mobile-app-skeleton";
 
 interface NotesMobilePresenterProps {
   containerRef: RefObject<HTMLDivElement>;
@@ -39,7 +40,7 @@ export function NotesMobilePresenter({
     >
       {showSidebar ? (
         loading ? (
-          <div className="h-full bg-background" />
+          <MobileListBodySkeleton />
         ) : (
           <Sidebar
             notes={notes}

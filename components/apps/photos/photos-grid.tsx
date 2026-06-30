@@ -9,6 +9,7 @@ import { toZonedTime } from "date-fns-tz";
 import { format, parseISO } from "date-fns";
 import { PhotoThumbnail } from "./photo-thumbnail";
 import { getPhotoAlt } from "@/lib/photos/photo-alt";
+import { MobileGridBodySkeleton } from "@/components/mobile/ios/mobile-app-skeleton";
 
 function isVideo(url: string): boolean {
   const lower = url.toLowerCase();
@@ -191,6 +192,14 @@ export function PhotosGrid({
             <div className="flex items-center justify-center h-64 text-red-500">
               Failed to load photos
             </div>
+          ) : loading && photos.length === 0 ? (
+            isMobileView ? (
+              <MobileGridBodySkeleton />
+            ) : (
+              <div className="flex items-center justify-center h-64 text-muted-foreground">
+                Loading photos...
+              </div>
+            )
           ) : !loading && photos.length === 0 ? (
             <div className="flex items-center justify-center h-64 text-muted-foreground">
               No photos

@@ -15,6 +15,7 @@ import {
   type ConsumptionSubview,
 } from "@/lib/sidebar-persistence";
 import { useMobileAppStackContext } from "@/components/mobile/ios/mobile-app-stack-context";
+import { MobileAppShellSkeleton } from "@/components/mobile/ios/mobile-app-skeleton";
 
 interface CalendarAppProps {
   isMobile?: boolean;
@@ -70,7 +71,7 @@ export function CalendarApp({ isMobile = false, inShell = false }: CalendarAppPr
   }, [isMobile, mobileStack, mobileSubview]);
 
   if (!isLoaded) {
-    return <div className="h-full bg-background" />;
+    return isMobile ? <MobileAppShellSkeleton variant="content" /> : <div className="h-full bg-background" />;
   }
 
   return (

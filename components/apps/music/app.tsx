@@ -13,6 +13,7 @@ import { useMobileAppStackContext } from "@/components/mobile/ios/mobile-app-sta
 import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
 import { IosMobileNavTitle } from "@/components/mobile/ios/ios-mobile-nav-title";
 import { WindowNavShell, WindowNavSpacer } from "@/components/window-nav-shell";
+import { MobileAppShellSkeleton } from "@/components/mobile/ios/mobile-app-skeleton";
 import {
   HomeView,
   BrowseView,
@@ -112,7 +113,7 @@ export default function App({ isDesktop = false }: AppProps) {
   })();
 
   if (!isLayoutInitialized) {
-    return <div className="h-full bg-background" />;
+    return !isDesktop ? <MobileAppShellSkeleton variant="content" /> : <div className="h-full bg-background" />;
   }
 
   const showSidebar = !isMobileView || !showContent;

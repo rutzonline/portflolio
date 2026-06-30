@@ -14,7 +14,7 @@ export function IosNavChevronBack({ tone = "accent" }: IosNavChevronBackProps) {
       viewBox="0 0 12 20"
       fill="none"
       aria-hidden
-      className={cn("shrink-0", tone === "onAccent" ? "h-[18px] w-[11px]" : "h-[17px] w-[10px]")}
+      className={cn("shrink-0", tone === "onAccent" ? "h-[20px] w-[12px]" : "h-[19px] w-[11px]")}
     >
       <path
         d="M10.5 2.5 2.5 10l8 8"

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { isAppSupportedOnMobile } from "@/lib/app-availability";
 import { IosAppHost } from "./ios-app-host";
+import { IosControlCenterChrome, IosControlCenterProvider } from "./ios-control-center";
 import { IosHomeScreen } from "./ios-home-screen";
 import { IosLockScreen } from "./ios-lock-screen";
 import {
@@ -19,7 +20,7 @@ interface IosShellProps {
 
 export function IosShell({ renderApp, initialApp }: IosShellProps) {
   const stack = useMobileAppStack(initialApp);
-  const [phase, setPhase] = useState<IosShellPhase>("loading");
+  const [phase, setPhase] = useState<IosShellPhase>(() => resolveIosShellPhase());
 
   useEffect(() => {
     setPhase(resolveIosShellPhase());
@@ -44,8 +45,9 @@ export function IosShell({ renderApp, initialApp }: IosShellProps) {
   }
 
   const showHome = (phase === "locked" || phase === "ready") && !stack.isActive;
+  const isUnlocked = phase !== "locked";
 
-  return (
+  const shellContent = (
     <>
       {showHome ? (
         <IosHomeScreen
@@ -57,6 +59,16 @@ export function IosShell({ renderApp, initialApp }: IosShellProps) {
       {stack.isActive ? <IosAppHost stack={stack} renderApp={renderApp} /> : null}
 
       {phase === "locked" ? <IosLockScreen onUnlock={handleUnlock} /> : null}
+
+      {isUnlocked ? (
+        <IosControlCenterChrome tone={stack.isActive ? "app" : "wallpaper"} />
+      ) : null}
     </>
   );
+
+  if (!isUnlocked) {
+    return shellContent;
+  }
+
+  return <IosControlCenterProvider>{shellContent}</IosControlCenterProvider>;
 }

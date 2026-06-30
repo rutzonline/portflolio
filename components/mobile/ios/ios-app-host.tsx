@@ -1,7 +1,9 @@
 "use client";
 
 import { APPS } from "@/lib/app-config";
+import { cn } from "@/lib/utils";
 import { MobileAppStackProvider, useMobileAppStackContext } from "./mobile-app-stack-context";
+import { IOS_STATUS_BAR_OFFSET_CLASS } from "./ios-status-bar";
 import type { MobileAppStackValue } from "./use-mobile-app-stack";
 
 interface IosAppHostProps {
@@ -27,7 +29,7 @@ export function IosAppHost({ stack, renderApp }: IosAppHostProps) {
   if (!stack.isActive || !stack.currentAppId) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-background">
+    <div className={cn("fixed inset-0 z-50 flex flex-col bg-background", IOS_STATUS_BAR_OFFSET_CLASS)}>
       <MobileAppStackProvider value={stack}>
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <IosAppHostContent renderApp={renderApp} />

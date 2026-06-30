@@ -49,7 +49,7 @@ export function IosIntroSheet({ onContinue }: IosIntroSheetProps) {
       <button
         type="button"
         aria-label="Close readme"
-        className="absolute inset-0 bg-black/30 backdrop-blur-[1px] dark:bg-black/40"
+        className="absolute inset-0 bg-black/30 backdrop-blur-[0.5px] dark:bg-black/40"
         onClick={onContinue}
       />
 
@@ -68,12 +68,12 @@ export function IosIntroSheet({ onContinue }: IosIntroSheetProps) {
           onClick={onContinue}
           aria-label="Close readme"
           className={cn(
-            "absolute right-4 top-4 z-20 h-6 w-6 rounded-full bg-[#0A84FF]",
-            "flex items-center justify-center text-white",
+            "absolute right-4 top-4 z-20 h-6 w-6 rounded-full border border-[#0A84FF] bg-transparent",
+            "flex items-center justify-center",
             "transition-opacity active:opacity-80"
           )}
         >
-          <X className="h-3.5 w-3.5" strokeWidth={3} aria-hidden />
+          <X className="h-3.5 w-3.5 text-[#0A84FF]" strokeWidth={2.5} aria-hidden />
         </button>
 
         {/* Pinned header — stays put while the body scrolls behind it. */}
@@ -83,7 +83,7 @@ export function IosIntroSheet({ onContinue }: IosIntroSheetProps) {
               hi, i&apos;m rutuja
             </p>
             <p className="mt-1 text-[15px] font-bold leading-snug text-zinc-900 dark:text-zinc-100">
-              a marketing &amp; growth associate
+              i work in marketing &amp; growth
             </p>
           </div>
         </div>

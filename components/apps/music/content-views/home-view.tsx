@@ -6,6 +6,9 @@ import { cn } from "@/lib/utils";
 import { SECTION_SUBTEXT_CLASS } from "@/lib/ui-tokens";
 import { ContentFetchError } from "@/components/shared/content-fetch-error";
 import { createClient } from "@/utils/supabase/client";
+import { getCachedValue, getOrFetch } from "@/lib/mobile-supabase-cache";
+
+const MISC_HOME_CACHE_KEY = "misc:misc_home";
 
 interface HomeContent {
   banner_image_url: string;
@@ -31,20 +34,29 @@ export function HomeView({
   isWindowExpanded = false,
   onOpenLibrary,
 }: HomeViewProps) {
-  const [content, setContent] = useState<HomeContent | null>(null);
-  const [loading, setLoading] = useState(true);
+  const cachedContent = isMobileView ? getCachedValue<HomeContent>(MISC_HOME_CACHE_KEY) : null;
+  const [content, setContent] = useState<HomeContent | null>(cachedContent);
+  const [loading, setLoading] = useState(isMobileView ? !cachedContent : true);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchHome() {
       try {
-        const supabase = createClient();
-        const { data, error } = await supabase
-          .from("misc_home")
-          .select("*")
-          .limit(1)
-          .single();
-        if (error) throw error;
+        const fetchContent = async () => {
+          const supabase = createClient();
+          const { data, error } = await supabase
+            .from("misc_home")
+            .select("*")
+            .limit(1)
+            .single();
+          if (error) throw error;
+          return data as HomeContent;
+        };
+
+        const data = isMobileView
+          ? await getOrFetch(MISC_HOME_CACHE_KEY, fetchContent).promise
+          : await fetchContent();
+
         setContent(data);
         setFetchError(null);
       } catch (err) {
@@ -55,7 +67,7 @@ export function HomeView({
       }
     }
     fetchHome();
-  }, []);
+  }, [isMobileView]);
 
   const banner = (
     <div className={cn("relative overflow-hidden rounded-xl bg-muted", isWindowExpanded ? "aspect-[16/10]" : "aspect-[21/9]")}>
