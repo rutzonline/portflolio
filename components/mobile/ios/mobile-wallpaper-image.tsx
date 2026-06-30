@@ -26,7 +26,7 @@ export function MobileWallpaperImage({
         alt=""
         decoding="async"
         fetchPriority={priority ? "high" : fetchPriority}
-        className="absolute inset-0 h-full w-full object-cover object-center"
+        className="absolute inset-0 h-full w-full transform-gpu object-cover object-center"
       />
     );
   }
@@ -39,7 +39,7 @@ export function MobileWallpaperImage({
       priority={priority}
       fetchPriority={fetchPriority}
       quality={75}
-      className={cn("object-cover object-center")}
+      className={cn("transform-gpu object-cover object-center")}
       sizes="100vw"
       onError={() => setUseDirectSrc(true)}
     />

@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { DesktopLandingFirstPaint } from "@/components/desktop/desktop-landing-first-paint";
+import { MobileLandingFirstPaint } from "@/components/mobile/mobile-landing-first-paint";
 import HomeClient from "./home-client";
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function Home() {
   return (
     <>
       <DesktopLandingFirstPaint />
+      <MobileLandingFirstPaint />
       <HomeClient />
     </>
   );

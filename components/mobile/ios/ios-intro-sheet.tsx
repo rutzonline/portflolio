@@ -38,18 +38,26 @@ function buildMobileIntroBodyMarkdown(): string {
 }
 
 interface IosIntroSheetProps {
+  open: boolean;
   onContinue: () => void;
 }
 
-export function IosIntroSheet({ onContinue }: IosIntroSheetProps) {
+export function IosIntroSheet({ open, onContinue }: IosIntroSheetProps) {
   const introBodyMarkdown = buildMobileIntroBodyMarkdown();
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+    <div
+      className={cn(
+        "fixed inset-0 z-[100] flex items-center justify-center transform-gpu transition-opacity duration-200",
+        open ? "modal-visible opacity-100" : "pointer-events-none opacity-0"
+      )}
+      aria-hidden={!open}
+    >
       {/* Full-viewport dim + light blur backdrop. */}
       <button
         type="button"
         aria-label="Close readme"
+        tabIndex={open ? 0 : -1}
         className={cn(
           "absolute inset-0 bg-black/30 backdrop-blur-[0.5px] dark:bg-black/40",
           IOS_MOBILE_TOUCH_ACTIVE_CLASS
@@ -59,7 +67,7 @@ export function IosIntroSheet({ onContinue }: IosIntroSheetProps) {
 
       <div
         className={cn(
-          "relative flex max-h-[36vh] w-[82vw] max-w-[380px] min-h-0 translate-x-4 flex-col",
+          "relative flex max-h-[36vh] w-[82vw] max-w-[380px] min-h-0 translate-x-4 flex-col transform-gpu",
           "overflow-hidden rounded-2xl bg-[#F2F2F2] shadow-2xl dark:bg-background"
         )}
         onClick={(e) => e.stopPropagation()}

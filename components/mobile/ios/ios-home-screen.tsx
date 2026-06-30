@@ -71,7 +71,7 @@ export function IosHomeScreen({ onOpenApp, enableIntroAutoOpen = false }: IosHom
 
   return (
     <div className="relative flex min-h-dvh flex-col overflow-hidden select-none [-webkit-touch-callout:none]">
-      <MobileWallpaperImage src={wallpaperSrc} fetchPriority="low" />
+      <MobileWallpaperImage src={wallpaperSrc} priority />
       <div className="absolute inset-0 bg-black/10" aria-hidden />
 
       <div className={cn("relative z-10 flex min-h-0 flex-1 flex-col", IOS_STATUS_BAR_OFFSET_CLASS)}>
@@ -105,7 +105,7 @@ export function IosHomeScreen({ onOpenApp, enableIntroAutoOpen = false }: IosHom
         </div>
       </div>
 
-      {showIntro ? <IosIntroSheet onContinue={handleIntroClose} /> : null}
+      <IosIntroSheet open={showIntro} onContinue={handleIntroClose} />
     </div>
   );
 }

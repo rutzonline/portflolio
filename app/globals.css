@@ -574,3 +574,18 @@ html, body {
 html.shell-ready .desktop-landing-first-paint {
   display: none !important;
 }
+
+/* "/" mobile first paint — server HTML wallpaper before the mobile shell mounts */
+.mobile-landing-first-paint {
+  display: none;
+}
+
+@media (pointer: coarse), (max-width: 767px) {
+  .mobile-landing-first-paint {
+    display: block;
+  }
+}
+
+html.mobile-shell-ready .mobile-landing-first-paint {
+  display: none !important;
+}

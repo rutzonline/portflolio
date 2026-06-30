@@ -62,6 +62,13 @@ export function MobileShell({ initialApp, initialNoteSlug, initialNote }: Mobile
   const [activeNoteSlug, setActiveNoteSlug] = useState<string | undefined>(initialNoteSlug);
 
   useEffect(() => {
+    document.documentElement.classList.add("mobile-shell-ready");
+    return () => {
+      document.documentElement.classList.remove("mobile-shell-ready");
+    };
+  }, []);
+
+  useEffect(() => {
     const syncNoteSlugFromLocation = () => {
       setActiveNoteSlug(readActiveNoteSlugFromLocation());
     };
