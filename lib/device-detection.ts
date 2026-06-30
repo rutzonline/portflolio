@@ -5,18 +5,17 @@ const IPAD_OS_MAC_PATTERN = /Macintosh/i;
 const MOBILE_SAFARI_FRAGMENT_PATTERN = /Mobile\//i;
 
 export const SHELL_POINTER_MEDIA_QUERY = "(pointer: coarse)";
-const ANY_POINTER_COARSE_MEDIA_QUERY = "(any-pointer: coarse)";
-const ANY_HOVER_NONE_MEDIA_QUERY = "(any-hover: none)";
 
-const MOBILE_MAX_VIEWPORT_WIDTH = 1024;
+/** Viewport width at or above this with a fine primary pointer is always desktop. */
+export const DESKTOP_MIN_VIEWPORT_WIDTH = 1024;
+
+/** Viewport width below this is treated as phone-sized (matches legacy 768px shell gate). */
+export const PHONE_MAX_VIEWPORT_WIDTH = 768;
 
 interface MobileSignals {
   clientHintMobile?: boolean;
   userAgent?: string;
   pointerCoarse?: boolean;
-  anyPointerCoarse?: boolean;
-  anyHoverNone?: boolean;
-  maxTouchPoints?: number;
   viewportWidth?: number;
 }
 
@@ -40,16 +39,30 @@ export function isMobileBySignals(signals: MobileSignals): boolean {
     return true;
   }
 
-  const signalCount = [
-    Boolean(signals.pointerCoarse),
-    Boolean(signals.anyPointerCoarse),
-    Boolean(signals.anyHoverNone),
-    (signals.maxTouchPoints ?? 0) > 0,
-    typeof signals.viewportWidth === "number" && signals.viewportWidth <= MOBILE_MAX_VIEWPORT_WIDTH,
-  ].filter(Boolean).length;
+  const viewportWidth = signals.viewportWidth;
+  const primaryPointerIsCoarse = Boolean(signals.pointerCoarse);
+  const primaryPointerIsFine = signals.pointerCoarse === false;
 
-  // Require multiple non-UA signals so touch-enabled laptops do not route to mobile.
-  return signalCount >= 3;
+  // Touchscreen laptops: large viewport + mouse-primary must never get the mobile shell.
+  if (
+    typeof viewportWidth === "number" &&
+    viewportWidth >= DESKTOP_MIN_VIEWPORT_WIDTH &&
+    primaryPointerIsFine
+  ) {
+    return false;
+  }
+
+  // Phones and touch-first tablets (coarse primary pointer).
+  if (primaryPointerIsCoarse) {
+    return true;
+  }
+
+  // Narrow desktop windows / phone-sized viewports without UA (legacy width gate).
+  if (typeof viewportWidth === "number" && viewportWidth < PHONE_MAX_VIEWPORT_WIDTH) {
+    return true;
+  }
+
+  return false;
 }
 
 export function detectMobileClientFromWindow(): boolean {
@@ -62,9 +75,6 @@ export function detectMobileClientFromWindow(): boolean {
   return isMobileBySignals({
     userAgent: nav.userAgent,
     pointerCoarse: window.matchMedia(SHELL_POINTER_MEDIA_QUERY).matches,
-    anyPointerCoarse: window.matchMedia(ANY_POINTER_COARSE_MEDIA_QUERY).matches,
-    anyHoverNone: window.matchMedia(ANY_HOVER_NONE_MEDIA_QUERY).matches,
-    maxTouchPoints: nav.maxTouchPoints,
     viewportWidth: window.innerWidth,
   });
 }

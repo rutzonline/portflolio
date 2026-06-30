@@ -2,7 +2,7 @@ import NewNote from "./new-note";
 import { Note } from "@/lib/notes/types";
 import { WindowNavShell } from "@/components/window-nav-shell";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
-import { IosMobileNavTitle } from "@/components/mobile/ios/ios-mobile-nav-title";
+import { IosMobileNavTitle } from "@/lib/dynamic-ios-nav";
 
 interface NavProps {
   addNewPinnedNote: (slug: string) => void;

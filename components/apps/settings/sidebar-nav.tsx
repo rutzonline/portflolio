@@ -2,7 +2,7 @@
 
 import { WindowNavShell, WindowNavSpacer } from "@/components/window-nav-shell";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
-import { IosMobileNavTitle } from "@/components/mobile/ios/ios-mobile-nav-title";
+import { IosMobileNavTitle } from "@/lib/dynamic-ios-nav";
 
 interface SidebarNavProps {
   isMobile: boolean;

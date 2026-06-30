@@ -6,18 +6,13 @@ import {
   detectMobileClientFromWindow,
 } from "@/lib/device-detection";
 
-const SHELL_ADDITIONAL_MEDIA_QUERIES = ["(any-pointer: coarse)", "(any-hover: none)"] as const;
-
 export function useShellIsMobile(initialIsMobile?: boolean): boolean | null {
   const [isMobile, setIsMobile] = useState<boolean | null>(
     typeof initialIsMobile === "boolean" ? initialIsMobile : null
   );
 
   useEffect(() => {
-    const mediaQueries = [
-      window.matchMedia(SHELL_POINTER_MEDIA_QUERY),
-      ...SHELL_ADDITIONAL_MEDIA_QUERIES.map((query) => window.matchMedia(query)),
-    ];
+    const mediaQueries = [window.matchMedia(SHELL_POINTER_MEDIA_QUERY)];
 
     const syncIsMobile = () => {
       setIsMobile(detectMobileClientFromWindow());

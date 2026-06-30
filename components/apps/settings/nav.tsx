@@ -2,9 +2,8 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { IosMobileNavTitle } from "@/components/mobile/ios/ios-mobile-nav-title";
+import { IosMobileNavTitle, IosWindowNavBack } from "@/lib/dynamic-ios-nav";
 import { WindowNavShell } from "@/components/window-nav-shell";
-import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
 
 interface NavProps {

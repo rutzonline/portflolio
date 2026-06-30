@@ -5,7 +5,7 @@ import { WindowControls } from "@/components/window-controls";
 import { WindowNavShell, WindowNavSpacer } from "@/components/window-nav-shell";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
 import { cn } from "@/lib/utils";
-import { IosMobileNavTitle } from "@/components/mobile/ios/ios-mobile-nav-title";
+import { IosMobileNavTitle } from "@/lib/dynamic-ios-nav";
 
 interface FinderNavProps {
   isDesktopShell: boolean;

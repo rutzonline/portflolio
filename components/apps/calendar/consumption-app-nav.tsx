@@ -4,8 +4,7 @@ import { WindowControls } from "@/components/window-controls";
 import { cn } from "@/lib/utils";
 import { WindowNavShell, WindowNavSpacer } from "@/components/window-nav-shell";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
-import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
-import { IosMobileNavTitle } from "@/components/mobile/ios/ios-mobile-nav-title";
+import { IosMobileNavTitle, IosWindowNavBack } from "@/lib/dynamic-ios-nav";
 import type { CalendarAppMode } from "@/lib/sidebar-persistence";
 
 interface ConsumptionAppNavProps {

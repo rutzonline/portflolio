@@ -1,8 +1,13 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Desktop } from "@/components/desktop/desktop";
-import { MobileShell } from "@/components/mobile/mobile-shell";
 import { useShellIsMobile } from "@/lib/use-shell-is-mobile";
+
+const MobileShell = dynamic(
+  () => import("@/components/mobile/mobile-shell").then((mod) => mod.MobileShell),
+  { ssr: false }
+);
 
 interface AppShellPageProps {
   appId?: string;

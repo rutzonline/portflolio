@@ -11,7 +11,7 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "./icons";
-import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
+import { IosWindowNavBack } from "@/lib/dynamic-ios-nav";
 import { getDisplayCreatedAt } from "@/lib/notes/display-created-at";
 
 const TIMESTAMP_PLACEHOLDER = "September 30, 2026 at 11:59 PM";
