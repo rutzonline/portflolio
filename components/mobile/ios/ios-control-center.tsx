@@ -279,7 +279,7 @@ function IosControlCenterOverlay() {
         ref={panelRef}
         className={cn(
           "absolute inset-x-0 top-0 mx-auto w-full max-w-lg px-3 pt-[max(env(safe-area-inset-top),10px)]",
-          pullOffset === 0 && "transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
+          pullOffset === 0 && "transition-transform duration-300 ease-\\[cubic-bezier(0.32,0.72,0,1)\\]"
         )}
         style={{ transform: panelTransform }}
         onPointerDown={handlePanelPointerDown}

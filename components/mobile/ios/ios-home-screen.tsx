@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useSystemSettings } from "@/lib/system-settings-context";
 import { getMobileWallpaperPath } from "@/lib/mobile-wallpapers";
+import { MobileWallpaperImage } from "./mobile-wallpaper-image";
 import { getMessagesUnreadCount } from "@/lib/messages/unread-count";
 import { preloadIosHomeIcons } from "@/lib/ios-app-icons";
 import { getIosHomeGridApps } from "@/lib/ios-home-apps";
@@ -71,15 +71,7 @@ export function IosHomeScreen({ onOpenApp, enableIntroAutoOpen = false }: IosHom
 
   return (
     <div className="relative flex min-h-dvh flex-col overflow-hidden select-none [-webkit-touch-callout:none]">
-      <Image
-        src={wallpaperSrc}
-        alt=""
-        fill
-        fetchPriority="low"
-        quality={75}
-        className="object-cover object-center"
-        sizes="100vw"
-      />
+      <MobileWallpaperImage src={wallpaperSrc} fetchPriority="low" />
       <div className="absolute inset-0 bg-black/10" aria-hidden />
 
       <div className={cn("relative z-10 flex min-h-0 flex-1 flex-col", IOS_STATUS_BAR_OFFSET_CLASS)}>

@@ -20,7 +20,7 @@ const nextConfig = {
   images: {
     localPatterns: [
       {
-        pathname: "/mobile/**",
+        pathname: "/**",
       },
     ],
     remotePatterns: [

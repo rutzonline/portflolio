@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSystemSettings } from "@/lib/system-settings-context";
 import { getMobileWallpaperPath } from "@/lib/mobile-wallpapers";
+import { MobileWallpaperImage } from "./mobile-wallpaper-image";
 
 interface IosLockScreenProps {
   onUnlock: () => void;
@@ -132,7 +132,7 @@ export function IosLockScreen({ onUnlock }: IosLockScreenProps) {
         "fixed inset-0 z-[100] flex flex-col overflow-hidden bg-black touch-none",
         "will-change-transform",
         (isUnlocking || pullOffset === 0) &&
-          "transition-transform duration-[1100ms] ease-[cubic-bezier(0.32,0.72,0,1)]",
+          "transition-transform duration-\\[1100ms\\] ease-\\[cubic-bezier(0.32,0.72,0,1)\\]",
         isUnlocking && "pointer-events-none"
       )}
       style={{
@@ -145,14 +145,9 @@ export function IosLockScreen({ onUnlock }: IosLockScreenProps) {
       role="button"
       aria-label="Swipe up or double tap to unlock"
     >
-      <Image
+      <MobileWallpaperImage
         src={getMobileWallpaperPath(mobileWallpaperId)}
-        alt=""
-        fill
         priority
-        quality={75}
-        className="object-cover object-center"
-        sizes="100vw"
       />
       <div className="absolute inset-0 bg-black/20" aria-hidden />
 
