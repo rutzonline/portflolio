@@ -245,7 +245,7 @@ export function ContactCharmsPlayground({ isMobileView = false }: { isMobileView
     <div className="space-y-3">
       <div>
         <div className={RESUME_SECTION_HEADING_CLASS}>
-          that&apos;s it. collect some charms and put my limitaxxing to use
+          that&apos;s it. collect some charms and put my tokenmaxxing to use
         </div>
       </div>
 

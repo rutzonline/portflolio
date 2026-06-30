@@ -33,6 +33,8 @@ export default {
           "SF Pro Text",
           ...fontFamily.sans,
         ],
+        caveat: ["var(--font-caveat)", "cursive"],
+        playfair: ["var(--font-playfair-display)", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",

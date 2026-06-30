@@ -18,6 +18,11 @@ const supabaseHostname = supabaseUrl ? new URL(supabaseUrl).hostname : null;
 
 const nextConfig = {
   images: {
+    localPatterns: [
+      {
+        pathname: "/mobile/**",
+      },
+    ],
     remotePatterns: [
       // Supabase Storage for photos
       ...(supabaseHostname ? [

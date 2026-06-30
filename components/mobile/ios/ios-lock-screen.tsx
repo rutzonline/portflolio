@@ -150,9 +150,9 @@ export function IosLockScreen({ onUnlock }: IosLockScreenProps) {
         alt=""
         fill
         priority
+        quality={75}
         className="object-cover object-center"
         sizes="100vw"
-        unoptimized
       />
       <div className="absolute inset-0 bg-black/20" aria-hidden />
 

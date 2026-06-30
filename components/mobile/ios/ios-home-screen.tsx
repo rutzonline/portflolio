@@ -75,10 +75,10 @@ export function IosHomeScreen({ onOpenApp, enableIntroAutoOpen = false }: IosHom
         src={wallpaperSrc}
         alt=""
         fill
-        priority
+        fetchPriority="low"
+        quality={75}
         className="object-cover object-center"
         sizes="100vw"
-        unoptimized
       />
       <div className="absolute inset-0 bg-black/10" aria-hidden />
 
