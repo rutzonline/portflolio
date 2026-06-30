@@ -4,12 +4,14 @@ import { cn } from "@/lib/utils";
 import type { CaseStudy } from "@/types/work";
 import { WorkMarkdown } from "@/components/apps/work/work-markdown";
 import { TAG_COLOR_CLASSES } from "./tag-colors";
+import { IOS_MOBILE_READING_TEXT_CLASS } from "@/lib/ui-tokens";
 
 interface CaseStudyDetailProps {
   study: CaseStudy;
+  isMobileView?: boolean;
 }
 
-export function CaseStudyDetail({ study }: CaseStudyDetailProps) {
+export function CaseStudyDetail({ study, isMobileView = false }: CaseStudyDetailProps) {
   return (
     <div className="flex-1 overflow-y-auto min-h-0">
       <div
@@ -48,13 +50,18 @@ export function CaseStudyDetail({ study }: CaseStudyDetailProps) {
         </div>
 
         {study.description.trim() ? (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6 leading-relaxed border-b border-zinc-200 dark:border-zinc-700/60 pb-6">
+          <p
+            className={cn(
+              "mb-6 border-b border-zinc-200 pb-6 text-zinc-500 dark:border-zinc-700/60 dark:text-zinc-400",
+              isMobileView ? IOS_MOBILE_READING_TEXT_CLASS : "text-sm leading-relaxed"
+            )}
+          >
             {study.description}
           </p>
         ) : null}
 
         {study.body.trim() ? (
-          <WorkMarkdown markdown={study.body} />
+          <WorkMarkdown markdown={study.body} isMobileView={isMobileView} />
         ) : (
           <div className="rounded-xl border border-dashed border-zinc-200 dark:border-zinc-700/60 bg-zinc-50 dark:bg-zinc-800/30 px-4 py-10 text-center">
             <p className="text-sm text-zinc-500 dark:text-zinc-400">Content coming soon.</p>

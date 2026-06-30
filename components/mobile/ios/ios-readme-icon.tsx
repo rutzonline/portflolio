@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { IOS_MOBILE_TOUCH_ACTIVE_CLASS } from "@/lib/ui-tokens";
 
 interface IosReadmeIconProps {
   onOpen: () => void;
@@ -15,8 +16,8 @@ export function IosReadmeIcon({ onOpen, className }: IosReadmeIconProps) {
       onClick={onOpen}
       aria-label="readme"
       className={cn(
-        "flex flex-col items-center gap-1.5 select-none touch-manipulation",
-        "active:scale-95 transition-transform",
+        "flex min-h-11 min-w-11 flex-col items-center justify-center gap-1.5 select-none touch-manipulation",
+        IOS_MOBILE_TOUCH_ACTIVE_CLASS,
         className
       )}
     >

@@ -70,7 +70,27 @@ export const IOS_MOBILE_LIST_SECTION_LABEL_CLASS =
 export const IOS_MOBILE_LIST_CHEVRON_CLASS = "h-[13px] w-[13px] shrink-0 text-muted-foreground/70";
 
 /** Base body text size for mobile app content (applied at shell level). */
-export const IOS_MOBILE_BODY_TEXT_CLASS = "text-[17px] leading-normal";
+export const IOS_MOBILE_BODY_TEXT_CLASS = "text-[17px] leading-[1.5]";
+
+/** Long-form reading copy — note bodies, message bubbles, resume panels. */
+export const IOS_MOBILE_READING_TEXT_CLASS = "text-[17px] leading-[1.5]";
+
+/** Pressed state for tappable controls (no motion). */
+export const IOS_MOBILE_TOUCH_ACTIVE_CLASS = "active:opacity-70";
+
+/** Minimum 44×44pt hit target via padding around a fixed-size icon. */
+export const IOS_MOBILE_ICON_HIT_AREA_CLASS =
+  "inline-flex min-h-11 min-w-11 items-center justify-center";
+
+/** One swipe-action column width (matches w-16). */
+export const IOS_MOBILE_SWIPE_ACTION_WIDTH_PX = 64;
+
+/** Minimum horizontal swipe before snapping open/closed. */
+export const IOS_MOBILE_SWIPE_SNAP_THRESHOLD_PX = 40;
+
+export function iosMobileSwipeOffsetPx(actionCount: number): number {
+  return IOS_MOBILE_SWIPE_ACTION_WIDTH_PX * actionCount;
+}
 
 /** Shared mobile search field height and padding. */
 export const IOS_MOBILE_SEARCH_INPUT_CLASS =

@@ -5,6 +5,7 @@ import { WindowNavShell } from "@/components/window-nav-shell";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
 import { IosMobileNavTitle } from "@/lib/dynamic-ios-nav";
 import { cn } from "@/lib/utils";
+import { IOS_MOBILE_ICON_HIT_AREA_CLASS, IOS_MOBILE_TOUCH_ACTIVE_CLASS } from "@/lib/ui-tokens";
 
 interface NavProps {
   onNewChat: () => void;
@@ -66,7 +67,9 @@ export function Nav({
         <button
           className={cn(
             "desktop:p-2 hover:bg-muted-foreground/10 rounded-lg",
-            isMobileView ? "p-2" : ""
+            isMobileView
+              ? cn(IOS_MOBILE_ICON_HIT_AREA_CLASS, IOS_MOBILE_TOUCH_ACTIVE_CLASS)
+              : ""
           )}
           onClick={onNewChat}
           onMouseDown={(e) => e.stopPropagation()}

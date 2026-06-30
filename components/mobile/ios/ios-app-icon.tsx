@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { CalendarDockIcon } from "@/components/apps/calendar/calendar-dock-icon";
 import { cn } from "@/lib/utils";
+import { IOS_MOBILE_TOUCH_ACTIVE_CLASS } from "@/lib/ui-tokens";
 import {
   getIosAppIconArtScale,
   getIosAppIconSrc,
@@ -48,9 +49,9 @@ export function IosAppIcon({ app, onOpen, size = "grid", className, badgeCount =
       aria-label={app.name}
       onContextMenu={(event) => event.preventDefault()}
       className={cn(
-        "flex w-full flex-col items-center gap-1.5 select-none touch-manipulation",
+        "flex w-full min-h-11 flex-col items-center justify-center gap-1.5 select-none touch-manipulation px-1",
         "[-webkit-touch-callout:none]",
-        "active:scale-95 transition-transform",
+        IOS_MOBILE_TOUCH_ACTIVE_CLASS,
         size === "dock" && "overflow-visible",
         className
       )}

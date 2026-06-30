@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm";
 import type { Components } from "react-markdown";
 import type { Element, ElementContent } from "hast";
 import { cn } from "@/lib/utils";
+import { IOS_MOBILE_READING_TEXT_CLASS } from "@/lib/ui-tokens";
 
 function paragraphHasBlockChild(node: { children?: ElementContent[] } | undefined): boolean {
   if (!node?.children?.length) return false;
@@ -21,8 +22,15 @@ function isArrowLead(text: string): boolean {
   return text.trimStart().startsWith("→");
 }
 
-function createWorkMarkdownComponents(): Components {
-  const bodyClass = "m-0 mb-4 last:mb-0 text-[14px] leading-[1.7] text-zinc-300";
+function createWorkMarkdownComponents(isMobileView = false): Components {
+  const bodyClass = cn(
+    "m-0 mb-4 last:mb-0 text-zinc-300",
+    isMobileView ? IOS_MOBILE_READING_TEXT_CLASS : "text-[14px] leading-[1.7]"
+  );
+  const listClass = cn(
+    "m-0 mb-5 space-y-2 pl-5 text-zinc-300 last:mb-0",
+    isMobileView ? IOS_MOBILE_READING_TEXT_CLASS : "text-[14px] leading-[1.65]"
+  );
 
   return {
     p: ({ node, children }) => {
@@ -60,14 +68,10 @@ function createWorkMarkdownComponents(): Components {
     },
     hr: () => <hr className="my-6 border-0 border-t border-white/10" />,
     ul: ({ children }) => (
-      <ul className="m-0 mb-5 list-disc space-y-2 pl-5 text-[14px] leading-[1.65] text-zinc-300 last:mb-0">
-        {children}
-      </ul>
+      <ul className={cn(listClass, "list-disc")}>{children}</ul>
     ),
     ol: ({ children }) => (
-      <ol className="m-0 mb-5 list-decimal space-y-2 pl-5 text-[14px] leading-[1.65] text-zinc-300 last:mb-0">
-        {children}
-      </ol>
+      <ol className={cn(listClass, "list-decimal")}>{children}</ol>
     ),
     li: ({ children }) => <li className="pl-0.5 marker:text-zinc-500">{children}</li>,
     blockquote: ({ children }) => (
@@ -102,15 +106,19 @@ function createWorkMarkdownComponents(): Components {
 interface WorkMarkdownProps {
   markdown: string;
   className?: string;
+  isMobileView?: boolean;
 }
 
 /** Rich markdown for work stint / case study bodies — preserves casing vs site-wide lowercase preview. */
-export function WorkMarkdown({ markdown, className }: WorkMarkdownProps) {
+export function WorkMarkdown({ markdown, className, isMobileView = false }: WorkMarkdownProps) {
   if (!markdown.trim()) return null;
 
   return (
     <article className={cn("work-markdown max-w-none", className)}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={createWorkMarkdownComponents()}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={createWorkMarkdownComponents(isMobileView)}
+      >
         {markdown}
       </ReactMarkdown>
     </article>

@@ -10,24 +10,30 @@ interface LockScreenProps {
   onUnlock: () => void;
 }
 
+function formatLockTime(date: Date): string {
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
+
+function formatLockDate(date: Date): string {
+  const weekday = date.toLocaleDateString("en-US", { weekday: "short" });
+  const month = date.toLocaleDateString("en-US", { month: "short" });
+  const day = date.getDate();
+  return `${weekday}, ${month} ${day}`;
+}
+
 export function LockScreen({ onUnlock }: LockScreenProps) {
   const { currentOS } = useSystemSettings();
-  const [currentTime, setCurrentTime] = useState<string>("");
-  const [currentDate, setCurrentDate] = useState<string>("");
+  const [currentTime, setCurrentTime] = useState(() => formatLockTime(new Date()));
+  const [currentDate, setCurrentDate] = useState(() => formatLockDate(new Date()));
   const [isUnlocking, setIsUnlocking] = useState(false);
 
   useEffect(() => {
     const updateDateTime = () => {
       const now = new Date();
-      const hours = now.getHours().toString().padStart(2, "0");
-      const minutes = now.getMinutes().toString().padStart(2, "0");
-      setCurrentTime(`${hours}:${minutes}`);
-
-      // Date in format "Wed Jan 7"
-      const weekday = now.toLocaleDateString("en-US", { weekday: "short" });
-      const month = now.toLocaleDateString("en-US", { month: "short" });
-      const day = now.getDate();
-      setCurrentDate(`${weekday}, ${month} ${day}`);
+      setCurrentTime(formatLockTime(now));
+      setCurrentDate(formatLockDate(now));
     };
 
     updateDateTime();

@@ -15,6 +15,7 @@ import {
 } from "@/lib/notes/image-upload";
 import { cn } from "@/lib/utils";
 import { getSiteMediaViewHref, isSiteOwnedMediaUrl } from "@/lib/external-link";
+import { IOS_MOBILE_READING_TEXT_CLASS } from "@/lib/ui-tokens";
 
 const SPACE_TAB = "  ";
 const NBSP_TAB = "\u00a0\u00a0";
@@ -58,12 +59,14 @@ export default function NoteContent({
   canEdit,
   isEditing,
   setIsEditing,
+  isMobile = false,
 }: {
   note: Note;
   saveNote: (updates: Partial<Note>) => void;
   canEdit: boolean;
   isEditing: boolean;
   setIsEditing: (editing: boolean) => void;
+  isMobile?: boolean;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const clickRelativeYRef = useRef<number | null>(null);
@@ -483,7 +486,10 @@ export default function NoteContent({
           ref={textareaRef}
           id="note-content"
           value={note.content || ""}
-          className="min-h-[100px] focus:outline-none leading-normal resize-none overflow-hidden"
+          className={cn(
+            "min-h-[100px] focus:outline-none resize-none overflow-hidden",
+            isMobile ? IOS_MOBILE_READING_TEXT_CLASS : "leading-normal"
+          )}
           placeholder="Start writing..."
           onChange={handleChange}
           onPaste={handlePaste}
@@ -492,7 +498,10 @@ export default function NoteContent({
           onFocus={handleFocus}
         />
       ) : (
-        <div className="text-base desktop:text-sm" onClick={handleMarkdownClick}>
+        <div
+          className={cn(isMobile ? IOS_MOBILE_READING_TEXT_CLASS : "text-base desktop:text-sm")}
+          onClick={handleMarkdownClick}
+        >
           <ReactMarkdown
             className="markdown-body"
             remarkPlugins={[remarkGfm]}

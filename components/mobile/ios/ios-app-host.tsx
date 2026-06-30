@@ -18,7 +18,7 @@ function IosAppHostContent({ renderApp }: { renderApp: (appId: string) => React.
   const app = APPS.find((entry) => entry.id === stack.currentAppId);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-background text-[17px] leading-normal">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-background text-[17px] leading-[1.5]">
       <div className="min-h-0 flex-1 overflow-hidden">{renderApp(stack.currentAppId)}</div>
       <span className="sr-only">{app?.name ?? "App"}</span>
     </div>

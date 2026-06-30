@@ -1,5 +1,10 @@
 import { Recipient } from "@/types/messages";
-import { ACCENT_BLUE_HEX } from "@/lib/ui-tokens";
+import {
+  ACCENT_BLUE_HEX,
+  IOS_MOBILE_ICON_HIT_AREA_CLASS,
+  IOS_MOBILE_TOUCH_ACTIVE_CLASS,
+} from "@/lib/ui-tokens";
+import { cn } from "@/lib/utils";
 import {
   useState,
   useRef,
@@ -424,7 +429,11 @@ export const MessageInput = forwardRef<
               type="submit"
               onClick={handleSubmit}
               disabled={disabled || !message.trim()}
-              className="absolute right-1 bottom-1 bg-accent-blue rounded-full p-1 text-white font-bold transition-colors"
+              className={cn(
+                "absolute right-0 bottom-0 bg-accent-blue rounded-full text-white font-bold",
+                IOS_MOBILE_ICON_HIT_AREA_CLASS,
+                IOS_MOBILE_TOUCH_ACTIVE_CLASS
+              )}
               aria-label="Send message"
             >
               <Icons.arrowUp className="h-4 w-4" strokeWidth={3} />

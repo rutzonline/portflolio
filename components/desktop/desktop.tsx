@@ -11,8 +11,6 @@ import { MenuBar } from "./menu-bar";
 import { Dock } from "./dock";
 import { Window } from "./window";
 import { MessagesNotificationBanner } from "./messages-notification-banner";
-import { NotesApp } from "@/components/apps/notes/notes-app";
-import { MessagesApp } from "@/components/apps/messages/messages-app";
 import type { PreviewFileType } from "@/components/apps/preview";
 import { getPreviewMetadataFromPath, PREVIEW_TITLE_BAR_HEIGHT } from "@/lib/preview-utils";
 import {
@@ -59,6 +57,12 @@ import { getAppById } from "@/lib/app-config";
 import { useAudio } from "@/lib/music/audio-context";
 
 const SettingsApp = dynamic(() => import("@/components/apps/settings/settings-app").then(m => ({ default: m.SettingsApp })));
+const NotesApp = dynamic(() =>
+  import("@/components/apps/notes/notes-app").then((m) => ({ default: m.NotesApp }))
+);
+const MessagesApp = dynamic(() =>
+  import("@/components/apps/messages/messages-app").then((m) => ({ default: m.MessagesApp }))
+);
 const FinderApp = dynamic(() => import("@/components/apps/finder/finder-app").then(m => ({ default: m.FinderApp })));
 const PhotosApp = dynamic(() => import("@/components/apps/photos/photos-app").then(m => ({ default: m.PhotosApp })));
 const CalendarApp = dynamic(() => import("@/components/apps/calendar/calendar-app").then(m => ({ default: m.CalendarApp })));
@@ -236,6 +240,13 @@ function DesktopContent({
     return () => Object.values(timers).forEach(clearTimeout);
   }, []);
   const [mode, setMode] = useState<DesktopMode>("locked");
+
+  useEffect(() => {
+    document.documentElement.classList.add("shell-ready");
+    return () => {
+      document.documentElement.classList.remove("shell-ready");
+    };
+  }, []);
 
   // Open Now Playing window the first time a track starts playing (unless user dismissed it)
   useEffect(() => {

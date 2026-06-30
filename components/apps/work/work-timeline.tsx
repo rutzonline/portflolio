@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { IOS_MOBILE_READING_TEXT_CLASS } from "@/lib/ui-tokens";
 import { WORK_LOGOS } from "@/lib/work-logos";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { STATE_PLATE_BODY } from "./case-studies/fallback-data";
@@ -200,7 +201,13 @@ function TimelineSection({
   );
 }
 
-export function WorkStintDetail({ stint }: { stint: WorkStint }) {
+export function WorkStintDetail({
+  stint,
+  isMobileView = false,
+}: {
+  stint: WorkStint;
+  isMobileView?: boolean;
+}) {
   const hasHighlights = (stint.highlights?.length ?? 0) > 0;
   const hasDetails = Boolean(stint.details?.trim());
   const { media, loading, hasMedia } = useWorkStintMedia(stint.id);
@@ -219,7 +226,10 @@ export function WorkStintDetail({ stint }: { stint: WorkStint }) {
               {stint.highlights!.map((item) => (
                 <li
                   key={item}
-                  className="flex items-start gap-2 text-sm leading-relaxed text-zinc-300"
+                  className={cn(
+                    "flex items-start gap-2 text-zinc-300",
+                    isMobileView ? IOS_MOBILE_READING_TEXT_CLASS : "text-sm leading-relaxed"
+                  )}
                 >
                   <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400/80" />
                   {item}
@@ -229,7 +239,7 @@ export function WorkStintDetail({ stint }: { stint: WorkStint }) {
           </div>
         )}
 
-        {hasDetails && <WorkMarkdown markdown={stint.details!} />}
+        {hasDetails && <WorkMarkdown markdown={stint.details!} isMobileView={isMobileView} />}
 
         {loading && !hasDetails && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
@@ -271,7 +281,12 @@ export function WorkTimeline({ isMobileView = false, onSelect }: WorkTimelinePro
           <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2 px-1">
             professional summary
           </h3>
-          <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300 px-1">
+          <p
+            className={cn(
+              "px-1 text-zinc-700 dark:text-zinc-300",
+              isMobileView ? IOS_MOBILE_READING_TEXT_CLASS : "text-sm leading-relaxed"
+            )}
+          >
             {WORK_PAGE_INTRO}
           </p>
         </div>

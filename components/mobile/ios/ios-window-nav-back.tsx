@@ -32,7 +32,7 @@ export function IosWindowNavBack({
       disabled={!canGoBack}
       className={cn(
         IOS_NAV_BACK_BUTTON_CLASS,
-        canGoBack ? "active:opacity-70" : "opacity-0 pointer-events-none"
+        canGoBack ? "" : "opacity-0 pointer-events-none"
       )}
       style={{ color: labelColor }}
       aria-label="Go back"

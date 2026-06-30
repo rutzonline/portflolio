@@ -8,6 +8,7 @@ import {
   RESUME_SECTION_HEADING_CLASS,
   resumePanelScrollClass,
 } from "./resume-panel-styles";
+import { IOS_MOBILE_READING_TEXT_CLASS, IOS_MOBILE_TOUCH_ACTIVE_CLASS } from "@/lib/ui-tokens";
 
 const CONTACT_LINKS = [
   {
@@ -49,8 +50,10 @@ export function ContactResumePanel({ isMobileView = false }: { isMobileView?: bo
                 rel={link.external ? "noopener noreferrer" : undefined}
                 className={cn(
                   RESUME_PANEL_CARD_CLASS,
-                  "px-3.5 py-2 text-sm text-center text-zinc-800 dark:text-zinc-100 whitespace-nowrap",
-                  "can-hover:hover:bg-zinc-200/70 dark:can-hover:hover:bg-zinc-700/50 transition-colors"
+                  "px-3.5 py-2 text-center text-zinc-800 dark:text-zinc-100 whitespace-nowrap",
+                  "can-hover:hover:bg-zinc-200/70 dark:can-hover:hover:bg-zinc-700/50",
+                  isMobileView && cn(IOS_MOBILE_READING_TEXT_CLASS, IOS_MOBILE_TOUCH_ACTIVE_CLASS),
+                  !isMobileView && "text-sm transition-colors"
                 )}
               >
                 {link.label}

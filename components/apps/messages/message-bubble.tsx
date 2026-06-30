@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { IOS_MOBILE_ICON_HIT_AREA_CLASS, IOS_MOBILE_READING_TEXT_CLASS, IOS_MOBILE_TOUCH_ACTIVE_CLASS } from "@/lib/ui-tokens";
 import { Message, ReactionType, Reaction, REACTION_TEXT } from "@/types/messages";
 import { Conversation } from "@/types/messages";
 import { memo, useCallback, useState, useRef, type ReactNode } from "react";
@@ -362,7 +363,7 @@ export const MessageBubble = memo(function MessageBubble({
                       !isMe || isTyping ? "inset-[-17px]" : "inset-[-22px]"
                     )}
                   />
-                  <div className="text-[14px] flex items-center">
+                  <div className={cn(isMobileView ? IOS_MOBILE_READING_TEXT_CLASS : "text-[14px]", "flex items-center")}>
                     <div className="flex items-center justify-center gap-[4px] bg-gray-100 dark:bg-[#404040]">
                       <style>{typingAnimation}</style>
                       <div
@@ -401,7 +402,7 @@ export const MessageBubble = memo(function MessageBubble({
                           )}
                         />
                       )}
-                        <div className="text-[14px] flex items-center">
+                        <div className={cn(isMobileView ? IOS_MOBILE_READING_TEXT_CLASS : "text-[14px]", "flex items-center")}>
                         {prepareContent(message.content, message.sender)}
                       </div>
                     </div>

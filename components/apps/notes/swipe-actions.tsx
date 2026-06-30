@@ -1,5 +1,7 @@
 import React from 'react';
 import { Pin, PinOff, Trash2, Edit } from "lucide-react";
+import { IOS_MOBILE_TOUCH_ACTIVE_CLASS } from "@/lib/ui-tokens";
+import { cn } from "@/lib/utils";
 
 interface SwipeActionsProps {
   isOpen: boolean;
@@ -28,7 +30,10 @@ export function SwipeActions({
     >
       <button
         onClick={onPin}
-        className="bg-[#3293FC] text-white p-2 h-full w-16 flex items-center justify-center"
+        className={cn(
+          "bg-[#3293FC] text-white h-full w-16 flex items-center justify-center",
+          IOS_MOBILE_TOUCH_ACTIVE_CLASS
+        )}
       >
         {isPinned ? <PinOff size={20} /> : <Pin size={20} />}
       </button>
@@ -36,13 +41,19 @@ export function SwipeActions({
         <>
           <button
             onClick={onEdit}
-            className="bg-[#787BFF] text-white p-2 h-full w-16 flex items-center justify-center"
+            className={cn(
+              "bg-[#787BFF] text-white h-full w-16 flex items-center justify-center",
+              IOS_MOBILE_TOUCH_ACTIVE_CLASS
+            )}
           >
             <Edit size={20} />
           </button>
           <button
             onClick={onDelete}
-            className="bg-[#FF4539] text-white p-2 h-full w-16 flex items-center justify-center"
+            className={cn(
+              "bg-[#FF4539] text-white h-full w-16 flex items-center justify-center",
+              IOS_MOBILE_TOUCH_ACTIVE_CLASS
+            )}
           >
             <Trash2 size={20} />
           </button>

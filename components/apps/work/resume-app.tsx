@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { useRecents } from "@/lib/recents-context";
 import { cn } from "@/lib/utils";
-import { SIDEBAR_ITEM_ACTIVE_CLASS, ACCENT_BLUE_CLASS, FILE_LIST_ROW_SELECTED_CLASS, DESKTOP_NAV_SIDEBAR_WIDTH_CLASS, IOS_MOBILE_LIST_CHEVRON_CLASS, IOS_MOBILE_LIST_ROW_CLASS, IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS, IOS_MOBILE_LIST_ROW_TITLE_CLASS, IOS_MOBILE_LIST_SCREEN_CLASS } from "@/lib/ui-tokens";
+import { SIDEBAR_ITEM_ACTIVE_CLASS, ACCENT_BLUE_CLASS, FILE_LIST_ROW_SELECTED_CLASS, DESKTOP_NAV_SIDEBAR_WIDTH_CLASS, IOS_MOBILE_LIST_CHEVRON_CLASS, IOS_MOBILE_LIST_ROW_CLASS, IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS, IOS_MOBILE_LIST_ROW_TITLE_CLASS, IOS_MOBILE_LIST_SCREEN_CLASS, IOS_MOBILE_READING_TEXT_CLASS } from "@/lib/ui-tokens";
 import { IosMobileListGroup } from "@/components/mobile/ios/ios-mobile-list";
 import { FinderNav, FinderSidebarMobileNav } from "../finder/nav";
 import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
@@ -1501,7 +1501,8 @@ export function ResumeApp({
           <div
             key={item}
             className={cn(
-              "px-4 py-2 text-sm text-zinc-800 dark:text-zinc-100",
+              "px-4 py-2 text-zinc-800 dark:text-zinc-100",
+              isMobile ? IOS_MOBILE_READING_TEXT_CLASS : "text-sm",
               idx < items.length - 1 && RESUME_PANEL_COL_DIVIDER
             )}
           >
@@ -1539,7 +1540,13 @@ export function ResumeApp({
           {renderInlineHeading(section.heading)}
           <div className="space-y-1 px-1">
             {section.items.map((item) => (
-              <div key={item} className="text-sm text-zinc-800 dark:text-zinc-100">
+              <div
+                key={item}
+                className={cn(
+                  "text-zinc-800 dark:text-zinc-100",
+                  isMobile ? IOS_MOBILE_READING_TEXT_CLASS : "text-sm"
+                )}
+              >
                 {item}
               </div>
             ))}
@@ -1680,9 +1687,9 @@ export function ResumeApp({
                   onOpenStudy={handleOpenCaseStudyFolder}
                 />
               ) : isWorkDocumentsView && WORK_STINT_DETAILS_ENABLED && selectedWorkStint ? (
-                <WorkStintDetail stint={selectedWorkStint} />
+                <WorkStintDetail stint={selectedWorkStint} isMobileView />
               ) : isWorkDocumentsView && selectedCaseStudy ? (
-                <CaseStudyDetail study={selectedCaseStudy} />
+                <CaseStudyDetail study={selectedCaseStudy} isMobileView />
               ) : isWorkDocumentsView ? (
                 <WorkTimeline
                   isMobileView={true}

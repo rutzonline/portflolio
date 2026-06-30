@@ -9,6 +9,7 @@ import {
   RESUME_SECTION_HEADING_CLASS,
   resumePanelScrollClass,
 } from "./resume-panel-styles";
+import { IOS_MOBILE_READING_TEXT_CLASS, IOS_MOBILE_TOUCH_ACTIVE_CLASS } from "@/lib/ui-tokens";
 
 interface FAQ {
   id: string;
@@ -16,7 +17,15 @@ interface FAQ {
   answer: string;
 }
 
-function FAQItem({ question, answer }: { question: string; answer: string }) {
+function FAQItem({
+  question,
+  answer,
+  isMobileView = false,
+}: {
+  question: string;
+  answer: string;
+  isMobileView?: boolean;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -24,8 +33,9 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
       type="button"
       onClick={() => setOpen((prev) => !prev)}
       className={cn(
-        "w-full text-left rounded-xl bg-muted/50 border border-border/50 px-4 py-3 transition-colors",
-        "can-hover:hover:border-border can-hover:hover:bg-muted/70"
+        "w-full text-left rounded-xl bg-muted/50 border border-border/50 px-4 py-3",
+        "can-hover:hover:border-border can-hover:hover:bg-muted/70",
+        isMobileView && IOS_MOBILE_TOUCH_ACTIVE_CLASS
       )}
     >
       <div className="flex items-center gap-2.5">
@@ -42,10 +52,24 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
             fill="currentColor"
           />
         </svg>
-        <span className="text-sm text-zinc-800 dark:text-zinc-100">{question}</span>
+        <span
+          className={cn(
+            "text-zinc-800 dark:text-zinc-100",
+            isMobileView ? IOS_MOBILE_READING_TEXT_CLASS : "text-sm"
+          )}
+        >
+          {question}
+        </span>
       </div>
       {open && (
-        <p className="mt-2 ml-5 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">{answer}</p>
+        <p
+          className={cn(
+            "mt-2 ml-5 text-zinc-600 dark:text-zinc-400",
+            isMobileView ? IOS_MOBILE_READING_TEXT_CLASS : "text-sm leading-relaxed"
+          )}
+        >
+          {answer}
+        </p>
       )}
     </button>
   );
@@ -95,7 +119,12 @@ export function FaqResumePanel({ isMobileView = false }: { isMobileView?: boolea
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {faqs.map((faq) => (
-              <FAQItem key={faq.id} question={faq.question} answer={faq.answer} />
+              <FAQItem
+                key={faq.id}
+                question={faq.question}
+                answer={faq.answer}
+                isMobileView={isMobileView}
+              />
             ))}
           </div>
         )}

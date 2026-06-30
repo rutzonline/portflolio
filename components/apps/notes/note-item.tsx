@@ -12,6 +12,12 @@ import {
 import { Note } from "@/lib/notes/types";
 import { getDisplayCreatedAt } from "@/lib/notes/display-created-at";
 import { Dispatch, SetStateAction } from "react";
+import {
+  IOS_MOBILE_SWIPE_SNAP_THRESHOLD_PX,
+  IOS_MOBILE_TOUCH_ACTIVE_CLASS,
+  iosMobileSwipeOffsetPx,
+} from "@/lib/ui-tokens";
+import { cn } from "@/lib/utils";
 
 const SIDEBAR_DATE_PLACEHOLDER = "00/00/0000";
 
@@ -98,6 +104,8 @@ export const NoteItem = React.memo(function NoteItem({
   };
 
   const canEditOrDelete = item.session_id === sessionId;
+  const swipeActionCount = canEditOrDelete ? 3 : 1;
+  const swipeOffsetPx = iosMobileSwipeOffsetPx(swipeActionCount);
 
   const handleSwipeAction = (action: () => void) => {
     if (isSwipeOpen) {
@@ -163,7 +171,10 @@ export const NoteItem = React.memo(function NoteItem({
           <button
             onClick={() => onNoteSelect(item)}
             tabIndex={-1}
-            className="block py-2 h-full w-full flex flex-col justify-center text-left"
+            className={cn(
+              "block py-2 h-full w-full flex flex-col justify-center text-left",
+              isMobile && IOS_MOBILE_TOUCH_ACTIVE_CLASS
+            )}
           >
             {noteContentInner}
           </button>
@@ -183,14 +194,16 @@ export const NoteItem = React.memo(function NoteItem({
 
   const handlers = useSwipeable({
     onSwipeStart: () => setIsSwiping(true),
-    onSwiped: () => setIsSwiping(false),
-    onSwipedLeft: () => {
-      setOpenSwipeItemSlug(item.slug);
+    onSwiped: (eventData) => {
       setIsSwiping(false);
-    },
-    onSwipedRight: () => {
-      setOpenSwipeItemSlug(null);
-      setIsSwiping(false);
+      const { deltaX } = eventData;
+      if (deltaX < -IOS_MOBILE_SWIPE_SNAP_THRESHOLD_PX) {
+        setOpenSwipeItemSlug(item.slug);
+      } else if (deltaX > IOS_MOBILE_SWIPE_SNAP_THRESHOLD_PX) {
+        setOpenSwipeItemSlug(null);
+      } else {
+        setOpenSwipeItemSlug(isSwipeOpen ? item.slug : null);
+      }
     },
     trackMouse: true,
   });
@@ -200,13 +213,15 @@ export const NoteItem = React.memo(function NoteItem({
       <div {...handlers} className="relative overflow-hidden">
         <div
           data-note-slug={item.slug}
-          className={`transition-transform duration-300 ease-out w-full ${
-            isSwipeOpen ? "transform -translate-x-24" : ""
-          } ${
-            showDivider
-              ? 'after:content-[""] after:block after:mx-6 after:border-t after:border-muted-foreground/20'
-              : ""
-          }`}
+          className={cn(
+            "w-full",
+            !isSwiping && "transition-transform duration-300 ease-out",
+            showDivider &&
+              'after:content-[""] after:block after:mx-6 after:border-t after:border-muted-foreground/20'
+          )}
+          style={{
+            transform: isSwipeOpen ? `translateX(-${swipeOffsetPx}px)` : undefined,
+          }}
         >
           {NoteContent}
         </div>

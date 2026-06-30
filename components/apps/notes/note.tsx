@@ -148,6 +148,7 @@ export default function Note({ note: initialNote, isMobile, onBack }: NoteProps)
             canEdit={canEdit}
             isEditing={isEditing}
             setIsEditing={setIsEditing}
+            isMobile={isMobile}
           />
         </div>
       </div>

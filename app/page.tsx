@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
+import { DesktopLandingFirstPaint } from "@/components/desktop/desktop-landing-first-paint";
 import HomeClient from "./home-client";
 
 export const metadata: Metadata = {
@@ -11,6 +12,14 @@ export const metadata: Metadata = {
   },
 };
 
+/** Explicit static — no cookies/headers/data fetches on this route. */
+export const dynamic = "force-static";
+
 export default function Home() {
-  return <HomeClient />;
+  return (
+    <>
+      <DesktopLandingFirstPaint />
+      <HomeClient />
+    </>
+  );
 }

@@ -3,6 +3,10 @@ import Image from "next/image";
 import { useSwipeable } from "react-swipeable";
 import { Conversation, REACTION_TEXT } from "@/types/messages";
 import { cn } from "@/lib/utils";
+import {
+  IOS_MOBILE_SWIPE_SNAP_THRESHOLD_PX,
+  iosMobileSwipeOffsetPx,
+} from "@/lib/ui-tokens";
 import { SwipeActions } from "./swipe-actions";
 import {
   ContextMenu,
@@ -72,14 +76,16 @@ export const ConversationItem = memo(function ConversationItem({
 
   const handlers = useSwipeable({
     onSwipeStart: () => setIsSwiping(true),
-    onSwiped: () => setIsSwiping(false),
-    onSwipedLeft: () => {
-      setOpenSwipedConvo(conversation.id);
+    onSwiped: (eventData) => {
       setIsSwiping(false);
-    },
-    onSwipedRight: () => {
-      setOpenSwipedConvo(null);
-      setIsSwiping(false);
+      const { deltaX } = eventData;
+      if (deltaX < -IOS_MOBILE_SWIPE_SNAP_THRESHOLD_PX) {
+        setOpenSwipedConvo(conversation.id);
+      } else if (deltaX > IOS_MOBILE_SWIPE_SNAP_THRESHOLD_PX) {
+        setOpenSwipedConvo(null);
+      } else {
+        setOpenSwipedConvo(isSwipeOpen ? conversation.id : null);
+      }
     },
     trackMouse: true,
   });
@@ -134,7 +140,7 @@ export const ConversationItem = memo(function ConversationItem({
       aria-current={activeConversation === conversation.id ? "true" : undefined}
       className={cn(
         "w-full text-left relative flex items-center",
-        isMobileView ? "h-[72px]" : "h-[70px] py-2",
+        isMobileView ? "h-[72px] active:bg-white/5" : "h-[70px] py-2",
         activeConversation === conversation.id && !isMobileView
           ? "bg-accent-blue text-white rounded-md"
           : "",
@@ -307,14 +313,17 @@ export const ConversationItem = memo(function ConversationItem({
   );
 
   if (isMobileView) {
+    const swipeOffsetPx = iosMobileSwipeOffsetPx(3);
+
     return (
       <ContextMenu>
         <ContextMenuTrigger asChild>
           <div {...handlers} className="relative overflow-hidden">
             <div
-              className={`transition-transform duration-300 ease-out w-full ${
-                isSwipeOpen ? "transform -translate-x-24" : ""
-              }`}
+              className={cn("w-full", !isSwiping && "transition-transform duration-300 ease-out")}
+              style={{
+                transform: isSwipeOpen ? `translateX(-${swipeOffsetPx}px)` : undefined,
+              }}
             >
               {ConversationContent}
             </div>
