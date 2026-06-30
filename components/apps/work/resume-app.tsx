@@ -6,8 +6,11 @@ import { useWindowFocus } from "@/lib/window-focus-context";
 import { useRecents } from "@/lib/recents-context";
 import { cn } from "@/lib/utils";
 import { SIDEBAR_ITEM_ACTIVE_CLASS, ACCENT_BLUE_CLASS, FILE_LIST_ROW_SELECTED_CLASS, DESKTOP_NAV_SIDEBAR_WIDTH_CLASS, IOS_MOBILE_LIST_CHEVRON_CLASS, IOS_MOBILE_LIST_ROW_CLASS, IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS, IOS_MOBILE_LIST_ROW_TITLE_CLASS, IOS_MOBILE_LIST_SCREEN_CLASS } from "@/lib/ui-tokens";
-import { IosMobileLargeTitle, IosMobileListGroup } from "@/components/mobile/ios/ios-mobile-list";
+import { IosMobileListGroup } from "@/components/mobile/ios/ios-mobile-list";
 import { FinderNav, FinderSidebarMobileNav } from "../finder/nav";
+import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
+import { IosMobileNavTitle } from "@/components/mobile/ios/ios-mobile-nav-title";
+import { WindowNavShell, WindowNavSpacer } from "@/components/window-nav-shell";
 import type { SidebarItem } from "../finder/sidebar-types";
 import { getSearchSectionForSidebar, STATIC_SIDEBAR_PANELS } from "../finder/sidebar-types";
 import { APPS } from "@/lib/app-config";
@@ -972,25 +975,14 @@ export function ResumeApp({
   const renderMobileSidebarNav = () => <FinderSidebarMobileNav />;
 
   // Render mobile content nav (back button + title, like Settings Nav)
-  const renderMobileContentNav = (title: string, backTitle: string) => (
-    <div className="flex items-center justify-between px-4 relative min-h-24 py-2 select-none bg-background">
-      {/* Back button */}
-      <div className="absolute left-2 top-1/2 -translate-y-1/2">
-        <button
-          onClick={handleBack}
-          className="flex items-center gap-1 text-accent-blue hover:text-accent-blue transition-colors"
-        >
-          <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-          <span className="text-base">{backTitle}</span>
-        </button>
-      </div>
-      {/* Centered title */}
-      <span className="text-base font-semibold w-full text-center">
-        {title}
-      </span>
-    </div>
+  const renderMobileContentNav = (backTitle: string) => (
+    <WindowNavShell
+      isMobile={true}
+      className="bg-background"
+      left={<IosWindowNavBack canGoBack onBack={handleBack} backTitle={backTitle} />}
+      center={<IosMobileNavTitle>Resume</IosMobileNavTitle>}
+      right={<WindowNavSpacer isMobile={true} />}
+    />
   );
 
   // Get the back title for mobile navigation
@@ -1023,8 +1015,7 @@ export function ResumeApp({
     // Mobile sidebar - iOS Files style with cards
     if (isMobile) {
       return (
-        <div className={cn("flex-1 overflow-y-auto px-4 pt-2 pb-8", IOS_MOBILE_LIST_SCREEN_CLASS)}>
-          <IosMobileLargeTitle className="px-0">Resume</IosMobileLargeTitle>
+        <div className={cn("flex-1 overflow-y-auto px-4 pt-1 pb-8", IOS_MOBILE_LIST_SCREEN_CLASS)}>
           <IosMobileListGroup>
             {SIDEBAR_ITEMS.map((item, index) => (
               <button
@@ -1036,8 +1027,8 @@ export function ResumeApp({
                   index < SIDEBAR_ITEMS.length - 1 && "border-b border-border/50"
                 )}
               >
-                <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-accent-blue shrink-0">
-                  <SidebarIcon icon={item.icon} className="w-4 h-4 text-white" />
+                <span className="flex items-center justify-center w-7 h-7 shrink-0">
+                  <SidebarIcon icon={item.icon} className="w-5 h-5 text-[#0A84FF]" />
                 </span>
                 <span className={cn(IOS_MOBILE_LIST_ROW_TITLE_CLASS, "flex-1 text-left")}>{item.label}</span>
                 <svg className={IOS_MOBILE_LIST_CHEVRON_CLASS} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -1673,7 +1664,7 @@ export function ResumeApp({
           </>
         ) : (
           <>
-            {renderMobileContentNav(getBreadcrumbs().slice(-1)[0], getMobileBackTitle())}
+            {renderMobileContentNav(getMobileBackTitle())}
             <div className="flex-1 overflow-y-auto">
               {STATIC_PANEL_ITEMS.has(selectedSidebar) ? (
                 renderStaticPanel()

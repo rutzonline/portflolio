@@ -2,6 +2,7 @@ import NewNote from "./new-note";
 import { Note } from "@/lib/notes/types";
 import { WindowNavShell } from "@/components/window-nav-shell";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
+import { IosMobileNavTitle } from "@/components/mobile/ios/ios-mobile-nav-title";
 
 interface NavProps {
   addNewPinnedNote: (slug: string) => void;
@@ -34,6 +35,7 @@ export function Nav({
       isScrolled={isScrolled}
       onMouseDown={nav.onDragStart}
       left={nav.navLeft}
+      center={isMobile ? <IosMobileNavTitle>Notes</IosMobileNavTitle> : undefined}
       right={
         <div onMouseDown={(e) => e.stopPropagation()}>
           <NewNote

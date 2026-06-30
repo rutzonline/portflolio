@@ -23,9 +23,14 @@ interface HomeViewProps {
   onPlaylistSelect: (id: string) => void;
   isMobileView: boolean;
   isWindowExpanded?: boolean;
+  onOpenLibrary?: () => void;
 }
 
-export function HomeView({ isMobileView, isWindowExpanded = false }: HomeViewProps) {
+export function HomeView({
+  isMobileView,
+  isWindowExpanded = false,
+  onOpenLibrary,
+}: HomeViewProps) {
   const [content, setContent] = useState<HomeContent | null>(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -90,7 +95,11 @@ export function HomeView({ isMobileView, isWindowExpanded = false }: HomeViewPro
     <div
       className={cn(
         "space-y-4 leading-relaxed text-muted-foreground",
-        isWindowExpanded ? "max-w-none text-base" : "max-w-2xl text-sm"
+        isMobileView
+          ? "max-w-2xl text-[17px]"
+          : isWindowExpanded
+            ? "max-w-none text-base"
+            : "max-w-2xl text-sm"
       )}
     >
       {loading ? (
@@ -121,6 +130,15 @@ export function HomeView({ isMobileView, isWindowExpanded = false }: HomeViewPro
           <>
             <div className="mb-6">{banner}</div>
             {about}
+            {isMobileView && onOpenLibrary ? (
+              <button
+                type="button"
+                onClick={onOpenLibrary}
+                className="mt-5 text-[17px] font-bold text-[#0A84FF] active:opacity-70"
+              >
+                Library
+              </button>
+            ) : null}
           </>
         )}
       </div>

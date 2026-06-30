@@ -5,6 +5,7 @@ import { WindowControls } from "@/components/window-controls";
 import { WindowNavShell, WindowNavSpacer } from "@/components/window-nav-shell";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
 import { cn } from "@/lib/utils";
+import { IosMobileNavTitle } from "@/components/mobile/ios/ios-mobile-nav-title";
 
 interface FinderNavProps {
   isDesktopShell: boolean;
@@ -31,13 +32,14 @@ const stopDragPropagation: MouseEventHandler<HTMLElement> = (event) => {
   event.stopPropagation();
 };
 
-export function FinderSidebarMobileNav() {
+export function FinderSidebarMobileNav({ title = "Resume" }: { title?: string }) {
   const nav = useWindowNavBehavior({ isMobile: true });
 
   return (
     <WindowNavShell
       isMobile={true}
       left={nav.navLeft}
+      center={<IosMobileNavTitle>{title}</IosMobileNavTitle>}
       right={<WindowNavSpacer isMobile={true} />}
     />
   );

@@ -41,8 +41,10 @@ export function useMobileAppStack(initialAppId?: string) {
     const resolved = resolveInitialMobileApp(initialAppId);
     if (resolved) {
       syncMobileShellUrl(resolved);
+      return [resolved];
     }
-    return resolved ? [resolved] : [];
+    syncMobileShellUrl(null);
+    return [];
   });
 
   const isActive = stack.length > 0;

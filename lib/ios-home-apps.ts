@@ -3,7 +3,7 @@ import { isAppSupportedOnMobile } from "@/lib/app-availability";
 import type { AppConfig } from "@/types/apps";
 
 /** Pinned iOS dock — order is display order left to right. */
-export const IOS_DOCK_APP_IDS = ["messages", "resume", "desk", "settings"] as const;
+export const IOS_DOCK_APP_IDS = ["messages", "photos", "notes", "settings", "calendar"] as const;
 
 export type IosDockAppId = (typeof IOS_DOCK_APP_IDS)[number];
 

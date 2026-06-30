@@ -518,7 +518,7 @@ export default function Sidebar({
       >
         <div ref={scrollViewportRef} className="flex flex-col w-full">
           <SessionId setSessionId={setSessionId} />
-          <div className={`${isMobile ? "w-full" : "w-[320px]"} px-2`}>
+          <div className={isMobile ? "w-full px-2" : "w-[320px] px-2"}>
             <SearchBar
               notes={notes}
               onSearchResults={setLocalSearchResults}
@@ -528,6 +528,7 @@ export default function Sidebar({
               setSearchQuery={setSearchQuery}
               setHighlightedIndex={setHighlightedIndex}
               clearSearch={clearSearch}
+              isMobile={isMobile}
             />
             <SidebarContent
               groupedNotes={groupedNotes}

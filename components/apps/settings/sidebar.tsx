@@ -4,12 +4,12 @@ import { useState } from "react";
 import Image from "next/image";
 import { Settings, Paintbrush, Search, X, ChevronRight, Plane, Wifi, Bluetooth, Radio, Link2, Battery } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSystemSettings } from "@/lib/system-settings-context";
 import { SettingsCategory, SettingsPanel } from "./settings-app";
 import { SidebarNav } from "./sidebar-nav";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getHeadshotSrc } from "@/config/site";
 import {
-  IosMobileLargeTitle,
   IosMobileListGroup,
   IosMobileListRowSubtitle,
   IosMobileListRowTitle,
@@ -85,7 +85,12 @@ export function Sidebar({
 }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
-  const [airplaneMode, setAirplaneMode] = useState(false);
+  const {
+    wifiEnabled,
+    setWifiEnabled,
+    airplaneModeEnabled,
+    setAirplaneModeEnabled,
+  } = useSystemSettings();
 
   const query = searchQuery.toLowerCase();
 
@@ -123,16 +128,16 @@ export function Sidebar({
             isMobile={isMobile}
             bottomMargin="0px"
           >
-            <div className="px-4 pt-2 pb-8 min-h-full">
-              <div className="px-0 pb-4">
+            <div className="px-3 pt-2 pb-6 min-h-full">
+              <div className="px-0 pb-3">
                 <div className="relative">
-                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search"
-                    className="w-full pl-8 pr-8 py-0.5 rounded-lg text-base desktop:text-sm placeholder:text-sm placeholder:text-muted-foreground focus:outline-none bg-[#E8E8E7] dark:bg-[#353533]"
+                    className="w-full pl-9 pr-9 rounded-[10px] text-base placeholder:text-sm placeholder:text-muted-foreground focus:outline-none bg-[#E8E8E7] dark:bg-[#353533] h-10"
                   />
                   {searchQuery && (
                     <button
@@ -146,11 +151,9 @@ export function Sidebar({
                 </div>
               </div>
 
-              <IosMobileLargeTitle className="px-0">Settings</IosMobileLargeTitle>
-
               <div>
                 {showAppleAccount && (
-                  <IosMobileListGroup className="mb-4">
+                  <IosMobileListGroup className="mb-3">
                     <button
                       onClick={onAccountClick}
                       className={cn(IOS_MOBILE_LIST_ROW_CLASS, "can-hover:hover:bg-muted/40")}
@@ -199,21 +202,41 @@ export function Sidebar({
                         </span>
                         {item.type === "toggle" && (
                           <button
-                            onClick={() => setAirplaneMode(!airplaneMode)}
+                            onClick={() => setAirplaneModeEnabled(!airplaneModeEnabled)}
                             className={cn(
                               "w-12 h-7 rounded-full relative transition-colors shrink-0",
-                              airplaneMode ? "bg-green-500" : "bg-gray-300"
+                              airplaneModeEnabled ? "bg-green-500" : "bg-gray-300"
                             )}
                           >
                             <div
                               className={cn(
                                 "absolute top-0.5 w-6 h-6 rounded-full bg-white shadow transition-transform",
-                                airplaneMode ? "translate-x-5" : "translate-x-0.5"
+                                airplaneModeEnabled ? "translate-x-5" : "translate-x-0.5"
                               )}
                             />
                           </button>
                         )}
-                        {item.type === "value" && (
+                        {item.type === "value" && item.id === "wifi" && (
+                          <button
+                            onClick={() => {
+                              if (!airplaneModeEnabled) setWifiEnabled(!wifiEnabled);
+                            }}
+                            className={cn(
+                              "w-12 h-7 rounded-full relative transition-colors shrink-0",
+                              wifiEnabled && !airplaneModeEnabled ? "bg-green-500" : "bg-gray-300",
+                              airplaneModeEnabled && "opacity-60"
+                            )}
+                            aria-label={wifiEnabled ? "Turn Wi-Fi off" : "Turn Wi-Fi on"}
+                          >
+                            <div
+                              className={cn(
+                                "absolute top-0.5 w-6 h-6 rounded-full bg-white shadow transition-transform",
+                                wifiEnabled && !airplaneModeEnabled ? "translate-x-5" : "translate-x-0.5"
+                              )}
+                            />
+                          </button>
+                        )}
+                        {item.type === "value" && item.id !== "wifi" && (
                           <span className={IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS}>{item.value}</span>
                         )}
                         {item.type === "nav" && (

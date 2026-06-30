@@ -1,5 +1,9 @@
 import type { MouseEventHandler, ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import {
+  IOS_MOBILE_NAV_BAR_CLASS,
+  IOS_MOBILE_NAV_SIDE_RIGHT_CLASS,
+} from "@/lib/ios-nav-back-styles";
 
 interface WindowNavShellProps {
   isMobile: boolean;
@@ -22,12 +26,37 @@ export function WindowNavShell({
   centerClassName,
   right,
 }: WindowNavShellProps) {
+  if (isMobile) {
+    return (
+      <div
+        className={cn(IOS_MOBILE_NAV_BAR_CLASS, "sticky top-0", className)}
+        onMouseDown={onMouseDown}
+      >
+        <div className="flex h-11 w-full items-center justify-between">
+          <div className="z-[1] flex shrink-0 items-center">{left}</div>
+          <div className={cn("z-[1] flex shrink-0 items-center", IOS_MOBILE_NAV_SIDE_RIGHT_CLASS)}>
+            {right}
+          </div>
+        </div>
+        {center ? (
+          <div
+            className={cn(
+              "pointer-events-none absolute inset-0 flex items-center justify-center px-16",
+              centerClassName
+            )}
+          >
+            {center}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn(
-        "px-4 py-2 flex items-center sticky top-0 z-[1] select-none",
+        "px-4 py-2 flex items-center sticky top-0 z-[1] select-none bg-muted",
         isScrolled && "border-b shadow-[0_2px_4px_-1px_rgba(0,0,0,0.15)]",
-        isMobile ? "bg-background" : "bg-muted",
         className
       )}
       onMouseDown={onMouseDown}
@@ -46,8 +75,8 @@ export function WindowNavShell({
 export function WindowNavSpacer({ isMobile }: { isMobile: boolean }) {
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className={cn("desktop:p-2 rounded-lg", isMobile && "p-2")}>
-        <div className="w-4 h-4" />
+      <div className={cn("desktop:p-2 rounded-lg", isMobile && "h-11 w-11")}>
+        <div className={cn(isMobile ? "h-[22px] w-[22px]" : "w-4 h-4")} />
       </div>
     </div>
   );

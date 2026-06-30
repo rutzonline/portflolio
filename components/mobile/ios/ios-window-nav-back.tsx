@@ -1,16 +1,29 @@
 "use client";
 
-import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  IOS_NAV_ACCENT,
+  IOS_NAV_BACK_BUTTON_CLASS,
+  IOS_NAV_BACK_LABEL_CLASS,
+} from "@/lib/ios-nav-back-styles";
+import { IosNavChevronBack } from "./ios-nav-chevron-back";
 
 interface IosWindowNavBackProps {
   canGoBack: boolean;
   onBack: () => void;
   backTitle?: string;
+  tone?: "accent" | "onAccent";
 }
 
-/** WindowNavShell left slot — matches settings mobile back control. */
-export function IosWindowNavBack({ canGoBack, onBack, backTitle }: IosWindowNavBackProps) {
+/** WindowNavShell left slot — shared sizing across mobile apps. */
+export function IosWindowNavBack({
+  canGoBack,
+  onBack,
+  backTitle,
+  tone = "accent",
+}: IosWindowNavBackProps) {
+  const labelColor = tone === "onAccent" ? "#FFFFFF" : IOS_NAV_ACCENT;
+
   return (
     <button
       type="button"
@@ -18,13 +31,18 @@ export function IosWindowNavBack({ canGoBack, onBack, backTitle }: IosWindowNavB
       onMouseDown={(event) => event.stopPropagation()}
       disabled={!canGoBack}
       className={cn(
-        "flex items-center gap-1 rounded-lg px-1 py-1 transition-colors text-accent-blue",
-        canGoBack ? "can-hover:hover:bg-muted-foreground/10" : "opacity-0 pointer-events-none"
+        IOS_NAV_BACK_BUTTON_CLASS,
+        canGoBack ? "active:opacity-70" : "opacity-0 pointer-events-none"
       )}
+      style={{ color: labelColor }}
       aria-label="Go back"
     >
-      <ChevronLeft className="h-6 w-6" />
-      {backTitle ? <span className="text-sm">{backTitle}</span> : null}
+      <IosNavChevronBack tone={tone} />
+      {backTitle ? (
+        <span className={IOS_NAV_BACK_LABEL_CLASS} style={{ color: labelColor }}>
+          {backTitle}
+        </span>
+      ) : null}
     </button>
   );
 }

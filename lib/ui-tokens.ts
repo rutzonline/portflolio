@@ -68,3 +68,13 @@ export const IOS_MOBILE_LIST_SECTION_LABEL_CLASS =
 
 /** Trailing disclosure chevron on tappable rows. */
 export const IOS_MOBILE_LIST_CHEVRON_CLASS = "h-[13px] w-[13px] shrink-0 text-muted-foreground/70";
+
+/** Base body text size for mobile app content (applied at shell level). */
+export const IOS_MOBILE_BODY_TEXT_CLASS = "text-[17px] leading-normal";
+
+/** Shared mobile search field height and padding. */
+export const IOS_MOBILE_SEARCH_INPUT_CLASS =
+  "h-10 w-full rounded-[10px] text-base focus:outline-none";
+
+/** Horizontal inset for mobile search bars — slightly narrower than screen edges for a wider field. */
+export const IOS_MOBILE_SEARCH_WRAPPER_CLASS = "px-2 py-2";

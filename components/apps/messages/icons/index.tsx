@@ -18,6 +18,7 @@ import {
   Trash2,
   Pin,
   PinOff,
+  Mic,
 } from "lucide-react";
 
 type IconProps = React.HTMLAttributes<SVGElement> & {
@@ -131,6 +132,9 @@ export const Icons = {
   ),
   pinOff: ({ size = 16, ...props }: IconProps) => (
     <PinOff className="text-muted-foreground" size={size} {...props} />
+  ),
+  mic: ({ size = 16, ...props }: IconProps) => (
+    <Mic className="text-muted-foreground" size={size} {...props} />
   ),
   arrowUp: ({ size = 16, strokeWidth = 2, ...props }: IconProps) => (
     <ArrowUp

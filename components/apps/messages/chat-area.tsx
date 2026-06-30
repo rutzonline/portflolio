@@ -165,6 +165,7 @@ export function ChatArea({
         <ScrollArea
           className="min-h-0 flex-1"
           isMobile={isMobileView}
+          iosOverlayScrollbar={isMobileView}
           withVerticalMargins={false}
           bottomMargin="0px"
         >
@@ -235,6 +236,7 @@ export function ChatArea({
       <ScrollArea
         className="h-full flex flex-col"
         isMobile={isMobileView}
+        iosOverlayScrollbar={isMobileView}
         withVerticalMargins
         mobileHeaderHeight={isMobileView}
         bottomMargin="calc(var(--dynamic-height, 64px))"

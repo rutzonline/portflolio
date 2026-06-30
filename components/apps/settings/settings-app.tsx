@@ -94,6 +94,12 @@ export function SettingsApp({ isMobile = false, inShell = false, initialPanel, i
       // On mobile, back behavior is simpler:
       // If on a sub-panel (like About), go back to the category
       if (selectedPanel !== null) {
+        // Apple ID / profile should return to the Settings root list.
+        if (selectedPanel === "personal-info") {
+          setShowSidebar(true);
+          return;
+        }
+
         // Go back to category page
         const newHistory = history.slice(0, historyIndex + 1);
         newHistory.push({ category: selectedCategory, panel: null });
@@ -122,17 +128,15 @@ export function SettingsApp({ isMobile = false, inShell = false, initialPanel, i
   const canGoForward = historyIndex < history.length - 1;
 
   const getNavTitle = () => {
-    // Only show title for sub-panels on mobile, not main categories
+    if (isMobile) return "Settings";
+
     if (selectedPanel === "about") return "About";
     if (selectedPanel === "personal-info") return "Personal Information";
     if (selectedPanel === "storage") return "Storage";
-    // Don't show title for General/Appearance/Bluetooth on mobile (it's in the content card)
-    if (!isMobile) {
-      if (selectedCategory === "general") return "General";
-      if (selectedCategory === "appearance") return "Appearance";
-      if (selectedCategory === "wifi") return "Wi-Fi";
-      if (selectedCategory === "bluetooth") return "Bluetooth";
-    }
+    if (selectedCategory === "general") return "General";
+    if (selectedCategory === "appearance") return "Appearance";
+    if (selectedCategory === "wifi") return "Wi-Fi";
+    if (selectedCategory === "bluetooth") return "Bluetooth";
     return undefined;
   };
 

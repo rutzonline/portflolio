@@ -101,7 +101,7 @@ export function FaqResumePanel({ isMobileView = false }: { isMobileView?: boolea
         )}
 
         <div className="mt-12">
-          <ContactCharmsPlayground />
+          <ContactCharmsPlayground isMobileView={isMobileView} />
         </div>
       </div>
     </div>

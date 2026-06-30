@@ -3,14 +3,16 @@
 import { WindowNavShell, WindowNavSpacer } from "@/components/window-nav-shell";
 import { WindowControls } from "@/components/window-controls";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
+import { IosMobileNavTitle } from "@/components/mobile/ios/ios-mobile-nav-title";
 
 interface NavProps {
   isMobileView: boolean;
   isScrolled?: boolean;
   isDesktop?: boolean;
+  title?: string;
 }
 
-export function Nav({ isMobileView, isScrolled, isDesktop = false }: NavProps) {
+export function Nav({ isMobileView, isScrolled, isDesktop = false, title = "misc" }: NavProps) {
   const nav = useWindowNavBehavior({ isDesktop, isMobile: isMobileView });
 
   return (
@@ -19,6 +21,7 @@ export function Nav({ isMobileView, isScrolled, isDesktop = false }: NavProps) {
       isScrolled={isScrolled}
       onMouseDown={nav.onDragStart}
       left={nav.navLeft}
+      center={isMobileView ? <IosMobileNavTitle>{title}</IosMobileNavTitle> : undefined}
       right={<WindowNavSpacer isMobile={isMobileView} />}
     />
   );

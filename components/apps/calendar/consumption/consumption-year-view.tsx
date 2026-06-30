@@ -24,6 +24,7 @@ interface ConsumptionYearViewProps {
   calendars: Calendar[];
   onDayClick: (date: Date) => void;
   onMonthClick: (date: Date) => void;
+  isMobileView?: boolean;
 }
 
 function MiniMonth({
@@ -32,12 +33,14 @@ function MiniMonth({
   calendars,
   onDayClick,
   onMonthClick,
+  isMobileView = false,
 }: {
   monthDate: Date;
   events: CalendarEvent[];
   calendars: Calendar[];
   onDayClick: (date: Date) => void;
   onMonthClick: (date: Date) => void;
+  isMobileView?: boolean;
 }) {
   const days = getMonthViewDays(monthDate);
   const weeks: Date[][] = [];
@@ -49,7 +52,7 @@ function MiniMonth({
     <div>
       <button
         type="button"
-        className="font-semibold mb-2 hover:underline text-left text-sm"
+        className={cn("font-semibold mb-2 hover:underline text-left", isMobileView ? "text-base" : "text-sm")}
         style={{ color: BRAND_COLORS.tangerine }}
         onClick={() => onMonthClick(monthDate)}
       >
@@ -60,7 +63,10 @@ function MiniMonth({
         {WEEKDAY_LETTERS.map((letter, idx) => (
           <div
             key={idx}
-            className="text-center text-[10px] text-muted-foreground"
+            className={cn(
+              "text-center text-muted-foreground",
+              isMobileView ? "text-xs" : "text-[10px]"
+            )}
           >
             {letter}
           </div>
@@ -80,7 +86,8 @@ function MiniMonth({
                   key={dayIdx}
                   type="button"
                   className={cn(
-                    "text-[10px] aspect-square flex flex-col items-center justify-center rounded-full transition-colors relative",
+                    "aspect-square flex flex-col items-center justify-center rounded-full transition-colors relative",
+                    isMobileView ? "text-xs" : "text-[10px]",
                     !isCurrentMonth && "text-transparent pointer-events-none",
                     isCurrentMonth && "text-foreground can-hover:hover:bg-muted/60",
                     dayIsToday && isCurrentMonth && "text-white"
@@ -124,18 +131,21 @@ export function ConsumptionYearView({
   calendars,
   onDayClick,
   onMonthClick,
+  isMobileView = false,
 }: ConsumptionYearViewProps) {
   const year = currentDate.getFullYear();
   const months = useMemo(() => getYearMonths(year), [year]);
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 h-full bg-background text-foreground">
-      <div className="px-4 py-3 border-b border-border bg-background shrink-0">
-        <h1 className="text-2xl font-semibold">{year}</h1>
-      </div>
+    <div className={cn("flex flex-col flex-1 min-h-0 h-full bg-background text-foreground min-w-0", isMobileView && "overflow-x-hidden")}>
+      {!isMobileView && (
+        <div className="border-b border-border bg-background shrink-0 px-4 py-3">
+          <h1 className="font-semibold text-2xl">{year}</h1>
+        </div>
+      )}
 
-      <div className="flex-1 min-h-0 overflow-y-auto consumption-scrollbar p-4">
-        <div className="grid grid-cols-2 desktop:grid-cols-4 gap-x-4 desktop:gap-x-6 gap-y-6 max-w-5xl">
+      <div className={cn("flex-1 min-h-0 overflow-y-auto overflow-x-hidden consumption-scrollbar", isMobileView ? "p-3" : "p-4")}>
+        <div className="grid grid-cols-2 desktop:grid-cols-4 gap-x-4 desktop:gap-x-6 gap-y-6 max-w-5xl min-w-0">
           {months.map((monthDate, monthIdx) => (
             <MiniMonth
               key={monthIdx}
@@ -144,6 +154,7 @@ export function ConsumptionYearView({
               calendars={calendars}
               onDayClick={onDayClick}
               onMonthClick={onMonthClick}
+              isMobileView={isMobileView}
             />
           ))}
         </div>

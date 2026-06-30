@@ -9,7 +9,10 @@ import { loadMusicState, saveMusicState } from "@/lib/sidebar-persistence";
 import { MusicView } from "./types";
 import { Sidebar } from "./sidebar";
 import { Nav, DeskTopNav } from "./nav";
-import { ChevronLeft } from "lucide-react";
+import { useMobileAppStackContext } from "@/components/mobile/ios/mobile-app-stack-context";
+import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
+import { IosMobileNavTitle } from "@/components/mobile/ios/ios-mobile-nav-title";
+import { WindowNavShell, WindowNavSpacer } from "@/components/window-nav-shell";
 import {
   HomeView,
   BrowseView,
@@ -46,12 +49,27 @@ export default function App({ isDesktop = false }: AppProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showContent, setShowContent] = useState(initialState.showContent);
 
+  const mobileStack = useMobileAppStackContext();
   const containerRef = useRef<HTMLDivElement>(null);
+  const mobileEntryInitializedRef = useRef(false);
 
   useEffect(() => {
     setIsMobileView(!isDesktop);
     setIsLayoutInitialized(true);
   }, [isDesktop]);
+
+  // Mobile-only: always enter the app in Home content first.
+  // Back from Home should return to the sections list (sidebar), not exit the app.
+  useEffect(() => {
+    if (!isMobileView) return;
+    if (!isLayoutInitialized) return;
+    if (mobileEntryInitializedRef.current) return;
+    mobileEntryInitializedRef.current = true;
+
+    setActiveView("home");
+    setSelectedPlaylistId(null);
+    setShowContent(true);
+  }, [isLayoutInitialized, isMobileView]);
 
   useEffect(() => {
     saveMusicState(activeView, selectedPlaylistId);
@@ -110,6 +128,7 @@ export default function App({ isDesktop = false }: AppProps) {
             onPlaylistSelect={(id) => handleViewSelect("playlist", id)}
             isMobileView={isMobileView}
             isWindowExpanded={isWindowExpanded}
+            onOpenLibrary={isMobileView ? handleBack : undefined}
           />
         );
       case "browse":
@@ -132,6 +151,7 @@ export default function App({ isDesktop = false }: AppProps) {
             onPlaylistSelect={(id) => handleViewSelect("playlist", id)}
             isMobileView={isMobileView}
             isWindowExpanded={isWindowExpanded}
+            onOpenLibrary={isMobileView ? handleBack : undefined}
           />
         );
     }
@@ -183,17 +203,27 @@ export default function App({ isDesktop = false }: AppProps) {
           )}
         >
           {isMobileView && (
-            <div className="px-4 py-3 flex items-center gap-3 sticky top-0 z-[1] select-none bg-background">
-              <button
-                onClick={handleBack}
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-muted hover:bg-muted/80 transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              {activeView !== "home" && (
-                <h1 className="text-lg font-semibold">{sectionTitle}</h1>
-              )}
-            </div>
+            <WindowNavShell
+              isMobile={true}
+              className="shrink-0 bg-background"
+              left={
+                activeView === "home" ? (
+                  <IosWindowNavBack
+                    canGoBack
+                    onBack={() => mobileStack?.popToHome()}
+                    backTitle="home"
+                  />
+                ) : (
+                  <IosWindowNavBack
+                    canGoBack
+                    onBack={handleBack}
+                    backTitle="home"
+                  />
+                )
+              }
+              center={<IosMobileNavTitle>misc</IosMobileNavTitle>}
+              right={<WindowNavSpacer isMobile={true} />}
+            />
           )}
 
           <div className="desk-scroll flex-1 min-h-0 overflow-y-auto">

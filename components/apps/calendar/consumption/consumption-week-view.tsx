@@ -14,6 +14,7 @@ interface ConsumptionWeekViewProps {
   events: ConsumptionCalendarEvent[];
   calendars: Calendar[];
   onDayClick?: (date: Date) => void;
+  isMobileView?: boolean;
 }
 
 function eventsForDay(events: CalendarEvent[], day: Date): CalendarEvent[] {
@@ -26,6 +27,7 @@ export function ConsumptionWeekView({
   events,
   calendars,
   onDayClick,
+  isMobileView = false,
 }: ConsumptionWeekViewProps) {
   const weekDays = getWeekDays(currentDate);
 
@@ -45,12 +47,14 @@ export function ConsumptionWeekView({
   const weekLabel = `${format(weekDays[0], "MMM d")} – ${format(weekDays[6], "MMM d, yyyy")}`;
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 h-full bg-background text-foreground">
-      <div className="px-4 py-3 border-b border-border bg-background shrink-0">
-        <h1 className="text-2xl font-semibold">{weekLabel}</h1>
-      </div>
+    <div className={cn("flex flex-col flex-1 min-h-0 h-full bg-background text-foreground min-w-0", isMobileView && "overflow-x-hidden")}>
+      {!isMobileView && (
+        <div className="border-b border-border bg-background shrink-0 px-4 py-3">
+          <h1 className="font-semibold truncate text-2xl">{weekLabel}</h1>
+        </div>
+      )}
 
-      <div className="grid grid-cols-7 border-b border-border bg-muted/30 shrink-0">
+      <div className="grid grid-cols-7 border-b border-border bg-muted/30 shrink-0 min-w-0">
         {weekDays.map((date) => {
           const dayIsToday = isToday(date);
           return (
@@ -59,11 +63,12 @@ export function ConsumptionWeekView({
               type="button"
               onClick={() => onDayClick?.(date)}
               className={cn(
-                "py-2 text-center border-l border-border first:border-l-0 transition-colors",
+                "py-2 text-center border-l border-border first:border-l-0 transition-colors min-w-0",
+                isMobileView && "py-1.5",
                 "can-hover:hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
               )}
             >
-              <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+              <div className={cn("font-medium text-muted-foreground uppercase tracking-wide", isMobileView ? "text-xs" : "text-[11px]")}>
                 {format(date, "EEE")}
               </div>
               <div
@@ -82,8 +87,8 @@ export function ConsumptionWeekView({
         })}
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto consumption-scrollbar">
-        <div className="grid grid-cols-7 min-h-full">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden consumption-scrollbar">
+        <div className="grid grid-cols-7 min-h-full min-w-0">
           {weekDays.map((date, idx) => {
             const dayEvents = eventsByDay[idx];
             const accentColor =
@@ -92,7 +97,7 @@ export function ConsumptionWeekView({
             return (
               <div
                 key={date.toISOString()}
-                className="border-l border-border first:border-l-0 min-h-[200px] flex flex-col"
+                className="border-l border-border first:border-l-0 min-h-[200px] flex flex-col min-w-0"
                 style={
                   accentColor
                     ? { borderTopWidth: 2, borderTopColor: accentColor, borderTopStyle: "solid" }
@@ -108,7 +113,10 @@ export function ConsumptionWeekView({
                         key={event.id}
                         type="button"
                         onClick={() => openConsumptionUrl(consumption.url)}
-                        className="w-full text-left text-[11px] font-medium px-1.5 py-1 rounded-[4px] truncate text-white shadow-sm can-hover:hover:brightness-110 transition-[filter]"
+                        className={cn(
+                          "w-full text-left font-medium px-1.5 py-1 rounded-[4px] truncate text-white shadow-sm can-hover:hover:brightness-110 transition-[filter]",
+                          isMobileView ? "text-xs" : "text-[11px]"
+                        )}
                         style={{ backgroundColor: color }}
                         title={event.title}
                       >

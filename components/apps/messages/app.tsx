@@ -7,7 +7,6 @@ import { v4 as uuidv4 } from "uuid";
 import {
   initialConversations,
   MESSAGES_DEFAULT_CONVERSATION_ID,
-  MESSAGES_SEED_VERSION,
 } from "@/data/messages/initial-conversations";
 import { MessageQueue } from "@/lib/messages/message-queue";
 import { soundEffects, shouldMuteIncomingSound } from "@/lib/messages/sound-effects";
@@ -16,6 +15,11 @@ import { pushUrl } from "@/lib/set-url";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { useFileMenu } from "@/lib/file-menu-context";
 import { loadMessagesConversation, saveMessagesConversation } from "@/lib/sidebar-persistence";
+import {
+  loadStoredConversations,
+  touchStoredConversationsCache,
+} from "@/lib/messages/load-stored-conversations";
+import { MessagesAppSkeleton } from "./messages-app-skeleton";
 import type { MessagesNotificationPayload } from "@/types/messages/notification";
 import type { MessagesConversationSelectRequest } from "@/types/messages/selection";
 
@@ -80,7 +84,13 @@ export default function App({
 
   // State
   const [isNewConversation, setIsNewConversation] = useState(false);
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>(() => {
+    if (typeof window === "undefined") return [];
+    return loadStoredConversations();
+  });
+  const [conversationsHydrated, setConversationsHydrated] = useState(
+    () => typeof window !== "undefined"
+  );
   const [activeConversation, setActiveConversation] = useState<string | null>(
     null
   );
@@ -209,6 +219,7 @@ export default function App({
   useEffect(() => {
     if (conversations.length > 0) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
+      touchStoredConversationsCache(conversations);
     }
   }, [conversations]);
 
@@ -218,112 +229,44 @@ export default function App({
     setIsLayoutInitialized(true);
   }, [isDesktop]);
 
-  // Get conversations from local storage
+  // Hydrate conversations and pick the initial thread
   useEffect(() => {
-    const storedSeedVersion = localStorage.getItem(SEED_VERSION_KEY);
-    if (storedSeedVersion !== String(MESSAGES_SEED_VERSION)) {
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.setItem(SEED_VERSION_KEY, String(MESSAGES_SEED_VERSION));
-    }
+    const allConversations = loadStoredConversations();
+    setConversations(allConversations);
 
-    const saved = localStorage.getItem(STORAGE_KEY);
-    const deletedInitialRaw = localStorage.getItem(DELETED_INITIAL_KEY);
     const urlParams = new URLSearchParams(window.location.search);
     const urlConversationId = urlParams.get("id");
 
-    // Load set of deleted initial conversation IDs
-    let deletedInitialIds: Set<string> = new Set();
-    if (deletedInitialRaw) {
-      try {
-        const parsed = JSON.parse(deletedInitialRaw);
-        if (Array.isArray(parsed)) {
-          deletedInitialIds = new Set(parsed);
-        }
-      } catch {
-        // Ignore parse errors
-      }
-    }
-
-    // Start with initial conversations, excluding deleted ones
-    let allConversations = initialConversations.filter(
-      (conv) => !deletedInitialIds.has(conv.id)
-    );
-
-    if (saved) {
-      try {
-        // Load saved conversations
-        const parsedConversations = JSON.parse(saved);
-
-        if (!Array.isArray(parsedConversations)) {
-          console.error("Invalid conversations format in localStorage");
-          setConversations(allConversations);
-          return;
-        }
-
-        // Create a map of initial conversation IDs for faster lookup
-        const initialIds = new Set(initialConversations.map((conv) => conv.id));
-
-        // Separate user-created and modified initial conversations
-        const userConversations = [];
-        const modifiedInitialConversations = new Map();
-
-        for (const savedConv of parsedConversations) {
-          if (initialIds.has(savedConv.id)) {
-            modifiedInitialConversations.set(savedConv.id, savedConv);
-          } else {
-            userConversations.push(savedConv);
-          }
-        }
-
-        // Update initial conversations with saved changes
-        allConversations = allConversations.map((conv) =>
-          modifiedInitialConversations.has(conv.id)
-            ? modifiedInitialConversations.get(conv.id)
-            : conv
-        );
-
-        // Add user-created conversations
-        allConversations = [...allConversations, ...userConversations];
-      } catch (error) {
-        console.error("Error parsing saved conversations:", error);
-      }
-    }
-
-    // Set conversations first
-    setConversations(allConversations);
-
-    // Handle conversation selection after setting conversations
     if (urlConversationId) {
-      // Check if the URL conversation exists
       const conversationExists = allConversations.some(
         (c) => c.id === urlConversationId
       );
       if (conversationExists) {
-        // If it exists, select it
         setActiveConversation(urlConversationId);
+        setConversationsHydrated(true);
         return;
       }
     }
 
-    // If mobile view, show the sidebar
     if (isMobileView) {
       updateUrl("/messages");
       setActiveConversation(null);
+      setConversationsHydrated(true);
       return;
     }
 
-    // Try restoring persisted conversation from sessionStorage (desktop/shell mode)
     const persistedId = loadMessagesConversation();
     if (persistedId && allConversations.some((c) => c.id === persistedId)) {
       setActiveConversation(persistedId);
+      setConversationsHydrated(true);
       return;
     }
 
-    // No URL ID, no persisted ID, and not mobile - select default conversation
     const defaultConversationId = getDefaultConversationId(allConversations);
     if (defaultConversationId) {
       setActiveConversation(defaultConversationId);
     }
+    setConversationsHydrated(true);
   }, [isMobileView, updateUrl]);
 
   // Reset unread count and persist active conversation whenever it changes
@@ -1066,8 +1009,8 @@ export default function App({
   }, [onUnreadBadgeCountChange, totalUnreadCount]);
 
   // Show empty background while initializing to prevent flash
-  if (!isLayoutInitialized) {
-    return <div className="h-full bg-background" />;
+  if (!isLayoutInitialized || (isMobileView && !conversationsHydrated)) {
+    return isMobileView ? <MessagesAppSkeleton /> : <div className="h-full bg-background" />;
   }
 
   return (

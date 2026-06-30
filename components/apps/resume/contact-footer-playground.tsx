@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/client";
+import { resetIosInputZoom } from "@/lib/ios-input-zoom";
 import {
   RESUME_PANEL_FILL_CLASS,
   RESUME_SECTION_HEADING_CLASS,
@@ -19,7 +20,7 @@ const TOAST_IMAGES: Record<"done" | "rude", string> = {
   rude: "/rude!.png",
 };
 
-export function ContactFooterPlayground() {
+export function ContactFooterPlayground({ isMobileView = false }: { isMobileView?: boolean }) {
   const [feedback, setFeedback] = useState("");
   const [toast, setToast] = useState<ToastKind | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -59,13 +60,17 @@ export function ContactFooterPlayground() {
           <textarea
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
+            onBlur={() => {
+              if (isMobileView) resetIosInputZoom();
+            }}
             placeholder="type here..."
             rows={3}
             className={cn(
               "w-full resize-none rounded-lg border",
               "border-zinc-200/80 dark:border-zinc-700/45",
               RESUME_PANEL_FILL_CLASS,
-              "px-3 py-2 text-sm text-zinc-800 dark:text-zinc-100",
+              "px-3 py-2 text-zinc-800 dark:text-zinc-100",
+              isMobileView ? "text-base" : "text-sm",
               "placeholder:text-zinc-400 dark:placeholder:text-zinc-500",
               "outline-none focus:border-zinc-300 dark:focus:border-zinc-600 transition-colors"
             )}

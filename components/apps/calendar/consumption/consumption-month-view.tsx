@@ -9,6 +9,7 @@ import type { ConsumptionCalendarEvent } from "./logs-to-events";
 import { BRAND_COLORS, categoryDotClassName } from "./category-styles";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAYS_MOBILE = ["S", "M", "T", "W", "T", "F", "S"];
 
 function eventsForDay(events: CalendarEvent[], day: Date): CalendarEvent[] {
   const dayStr = format(day, "yyyy-MM-dd");
@@ -24,6 +25,7 @@ interface ConsumptionMonthViewProps {
   events: ConsumptionCalendarEvent[];
   calendars: Calendar[];
   onDayClick: (date: Date) => void;
+  isMobileView?: boolean;
 }
 
 export function ConsumptionMonthView({
@@ -31,28 +33,37 @@ export function ConsumptionMonthView({
   events,
   calendars,
   onDayClick,
+  isMobileView = false,
 }: ConsumptionMonthViewProps) {
   const days = useMemo(() => getMonthViewDays(currentDate), [currentDate]);
+  const weekdayLabels = isMobileView ? WEEKDAYS_MOBILE : WEEKDAYS;
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 h-full bg-background text-foreground">
-      <div className="px-4 py-3 border-b border-border bg-background shrink-0">
-        <h1 className="text-2xl font-semibold">{format(currentDate, "MMMM yyyy")}</h1>
-      </div>
+    <div className={cn("flex flex-col flex-1 min-h-0 h-full bg-background text-foreground min-w-0", isMobileView && "overflow-x-hidden")}>
+      {!isMobileView && (
+        <div className="border-b border-border bg-background shrink-0 px-4 py-3">
+          <h1 className="font-semibold truncate text-2xl">
+            {format(currentDate, "MMMM yyyy")}
+          </h1>
+        </div>
+      )}
 
-      <div className="grid grid-cols-7 border-b border-border bg-muted/30 shrink-0">
-        {WEEKDAYS.map((day) => (
+      <div className="grid grid-cols-7 border-b border-border bg-muted/30 shrink-0 min-w-0">
+        {weekdayLabels.map((day, index) => (
           <div
-            key={day}
-            className="text-center py-2 text-sm font-medium text-muted-foreground"
+            key={`${day}-${index}`}
+            className={cn(
+              "text-center font-medium text-muted-foreground py-2 text-sm",
+              isMobileView && "text-base py-2.5"
+            )}
           >
             {day}
           </div>
         ))}
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto consumption-scrollbar">
-        <div className="grid grid-cols-7 auto-rows-fr min-h-full">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden consumption-scrollbar">
+        <div className="grid grid-cols-7 auto-rows-fr min-h-full min-w-0">
           {days.map((day) => {
             const dayEvents = eventsForDay(events, day);
             const inMonth = isSameMonth(day, currentDate);
@@ -65,7 +76,8 @@ export function ConsumptionMonthView({
                 type="button"
                 onClick={() => onDayClick(day)}
                 className={cn(
-                  "flex flex-col min-h-[88px] border-b border-r border-border p-1.5 transition-colors",
+                  "flex flex-col border-b border-r border-border transition-colors min-w-0",
+                  isMobileView ? "min-h-[72px] p-1" : "min-h-[88px] p-1.5",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
                   !inMonth && "bg-muted/10 text-muted-foreground/50",
                   inMonth && "can-hover:hover:bg-muted/30",
@@ -76,6 +88,7 @@ export function ConsumptionMonthView({
                   <span
                     className={cn(
                       "text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full",
+                      isMobileView && "text-base w-8 h-8",
                       dayIsToday && inMonth && "text-white"
                     )}
                     style={

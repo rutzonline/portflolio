@@ -24,7 +24,7 @@ type BodyEntry = {
   el: HTMLDivElement;
 };
 
-export function ContactCharmsPlayground() {
+export function ContactCharmsPlayground({ isMobileView = false }: { isMobileView?: boolean }) {
   const blockRef = useRef<HTMLDivElement>(null);
   const flowerLayerRef = useRef<HTMLDivElement>(null);
   const bodyMapRef = useRef<Map<number, BodyEntry>>(new Map());
@@ -255,7 +255,12 @@ export function ContactCharmsPlayground() {
       >
         <div ref={flowerLayerRef} className="absolute inset-0 overflow-hidden pointer-events-none z-0" />
 
-        <div className="absolute inset-x-0 top-0 z-[2] flex gap-2.5 items-center pointer-events-auto flex-wrap px-3 pt-1">
+        <div
+          className={cn(
+            "absolute inset-x-0 top-0 z-[2] flex gap-2.5 items-center pointer-events-auto px-3 pt-1",
+            isMobileView ? "flex-nowrap overflow-x-auto" : "flex-wrap"
+          )}
+        >
           {CHARM_IMAGES.map((src, i) => (
             <button
               key={src}

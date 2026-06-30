@@ -22,7 +22,7 @@ import {
   type ConsumptionSubview,
   type ConsumptionCalendarView,
 } from "@/lib/sidebar-persistence";
-import { navigateDate } from "../utils";
+import { navigateDate, getWeekDays } from "../utils";
 import type { ViewType } from "../types";
 import { ConsumptionList } from "./consumption-list";
 import { ConsumptionWeekView } from "./consumption-week-view";
@@ -39,6 +39,8 @@ interface ConsumptionShellProps {
   currentDate: Date;
   onDateChange: (date: Date) => void;
   isMobileView?: boolean;
+  subview?: ConsumptionSubview;
+  onSubviewChange?: (next: ConsumptionSubview) => void;
 }
 
 const SUBVIEW_OPTIONS: { value: ConsumptionSubview; label: string }[] = [
@@ -85,14 +87,46 @@ function buildFetchRange(date: Date): { start: string; end: string } {
   return { start: `${year}-01-01`, end: `${year}-12-31` };
 }
 
-export function ConsumptionShell({ currentDate, onDateChange, isMobileView = false }: ConsumptionShellProps) {
-  const [subview, setSubview] = useState<ConsumptionSubview>("calendar");
+function getMobileToolbarTitle(
+  currentDate: Date,
+  subview: ConsumptionSubview,
+  calendarView: ConsumptionCalendarView
+): string | null {
+  if (subview === "list") return null;
+
+  switch (calendarView) {
+    case "week": {
+      const weekDays = getWeekDays(currentDate);
+      return `${format(weekDays[0], "MMM d")} – ${format(weekDays[6], "MMM d, yyyy")}`;
+    }
+    case "year":
+      return String(currentDate.getFullYear());
+    case "month":
+    default:
+      return format(currentDate, "MMMM yyyy");
+  }
+}
+
+export function ConsumptionShell({
+  currentDate,
+  onDateChange,
+  isMobileView = false,
+  subview: controlledSubview,
+  onSubviewChange,
+}: ConsumptionShellProps) {
+  const [uncontrolledSubview, setUncontrolledSubview] = useState<ConsumptionSubview>("calendar");
   const [calendarView, setCalendarView] = useState<ConsumptionCalendarView>("month");
   const [highlightDate, setHighlightDate] = useState<string | null>(null);
   const [prefsLoaded, setPrefsLoaded] = useState(false);
+  const subview = controlledSubview ?? uncontrolledSubview;
 
   useEffect(() => {
-    setSubview(loadConsumptionSubview());
+    const savedSubview = loadConsumptionSubview();
+    if (controlledSubview == null) {
+      setUncontrolledSubview(savedSubview);
+    } else {
+      onSubviewChange?.(savedSubview);
+    }
     setCalendarView(loadConsumptionCalendarView());
     setPrefsLoaded(true);
   }, []);
@@ -124,13 +158,17 @@ export function ConsumptionShell({ currentDate, onDateChange, isMobileView = fal
     return () => window.clearTimeout(timer);
   }, [highlightDate]);
 
-  const handleSubviewChange = (next: ConsumptionSubview) => {
-    setSubview(next);
+  const handleSubviewChange = useCallback((next: ConsumptionSubview) => {
+    if (controlledSubview == null) {
+      setUncontrolledSubview(next);
+    } else {
+      onSubviewChange?.(next);
+    }
     saveConsumptionSubview(next);
     if (next === "calendar") {
       setHighlightDate(null);
     }
-  };
+  }, [controlledSubview, onSubviewChange]);
 
   const handleCalendarViewChange = (next: ConsumptionCalendarView) => {
     setCalendarView(next);
@@ -156,10 +194,9 @@ export function ConsumptionShell({ currentDate, onDateChange, isMobileView = fal
       const dateKey = format(date, "yyyy-MM-dd");
       onDateChange(date);
       setHighlightDate(dateKey);
-      setSubview("list");
-      saveConsumptionSubview("list");
+      handleSubviewChange("list");
     },
-    [onDateChange]
+    [onDateChange, handleSubviewChange]
   );
 
   const handleMonthClick = useCallback(
@@ -172,36 +209,114 @@ export function ConsumptionShell({ currentDate, onDateChange, isMobileView = fal
     [onDateChange]
   );
 
+  const mobileToolbarTitle = useMemo(
+    () => getMobileToolbarTitle(currentDate, subview, calendarView),
+    [currentDate, subview, calendarView]
+  );
+
   if (!prefsLoaded) {
     return <div className="h-full bg-background" />;
   }
 
   return (
-    <div className={cn("flex flex-col h-full min-h-0 bg-background text-foreground font-[system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro',sans-serif]", isMobileView && "pb-2")}>
+    <div className={cn("flex flex-col h-full min-h-0 bg-background text-foreground font-[system-ui,-apple-system,BlinkMacSystemFont,'SF_Pro',sans-serif]", isMobileView && "pb-2 max-w-full overflow-x-hidden")}>
       <div
         className={cn(
-          "px-4 border-b border-border/80 bg-muted/20 backdrop-blur-xl shrink-0",
-          isMobileView ? "pt-2 pb-2" : "pt-3 pb-2"
+          "border-b border-border/80 bg-muted/20 backdrop-blur-xl shrink-0 min-w-0",
+          isMobileView ? "px-3 pt-2 pb-2" : "px-4 pt-3 pb-2"
         )}
       >
-        <p className="text-sm text-muted-foreground">
-          using this space to keep track of things I&apos;ve read (updated weekly)
-          {(usingFallback || allUsingFallback) && (
-            <span className="block text-xs text-amber-600/90 dark:text-amber-400/90 mt-1">
-              Showing demo data — connect Supabase or run migrations to load your rows.
-            </span>
+        {!isMobileView && (
+          <p className="text-sm text-muted-foreground">
+            using this space to keep track of things I&apos;ve read (updated weekly)
+            {(usingFallback || allUsingFallback) && (
+              <span className="block text-xs text-amber-600/90 dark:text-amber-400/90 mt-1">
+                Showing demo data — connect Supabase or run migrations to load your rows.
+              </span>
+            )}
+          </p>
+        )}
+        {isMobileView && (usingFallback || allUsingFallback) && (
+          <p className="text-xs text-amber-600/90 dark:text-amber-400/90">
+            Showing demo data — connect Supabase or run migrations to load your rows.
+          </p>
+        )}
+        <div
+          className={cn(
+            isMobileView ? "mt-2 flex flex-col gap-2" : "mt-3 flex items-center justify-between gap-2"
           )}
-        </p>
-        <div className="flex items-center justify-between gap-2 mt-3">
-          <div className="flex items-center gap-2" onMouseDown={(e) => e.stopPropagation()}>
-            <div className="flex items-center bg-background/50 rounded-lg p-0.5 border border-border/50 backdrop-blur-md">
+        >
+          {isMobileView ? (
+            <>
+              {mobileToolbarTitle && (
+                <h1 className="font-semibold text-xl text-center truncate px-2">
+                  {mobileToolbarTitle}
+                </h1>
+              )}
+              <div
+                className="flex items-center justify-between gap-3"
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center bg-background/50 rounded-lg p-0.5 border border-border/50 backdrop-blur-md shrink-0">
+                  {SUBVIEW_OPTIONS.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => handleSubviewChange(option.value)}
+                      className={cn(
+                        "font-medium rounded-md transition-colors px-3 py-1.5 text-sm",
+                        subview === option.value
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground can-hover:hover:text-foreground"
+                      )}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-9 px-3 text-sm shrink-0">
+                      Categories
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent side="bottom" align="end" className="w-auto p-3">
+                    <div className="flex flex-col gap-1.5">
+                      {CONSUMPTION_CATEGORIES.map((category) => {
+                        const color = CATEGORY_COLORS[category];
+                        return (
+                          <span
+                            key={category}
+                            className="inline-flex items-center gap-2 text-sm text-foreground"
+                          >
+                            <span
+                              className={cn("w-2.5 h-2.5 rounded-full shrink-0", categoryDotClassName(color))}
+                              style={{ backgroundColor: color }}
+                              aria-hidden
+                            />
+                            {CATEGORY_LABELS[category]}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </>
+          ) : (
+          <>
+          <div
+            className="flex items-center gap-2 min-w-0"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center bg-background/50 rounded-lg p-0.5 border border-border/50 backdrop-blur-md shrink-0">
               {SUBVIEW_OPTIONS.map((option) => (
                 <button
                   key={option.value}
                   type="button"
                   onClick={() => handleSubviewChange(option.value)}
                   className={cn(
-                    "px-3 py-1 text-sm font-medium rounded-md transition-colors",
+                    "font-medium rounded-md transition-colors px-3 py-1 text-sm",
                     subview === option.value
                       ? "bg-background text-foreground shadow-sm"
                       : "text-muted-foreground can-hover:hover:text-foreground"
@@ -212,14 +327,14 @@ export function ConsumptionShell({ currentDate, onDateChange, isMobileView = fal
               ))}
             </div>
             {subview === "calendar" && (
-              <div className="flex items-center bg-background/50 rounded-lg p-0.5 border border-border/50 backdrop-blur-md">
+              <div className="flex items-center bg-background/50 rounded-lg p-0.5 border border-border/50 backdrop-blur-md shrink-0">
                 {CALENDAR_VIEW_OPTIONS.map((option) => (
                   <button
                     key={option.value}
                     type="button"
                     onClick={() => handleCalendarViewChange(option.value)}
                     className={cn(
-                      "px-2.5 py-1 text-xs font-medium rounded-md transition-colors",
+                      "font-medium rounded-md transition-colors px-2.5 py-1 text-xs",
                       calendarView === option.value
                         ? "bg-background text-foreground shadow-sm"
                         : "text-muted-foreground can-hover:hover:text-foreground"
@@ -232,58 +347,63 @@ export function ConsumptionShell({ currentDate, onDateChange, isMobileView = fal
             )}
           </div>
 
-          <div className="flex items-center gap-1 shrink-0" onMouseDown={(e) => e.stopPropagation()}>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="h-8 px-3 text-sm">
-                  Categories
+          <div
+            className="flex items-center gap-1 shrink-0"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-8 px-3 text-sm">
+                      Categories
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent side="bottom" align="end" className="w-auto p-3">
+                    <div className="flex flex-col gap-1.5">
+                      {CONSUMPTION_CATEGORIES.map((category) => {
+                        const color = CATEGORY_COLORS[category];
+                        return (
+                          <span
+                            key={category}
+                            className="inline-flex items-center gap-2 text-xs text-foreground"
+                          >
+                            <span
+                              className={cn("w-2.5 h-2.5 rounded-full shrink-0", categoryDotClassName(color))}
+                              style={{ backgroundColor: color }}
+                              aria-hidden
+                            />
+                            {CATEGORY_LABELS[category]}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleNavigate("prev")}
+                  className="h-8 w-8"
+                >
+                  <ChevronLeft className="h-4 w-4" />
                 </Button>
-              </PopoverTrigger>
-              <PopoverContent side="bottom" align="end" className="w-auto p-3">
-                <div className="flex flex-col gap-1.5">
-                  {CONSUMPTION_CATEGORIES.map((category) => {
-                    const color = CATEGORY_COLORS[category];
-                    return (
-                      <span
-                        key={category}
-                        className="inline-flex items-center gap-2 text-xs text-foreground"
-                      >
-                        <span
-                          className={cn("w-2.5 h-2.5 rounded-full shrink-0", categoryDotClassName(color))}
-                          style={{ backgroundColor: color }}
-                          aria-hidden
-                        />
-                        {CATEGORY_LABELS[category]}
-                      </span>
-                    );
-                  })}
-                </div>
-              </PopoverContent>
-            </Popover>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => handleNavigate("prev")}
-              className="h-8 w-8"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleToday} className="h-8 px-3 text-sm">
-              Today
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => handleNavigate("next")}
-              className="h-8 w-8"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+                <Button variant="outline" size="sm" onClick={handleToday} className="h-8 px-3 text-sm">
+                  Today
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleNavigate("next")}
+                  className="h-8 w-8"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
           </div>
+          </>
+          )}
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-hidden relative flex flex-col">
+      <div className="flex-1 min-h-0 overflow-hidden relative flex flex-col min-w-0">
         {((subview === "list" ? allLoading : loading) &&
           (subview === "list" ? allLogs.length === 0 : logs.length === 0)) && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-[1px]">
@@ -305,6 +425,7 @@ export function ConsumptionShell({ currentDate, onDateChange, isMobileView = fal
             events={visibleEvents}
             calendars={CONSUMPTION_CALENDARS}
             onDayClick={handleDayClick}
+            isMobileView={isMobileView}
           />
         ) : calendarView === "week" ? (
           <ConsumptionWeekView
@@ -312,6 +433,7 @@ export function ConsumptionShell({ currentDate, onDateChange, isMobileView = fal
             events={visibleEvents}
             calendars={CONSUMPTION_CALENDARS}
             onDayClick={handleDayClick}
+            isMobileView={isMobileView}
           />
         ) : (
           <ConsumptionYearView
@@ -320,6 +442,7 @@ export function ConsumptionShell({ currentDate, onDateChange, isMobileView = fal
             calendars={CONSUMPTION_CALENDARS}
             onDayClick={handleDayClick}
             onMonthClick={handleMonthClick}
+            isMobileView={isMobileView}
           />
         )}
       </div>

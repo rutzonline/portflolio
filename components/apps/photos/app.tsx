@@ -47,12 +47,25 @@ export default function App({ isDesktop = false }: AppProps) {
   const [selectedInGridId, setSelectedInGridId] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const mobileEntryInitializedRef = useRef(false);
 
   // Mobile layout is determined by shell context, not viewport width
   useEffect(() => {
     setIsMobileView(!isDesktop);
     setIsLayoutInitialized(true);
   }, [isDesktop]);
+
+  // Mobile-only: open directly into Library grid (skip sidebar landing).
+  useEffect(() => {
+    if (!isMobileView) return;
+    if (!isLayoutInitialized) return;
+    if (mobileEntryInitializedRef.current) return;
+    mobileEntryInitializedRef.current = true;
+
+    setActiveView("library");
+    setShowGrid(true);
+    setSelectedPhotoId(null);
+  }, [isLayoutInitialized, isMobileView]);
 
   // Mark view as loaded after first render
   useEffect(() => {
@@ -153,10 +166,57 @@ export default function App({ isDesktop = false }: AppProps) {
     return <div className="h-full bg-background" />;
   }
 
-  // Mobile: show either sidebar or grid
+  if (isMobileView) {
+    return (
+      <div
+        ref={containerRef}
+        data-app="photos"
+        tabIndex={-1}
+        className="flex h-full relative outline-none overflow-hidden"
+      >
+        <main className="h-full w-full bg-background flex flex-col overflow-hidden">
+          <Nav isMobileView isScrolled={isScrolled} isDesktop={isDesktop} title="Photos" />
+          <div className="flex-1 min-h-0 overflow-hidden">
+            {!selectedPhoto ? (
+              <PhotosGrid
+                photos={filteredPhotos}
+                loading={loading}
+                error={error}
+                timeFilter={timeFilter}
+                onTimeFilterChange={setTimeFilter}
+                isMobileView={isMobileView}
+                onBack={handleBack}
+                activeView="library"
+                collections={collections}
+                isDesktop={isDesktop}
+                onToggleFavorite={toggleFavorite}
+                onPhotoSelect={handlePhotoSelect}
+                selectedInGridId={selectedInGridId}
+                onGridSelect={handleGridSelect}
+              />
+            ) : (
+              <PhotoViewer
+                photo={selectedPhoto}
+                photos={filteredPhotos}
+                currentIndex={selectedPhotoIndex}
+                totalPhotos={filteredPhotos.length}
+                onBack={handleCloseViewer}
+                onPrevious={handlePreviousPhoto}
+                onNext={handleNextPhoto}
+                onToggleFavorite={toggleFavorite}
+                isMobileView={isMobileView}
+                isDesktop={isDesktop}
+              />
+            )}
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   // Desktop: show both side by side
-  const showSidebar = !isMobileView || !showGrid;
-  const showPhotosGrid = !isMobileView || showGrid;
+  const showSidebar = true;
+  const showPhotosGrid = true;
 
   return (
     <div

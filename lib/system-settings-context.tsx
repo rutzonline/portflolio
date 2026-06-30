@@ -3,6 +3,11 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { soundEffects } from "@/lib/messages/sound-effects";
 import { OSVersion, getOSVersion, DEFAULT_OS_VERSION_ID } from "@/lib/os-versions";
+import {
+  DEFAULT_MOBILE_WALLPAPER_ID,
+  getMobileWallpaper,
+  type MobileWallpaper,
+} from "@/lib/mobile-wallpapers";
 
 export type AirdropMode = "contacts" | "everyone";
 export type FocusMode = "off" | "doNotDisturb" | "sleep" | "reduceInterruptions";
@@ -14,6 +19,8 @@ interface SystemSettingsContextValue {
   setVolume: (value: number) => void;
   wifiEnabled: boolean;
   setWifiEnabled: (enabled: boolean) => void;
+  airplaneModeEnabled: boolean;
+  setAirplaneModeEnabled: (enabled: boolean) => void;
   bluetoothEnabled: boolean;
   setBluetoothEnabled: (enabled: boolean) => void;
   airdropMode: AirdropMode;
@@ -23,16 +30,21 @@ interface SystemSettingsContextValue {
   osVersionId: string;
   setOSVersionId: (id: string) => void;
   currentOS: OSVersion;
+  mobileWallpaperId: string;
+  setMobileWallpaperId: (id: string) => void;
+  currentMobileWallpaper: MobileWallpaper;
 }
 
 const SystemSettingsContext = createContext<SystemSettingsContextValue | null>(null);
 
 const BRIGHTNESS_KEY = "system-brightness";
 const WIFI_KEY = "settings-wifi-enabled";
+const AIRPLANE_KEY = "settings-airplane-mode";
 const BLUETOOTH_KEY = "settings-bluetooth-enabled";
 const AIRDROP_KEY = "system-airdrop";
 const FOCUS_KEY = "system-focus";
 const OS_VERSION_KEY = "system-os-version";
+const MOBILE_WALLPAPER_KEY = "mobile-wallpaper-id";
 
 // Helper to load settings from localStorage synchronously
 function getInitialSettings() {
@@ -40,27 +52,33 @@ function getInitialSettings() {
     return {
       brightness: 100,
       wifiEnabled: true,
+      airplaneModeEnabled: false,
       bluetoothEnabled: true,
       airdropMode: "contacts" as AirdropMode,
       focusMode: "off" as FocusMode,
       osVersionId: DEFAULT_OS_VERSION_ID,
+      mobileWallpaperId: DEFAULT_MOBILE_WALLPAPER_ID,
     };
   }
 
   const storedBrightness = localStorage.getItem(BRIGHTNESS_KEY);
   const storedWifi = localStorage.getItem(WIFI_KEY);
+  const storedAirplane = localStorage.getItem(AIRPLANE_KEY);
   const storedBluetooth = localStorage.getItem(BLUETOOTH_KEY);
   const storedAirdrop = localStorage.getItem(AIRDROP_KEY);
   const storedFocus = localStorage.getItem(FOCUS_KEY);
   const storedOSVersion = localStorage.getItem(OS_VERSION_KEY);
+  const storedMobileWallpaper = localStorage.getItem(MOBILE_WALLPAPER_KEY);
 
   return {
     brightness: storedBrightness ? parseFloat(storedBrightness) : 100,
     wifiEnabled: storedWifi === null ? true : storedWifi === "true",
+    airplaneModeEnabled: storedAirplane === "true",
     bluetoothEnabled: storedBluetooth === null ? true : storedBluetooth === "true",
     airdropMode: (storedAirdrop === "contacts" || storedAirdrop === "everyone" ? storedAirdrop : "contacts") as AirdropMode,
     focusMode: (storedFocus === "off" || storedFocus === "doNotDisturb" || storedFocus === "sleep" || storedFocus === "reduceInterruptions" ? storedFocus : "off") as FocusMode,
     osVersionId: storedOSVersion || DEFAULT_OS_VERSION_ID,
+    mobileWallpaperId: storedMobileWallpaper || DEFAULT_MOBILE_WALLPAPER_ID,
   };
 }
 
@@ -76,10 +94,12 @@ export function SystemSettingsProvider({ children }: { children: React.ReactNode
   const [brightness, setBrightnessState] = useState(initial.brightness);
   const [volume, setVolumeState] = useState(85);
   const [wifiEnabled, setWifiEnabledState] = useState(initial.wifiEnabled);
+  const [airplaneModeEnabled, setAirplaneModeEnabledState] = useState(initial.airplaneModeEnabled);
   const [bluetoothEnabled, setBluetoothEnabledState] = useState(initial.bluetoothEnabled);
   const [airdropMode, setAirdropModeState] = useState<AirdropMode>(initial.airdropMode);
   const [focusMode, setFocusModeState] = useState<FocusMode>(initial.focusMode);
   const [osVersionId, setOSVersionIdState] = useState<string>(initial.osVersionId);
+  const [mobileWallpaperId, setMobileWallpaperIdState] = useState<string>(initial.mobileWallpaperId);
 
   // Load volume from soundEffects on mount (can't be done synchronously)
   useEffect(() => {
@@ -106,6 +126,19 @@ export function SystemSettingsProvider({ children }: { children: React.ReactNode
       localStorage.setItem(WIFI_KEY, String(enabled));
     }
   }, []);
+
+  const setAirplaneModeEnabled = useCallback(
+    (enabled: boolean) => {
+      setAirplaneModeEnabledState(enabled);
+      if (typeof window !== "undefined") {
+        localStorage.setItem(AIRPLANE_KEY, String(enabled));
+      }
+      if (enabled) {
+        setWifiEnabled(false);
+      }
+    },
+    [setWifiEnabled]
+  );
 
   const setBluetoothEnabled = useCallback((enabled: boolean) => {
     setBluetoothEnabledState(enabled);
@@ -135,10 +168,21 @@ export function SystemSettingsProvider({ children }: { children: React.ReactNode
     }
   }, []);
 
+  const setMobileWallpaperId = useCallback((id: string) => {
+    setMobileWallpaperIdState(id);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(MOBILE_WALLPAPER_KEY, id);
+    }
+  }, []);
+
   const currentOS = useMemo(() => getOSVersion(osVersionId), [osVersionId]);
+  const currentMobileWallpaper = useMemo(
+    () => getMobileWallpaper(mobileWallpaperId),
+    [mobileWallpaperId]
+  );
 
   return (
-    <SystemSettingsContext.Provider value={{ brightness, setBrightness, volume, setVolume, wifiEnabled, setWifiEnabled, bluetoothEnabled, setBluetoothEnabled, airdropMode, setAirdropMode, focusMode, setFocusMode, osVersionId, setOSVersionId, currentOS }}>
+    <SystemSettingsContext.Provider value={{ brightness, setBrightness, volume, setVolume, wifiEnabled, setWifiEnabled, airplaneModeEnabled, setAirplaneModeEnabled, bluetoothEnabled, setBluetoothEnabled, airdropMode, setAirdropMode, focusMode, setFocusMode, osVersionId, setOSVersionId, currentOS, mobileWallpaperId, setMobileWallpaperId, currentMobileWallpaper }}>
       {children}
       {/* Brightness overlay - dims everything below system overlays */}
       {brightness < 100 && (
@@ -167,6 +211,8 @@ const defaultSettings: SystemSettingsContextValue = {
   setVolume: () => {},
   wifiEnabled: true,
   setWifiEnabled: () => {},
+  airplaneModeEnabled: false,
+  setAirplaneModeEnabled: () => {},
   bluetoothEnabled: true,
   setBluetoothEnabled: () => {},
   airdropMode: "contacts",
@@ -176,6 +222,9 @@ const defaultSettings: SystemSettingsContextValue = {
   osVersionId: DEFAULT_OS_VERSION_ID,
   setOSVersionId: () => {},
   currentOS: getOSVersion(DEFAULT_OS_VERSION_ID),
+  mobileWallpaperId: DEFAULT_MOBILE_WALLPAPER_ID,
+  setMobileWallpaperId: () => {},
+  currentMobileWallpaper: getMobileWallpaper(DEFAULT_MOBILE_WALLPAPER_ID),
 };
 
 export function useSystemSettingsSafe(): SystemSettingsContextValue {

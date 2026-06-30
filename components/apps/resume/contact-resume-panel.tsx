@@ -59,7 +59,7 @@ export function ContactResumePanel({ isMobileView = false }: { isMobileView?: bo
           </div>
         </div>
 
-        <ContactFooterPlayground />
+        <ContactFooterPlayground isMobileView={isMobileView} />
       </div>
     </div>
   );

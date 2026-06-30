@@ -6,6 +6,7 @@ import { RecentsProvider } from "@/lib/recents-context";
 import type { Note as NoteType } from "@/lib/notes/types";
 import { APP_SHELL_URL_CHANGE_EVENT } from "@/lib/set-url";
 import { getNoteSlugFromShellPathname } from "@/lib/shell-routing";
+import { MessagesAppSkeleton } from "@/components/apps/messages/messages-app-skeleton";
 import { IosShell } from "./ios/ios-shell";
 
 const NotesApp = dynamic(() => import("@/components/apps/notes/notes-app").then((mod) => mod.NotesApp), {
@@ -13,7 +14,7 @@ const NotesApp = dynamic(() => import("@/components/apps/notes/notes-app").then(
 });
 const MessagesApp = dynamic(
   () => import("@/components/apps/messages/messages-app").then((mod) => mod.MessagesApp),
-  { ssr: false }
+  { ssr: false, loading: () => <MessagesAppSkeleton /> }
 );
 const SettingsApp = dynamic(
   () => import("@/components/apps/settings/settings-app").then((mod) => mod.SettingsApp),

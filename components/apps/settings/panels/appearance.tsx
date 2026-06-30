@@ -6,6 +6,7 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { useSystemSettings } from "@/lib/system-settings-context";
+import { MOBILE_WALLPAPERS, getMobileWallpaperPath } from "@/lib/mobile-wallpapers";
 import { OS_VERSIONS, getThumbnailPath } from "@/lib/os-versions";
 
 type ThemeOption = "system" | "light" | "dark";
@@ -241,6 +242,48 @@ function OSVersionCard({
   );
 }
 
+function MobileWallpaperCard({
+  wallpaperId,
+  name,
+  isSelected,
+  onClick,
+}: {
+  wallpaperId: string;
+  name: string;
+  isSelected: boolean;
+  onClick: () => void;
+}) {
+  const thumbnailPath = getMobileWallpaperPath(wallpaperId);
+
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "relative flex flex-col items-center p-3 rounded-xl transition-all",
+        "can-hover:hover:bg-muted/50",
+        isSelected && "ring-2 ring-accent-blue bg-accent-blue/10"
+      )}
+    >
+      {isSelected && (
+        <div className="absolute top-2 right-2 w-5 h-5 bg-accent-blue rounded-full flex items-center justify-center">
+          <Check className="w-3 h-3 text-white" />
+        </div>
+      )}
+      <div className="w-16 h-16 rounded-full overflow-hidden bg-muted mb-2 relative">
+        <Image
+          src={thumbnailPath}
+          alt={name}
+          fill
+          sizes="64px"
+          className="object-cover"
+          unoptimized
+        />
+      </div>
+      <span className="text-xs font-medium">{name}</span>
+    </button>
+  );
+}
+
 interface AppearancePanelProps {
   isMobile?: boolean;
   scrollToOSVersion?: boolean;
@@ -249,7 +292,7 @@ interface AppearancePanelProps {
 
 export function AppearancePanel({ isMobile = false, scrollToOSVersion, onScrollComplete }: AppearancePanelProps) {
   const { theme, setTheme } = useTheme();
-  const { osVersionId, setOSVersionId } = useSystemSettings();
+  const { osVersionId, setOSVersionId, mobileWallpaperId, setMobileWallpaperId } = useSystemSettings();
   const osVersionRef = useRef<HTMLDivElement>(null);
 
   // Scroll to OS version section when requested
@@ -318,23 +361,22 @@ export function AppearancePanel({ isMobile = false, scrollToOSVersion, onScrollC
           </div>
         </div>
 
-        {/* macOS Version section */}
+        {/* Wallpaper section */}
         <div ref={osVersionRef} className="pt-4">
           <p className="text-sm text-muted-foreground uppercase tracking-wide px-2">
-            macOS Version
+            Wallpaper
           </p>
         </div>
         <div className="rounded-xl bg-background p-4">
-          <div className="grid grid-cols-3 gap-2">
-            {OS_VERSIONS.map((os) => (
-              <OSVersionCard
-                key={os.id}
-                osId={os.id}
-                name={os.name}
-                version={os.version}
-                isSelected={os.id === osVersionId}
-                onClick={() => setOSVersionId(os.id)}
-                              />
+          <div className="grid grid-cols-2 gap-3">
+            {MOBILE_WALLPAPERS.map((wallpaper) => (
+              <MobileWallpaperCard
+                key={wallpaper.id}
+                wallpaperId={wallpaper.id}
+                name={wallpaper.name}
+                isSelected={wallpaper.id === mobileWallpaperId}
+                onClick={() => setMobileWallpaperId(wallpaper.id)}
+              />
             ))}
           </div>
         </div>

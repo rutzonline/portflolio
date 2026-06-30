@@ -11,6 +11,7 @@ interface UseWindowNavBehaviorProps {
   isMobile?: boolean;
   shellEnabled?: boolean;
   allowStandaloneClose?: boolean;
+  mobileBackTone?: "accent" | "onAccent";
 }
 
 export function useWindowNavBehavior({
@@ -18,6 +19,7 @@ export function useWindowNavBehavior({
   isMobile = false,
   shellEnabled = true,
   allowStandaloneClose = true,
+  mobileBackTone = "accent",
 }: UseWindowNavBehaviorProps) {
   const windowFocus = useWindowFocus();
   const mobileStack = useMobileAppStackContext();
@@ -30,6 +32,7 @@ export function useWindowNavBehavior({
         canGoBack: true,
         onBack: mobileStack.popToHome,
         backTitle: "Home",
+        tone: mobileBackTone,
       });
     }
 
@@ -53,6 +56,7 @@ export function useWindowNavBehavior({
     inShell,
     isMobile,
     mobileStack,
+    mobileBackTone,
     windowFocus,
   ]);
 

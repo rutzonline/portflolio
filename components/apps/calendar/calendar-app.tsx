@@ -9,8 +9,12 @@ import {
   loadCalendarAppMode,
   saveCalendarAppMode,
   saveConsumptionMonth,
+  loadConsumptionSubview,
+  saveConsumptionSubview,
   type CalendarAppMode,
+  type ConsumptionSubview,
 } from "@/lib/sidebar-persistence";
+import { useMobileAppStackContext } from "@/components/mobile/ios/mobile-app-stack-context";
 
 interface CalendarAppProps {
   isMobile?: boolean;
@@ -23,15 +27,20 @@ function toMonthKey(date: Date): string {
 
 export function CalendarApp({ isMobile = false, inShell = false }: CalendarAppProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const mobileStack = useMobileAppStackContext();
   const [appMode, setAppMode] = useState<CalendarAppMode>("consumption");
   const [currentDate, setCurrentDate] = useState(() => new Date());
+  const [mobileSubview, setMobileSubview] = useState<ConsumptionSubview>("calendar");
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     setAppMode(loadCalendarAppMode());
     setCurrentDate(new Date());
+    if (isMobile) {
+      setMobileSubview(loadConsumptionSubview());
+    }
     setIsLoaded(true);
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     if (isLoaded) {
@@ -48,6 +57,18 @@ export function CalendarApp({ isMobile = false, inShell = false }: CalendarAppPr
     setCurrentDate(date);
   }, []);
 
+  const handleMobileBack = useCallback(() => {
+    if (!isMobile) return;
+
+    if (mobileSubview === "list") {
+      setMobileSubview("calendar");
+      saveConsumptionSubview("calendar");
+      return;
+    }
+
+    mobileStack?.popToHome();
+  }, [isMobile, mobileStack, mobileSubview]);
+
   if (!isLoaded) {
     return <div className="h-full bg-background" />;
   }
@@ -58,7 +79,10 @@ export function CalendarApp({ isMobile = false, inShell = false }: CalendarAppPr
       data-app="calendar"
       tabIndex={-1}
       onMouseDown={() => containerRef.current?.focus()}
-      className="calendar-app h-full flex flex-col bg-background text-foreground relative outline-none overflow-hidden"
+      className={cn(
+        "calendar-app h-full flex flex-col bg-background text-foreground relative outline-none overflow-hidden",
+        isMobile && "max-w-full overflow-x-hidden"
+      )}
     >
       <div className={cn(isMobile && "shrink-0")}>
         <ConsumptionAppNav
@@ -66,6 +90,8 @@ export function CalendarApp({ isMobile = false, inShell = false }: CalendarAppPr
           onAppModeChange={handleAppModeChange}
           inShell={inShell}
           isMobile={isMobile}
+          onMobileBack={isMobile ? handleMobileBack : undefined}
+          mobileBackTitle={isMobile ? (mobileSubview === "list" ? "Calendar" : "Home") : undefined}
         />
       </div>
 
@@ -73,7 +99,13 @@ export function CalendarApp({ isMobile = false, inShell = false }: CalendarAppPr
         {appMode === "booking" ? (
           <CalEmbed />
         ) : (
-          <ConsumptionShell currentDate={currentDate} onDateChange={handleDateChange} isMobileView={isMobile} />
+          <ConsumptionShell
+            currentDate={currentDate}
+            onDateChange={handleDateChange}
+            isMobileView={isMobile}
+            subview={isMobile ? mobileSubview : undefined}
+            onSubviewChange={isMobile ? setMobileSubview : undefined}
+          />
         )}
       </div>
     </div>

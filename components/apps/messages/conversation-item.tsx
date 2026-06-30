@@ -2,6 +2,7 @@ import { memo, useState, useEffect } from "react";
 import Image from "next/image";
 import { useSwipeable } from "react-swipeable";
 import { Conversation, REACTION_TEXT } from "@/types/messages";
+import { cn } from "@/lib/utils";
 import { SwipeActions } from "./swipe-actions";
 import {
   ContextMenu,
@@ -131,28 +132,42 @@ export const ConversationItem = memo(function ConversationItem({
         .map((r) => r.name)
         .join(", ")}`}
       aria-current={activeConversation === conversation.id ? "true" : undefined}
-      className={`w-full h-[70px] py-2 text-left relative flex items-center ${
+      className={cn(
+        "w-full text-left relative flex items-center",
+        isMobileView ? "h-[72px]" : "h-[70px] py-2",
         activeConversation === conversation.id && !isMobileView
           ? "bg-accent-blue text-white rounded-md"
-          : ""
-      } ${
-        showDivider
-          ? 'after:content-[""] after:absolute after:bottom-0 after:left-[56px] after:right-4 after:border-t after:border-muted-foreground/20'
-          : ""
-      }`}
+          : "",
+        showDivider &&
+          (isMobileView
+            ? 'after:content-[""] after:absolute after:bottom-0 after:left-[78px] after:right-0 after:border-t-[0.5px] after:border-[rgba(255,255,255,0.1)]'
+            : 'after:content-[""] after:absolute after:bottom-0 after:left-[56px] after:right-4 after:border-t after:border-muted-foreground/20')
+      )}
     >
       {conversation.unreadCount > 0 &&
         activeConversation !== conversation.id && (
-        <div className="absolute left-0.5 w-2.5 h-2.5 bg-accent-blue rounded-full flex-shrink-0" />
+        <div
+          className={cn(
+            "absolute rounded-full flex-shrink-0",
+            isMobileView
+              ? "left-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-[#0A84FF]"
+              : "left-0.5 w-2.5 h-2.5 bg-accent-blue"
+          )}
+        />
       )}
-      <div className="flex items-center gap-2 w-full px-4">
-        <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 relative">
+      <div className={cn("flex items-center w-full", isMobileView ? "gap-3 px-4" : "gap-2 px-4")}>
+        <div
+          className={cn(
+            "rounded-full overflow-hidden flex-shrink-0 relative",
+            isMobileView ? "w-[50px] h-[50px]" : "w-10 h-10"
+          )}
+        >
           {conversation.recipients[0].avatar ? (
             <Image
               src={conversation.recipients[0].avatar}
               alt={`${conversation.recipients[0].name} avatar`}
               fill
-              sizes="40px"
+              sizes={isMobileView ? "50px" : "40px"}
               className="object-cover"
               unoptimized
             />
@@ -164,29 +179,45 @@ export const ConversationItem = memo(function ConversationItem({
             </div>
           )}
         </div>
-        <div className="flex-1 min-w-0 py-2">
-          <div className="flex justify-between items-baseline">
-            <span className="text-sm font-medium line-clamp-1 max-w-[70%]">
+        <div className={cn("flex-1 min-w-0", isMobileView ? "py-0" : "py-2")}>
+          <div className="flex justify-between items-baseline gap-2">
+            <span
+              className={cn(
+                "line-clamp-1 min-w-0",
+                isMobileView
+                  ? "text-[17px] leading-5 font-semibold text-white max-w-[65%]"
+                  : "font-medium text-sm max-w-[70%]"
+              )}
+            >
               {conversation.name || conversation.recipients.map((r) => r.name).join(", ")}
             </span>
-            {conversation.lastMessageTime && (
-              <span
-                className={`text-xs ml-2 flex-shrink-0 ${
-                  activeConversation === conversation.id
-                    ? "text-white/80"
-                    : "text-muted-foreground"
-                }`}
-              >
-                {formatTime(conversation.lastMessageTime)}
-              </span>
-            )}
+            <div className="flex items-center gap-1 flex-shrink-0 ml-auto">
+              {conversation.lastMessageTime && (
+                <span
+                  className={cn(
+                    isMobileView ? "text-[13px] text-[#8E8E93]" : "text-xs ml-2",
+                    !isMobileView &&
+                      (activeConversation === conversation.id
+                        ? "text-white/80"
+                        : "text-muted-foreground")
+                  )}
+                >
+                  {formatTime(conversation.lastMessageTime)}
+                </span>
+              )}
+            </div>
           </div>
           <div
-            className={`text-xs h-8 flex items-start justify-between ${
-              activeConversation === conversation.id
-                ? "text-white/80"
-                : "text-muted-foreground"
-            }`}
+            className={cn(
+              "flex items-start justify-between",
+              isMobileView
+                ? "text-[15px] leading-5 text-[#8E8E93] mt-0.5"
+                : "text-xs h-8",
+              !isMobileView &&
+                (activeConversation === conversation.id
+                  ? "text-white/80"
+                  : "text-muted-foreground")
+            )}
           >
             {conversation.isTyping ? (
               <div className="flex items-center py-0.5">

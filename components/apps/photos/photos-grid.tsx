@@ -65,14 +65,34 @@ export function PhotosGrid({
 
     if (photos.length > 0 && scrollContainerRef.current) {
       const container = scrollContainerRef.current;
-      if (container.scrollHeight > container.clientHeight) {
+      if (isMobileView) {
+        container.scrollTop = 0;
+      } else if (container.scrollHeight > container.clientHeight) {
         container.scrollTop = container.scrollHeight;
       }
       setIsPositioned(true);
     }
-  }, [photos]);
+  }, [photos, isMobileView]);
 
   const groupedPhotos = useMemo(() => {
+    if (isMobileView && activeView === "library") {
+      const today: Photo[] = [];
+      const older: Photo[] = [];
+
+      photos.forEach((photo) => {
+        if (isVideo(photo.url)) {
+          today.push(photo);
+        } else {
+          older.push(photo);
+        }
+      });
+
+      const groups: Record<string, Photo[]> = {};
+      if (today.length > 0) groups.Today = today;
+      if (older.length > 0) groups.Older = older;
+      return groups;
+    }
+
     // Photos are already sorted oldest first from parent
     if (timeFilter === "all") {
       return { all: photos };
@@ -91,7 +111,7 @@ export function PhotosGrid({
     });
 
     return groups;
-  }, [photos, timeFilter]);
+  }, [photos, timeFilter, isMobileView, activeView]);
 
   const dateRange = useMemo(() => {
     if (photos.length === 0) return "";
@@ -121,7 +141,7 @@ export function PhotosGrid({
         onMouseDown={inShell && !isMobileView ? windowFocus.onDragStart : undefined}
       >
         <div className="flex items-center gap-2">
-          {isMobileView && (
+          {!isMobileView && (
             <button
               onClick={onBack}
               className="flex items-center text-[#0A84FF] hover:text-[#0A84FF]/80 -ml-2"
@@ -178,11 +198,11 @@ export function PhotosGrid({
           ) : (
             Object.entries(groupedPhotos).map(([group, groupPhotos]) => (
               <div key={group} className="mb-6">
-                {timeFilter !== "all" && (
+                {(isMobileView && activeView === "library") || timeFilter !== "all" ? (
                   <h2 className="text-sm font-semibold text-muted-foreground mb-3">
                     {group}
                   </h2>
-                )}
+                ) : null}
                 <div
                   className={cn(
                     "grid gap-2",

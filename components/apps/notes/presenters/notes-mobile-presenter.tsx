@@ -4,7 +4,7 @@ import { RefObject } from "react";
 import { Note as NoteType } from "@/lib/notes/types";
 import Sidebar from "../sidebar";
 import Note from "../note";
-import { Icons } from "../icons";
+import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
 
 interface NotesMobilePresenterProps {
   containerRef: RefObject<HTMLDivElement>;
@@ -59,10 +59,7 @@ export function NotesMobilePresenter({
           )}
           {!selectedNote && (
             <div className="h-full p-3">
-              <button onClick={handleBackToSidebar} className="pt-2 flex items-center">
-                <Icons.back />
-                <span className="text-[#e2a727] text-base ml-1">Notes</span>
-              </button>
+              <IosWindowNavBack canGoBack onBack={handleBackToSidebar} backTitle="Notes" />
             </div>
           )}
         </div>

@@ -5,6 +5,8 @@ import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area"
 
 import { cn } from "@/lib/utils"
 
+const IOS_SCROLLBAR_HIDE_MS = 2000
+
 /**
  * Custom ScrollArea component for the chat interface
  * Customized with:
@@ -18,27 +20,56 @@ const ScrollArea = React.forwardRef<
     withVerticalMargins?: boolean
     mobileHeaderHeight?: boolean
     isMobile?: boolean
+    iosOverlayScrollbar?: boolean
     bottomMargin?: string
     viewportClassName?: string
   }
->(({ className, children, withVerticalMargins = false, mobileHeaderHeight = false, isMobile = false, bottomMargin, viewportClassName, ...props }, ref) => (
-  <ScrollAreaPrimitive.Root
-    ref={ref}
-    className={cn("relative overflow-hidden", className)}
-    {...props}
-  >
-    <ScrollAreaPrimitive.Viewport className={cn("h-full w-full rounded-[inherit]", viewportClassName)}>
-      {children}
-    </ScrollAreaPrimitive.Viewport>
-    <ScrollBar 
-      withVerticalMargins={withVerticalMargins} 
-      mobileHeaderHeight={mobileHeaderHeight} 
-      isMobile={isMobile}
-      bottomMargin={bottomMargin}
-    />
-    <ScrollAreaPrimitive.Corner />
-  </ScrollAreaPrimitive.Root>
-))
+>(({ className, children, withVerticalMargins = false, mobileHeaderHeight = false, isMobile = false, iosOverlayScrollbar = false, bottomMargin, viewportClassName, ...props }, ref) => {
+  const [scrollbarVisible, setScrollbarVisible] = React.useState(false)
+  const hideTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const revealScrollbar = React.useCallback(() => {
+    if (!iosOverlayScrollbar) return
+    setScrollbarVisible(true)
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+    hideTimerRef.current = setTimeout(() => setScrollbarVisible(false), IOS_SCROLLBAR_HIDE_MS)
+  }, [iosOverlayScrollbar])
+
+  React.useEffect(() => {
+    return () => {
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+    }
+  }, [])
+
+  const handleViewportScroll = React.useCallback(() => {
+    revealScrollbar()
+  }, [revealScrollbar])
+
+  return (
+    <ScrollAreaPrimitive.Root
+      ref={ref}
+      className={cn("relative overflow-hidden", className)}
+      {...props}
+    >
+      <ScrollAreaPrimitive.Viewport
+        className={cn("h-full w-full rounded-[inherit]", viewportClassName)}
+        onScroll={iosOverlayScrollbar ? handleViewportScroll : undefined}
+        onTouchStart={iosOverlayScrollbar ? revealScrollbar : undefined}
+      >
+        {children}
+      </ScrollAreaPrimitive.Viewport>
+      <ScrollBar 
+        withVerticalMargins={withVerticalMargins} 
+        mobileHeaderHeight={mobileHeaderHeight} 
+        isMobile={isMobile}
+        iosOverlayScrollbar={iosOverlayScrollbar}
+        scrollbarVisible={scrollbarVisible}
+        bottomMargin={bottomMargin}
+      />
+      <ScrollAreaPrimitive.Corner />
+    </ScrollAreaPrimitive.Root>
+  )
+})
 ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName
 
 // Add vertical margins to for chat area component
@@ -48,16 +79,23 @@ const ScrollBar = React.forwardRef<
     withVerticalMargins?: boolean
     mobileHeaderHeight?: boolean
     isMobile?: boolean
+    iosOverlayScrollbar?: boolean
+    scrollbarVisible?: boolean
     bottomMargin?: string
   }
->(({ className, orientation = "vertical", withVerticalMargins = false, mobileHeaderHeight = false, isMobile = false, bottomMargin, ...props }, ref) => (
+>(({ className, orientation = "vertical", withVerticalMargins = false, mobileHeaderHeight = false, isMobile = false, iosOverlayScrollbar = false, scrollbarVisible = false, bottomMargin, ...props }, ref) => (
   <ScrollAreaPrimitive.ScrollAreaScrollbar
     ref={ref}
     orientation={orientation}
     className={cn(
-      "flex touch-none select-none transition-all duration-300",
-      "opacity-80 can-hover:hover:opacity-100 z-40",
-      "bg-transparent can-hover:hover:border-l can-hover:hover:border-gray-200 dark:can-hover:hover:border-gray-700",
+      "flex touch-none select-none transition-opacity duration-300",
+      iosOverlayScrollbar
+        ? scrollbarVisible
+          ? "opacity-100"
+          : "opacity-0 pointer-events-none"
+        : "opacity-80 can-hover:hover:opacity-100",
+      !iosOverlayScrollbar &&
+        "bg-transparent can-hover:hover:border-l can-hover:hover:border-gray-200 dark:can-hover:hover:border-gray-700",
       orientation === "vertical" &&
         cn(
           isMobile ? "w-[8px]" : "w-[10px] can-hover:hover:w-[14px]",

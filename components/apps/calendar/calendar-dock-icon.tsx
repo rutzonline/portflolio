@@ -6,12 +6,17 @@ import { format } from "date-fns";
 interface CalendarDockIconProps {
   /** Artboard size — same as other dock icons (`getDockIconVisualSize`). */
   size?: number;
+  /**
+   * White tile size relative to artboard. macOS dock uses ~79%; iOS springboard uses 100%
+   * so calendar matches other squircle icons.
+   */
+  tileRatio?: number;
 }
 
 /** `size` is the full dock slot size. The tile renders at 79% of that, centered. */
-const DOCK_TILE_RATIO = 0.79;
+const DESKTOP_DOCK_TILE_RATIO = 0.79;
 
-export function CalendarDockIcon({ size = 48 }: CalendarDockIconProps) {
+export function CalendarDockIcon({ size = 48, tileRatio = DESKTOP_DOCK_TILE_RATIO }: CalendarDockIconProps) {
   const [date, setDate] = useState(new Date());
 
   useEffect(() => {
@@ -40,7 +45,7 @@ export function CalendarDockIcon({ size = 48 }: CalendarDockIconProps) {
 
   const dayOfWeek = format(date, "EEE");
   const dayNumber = format(date, "d");
-  const tileSize = Math.round(size * DOCK_TILE_RATIO);
+  const tileSize = Math.round(size * tileRatio);
 
   return (
     <div

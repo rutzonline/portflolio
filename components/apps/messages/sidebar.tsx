@@ -191,7 +191,7 @@ export function Sidebar({
       ) {
         e.preventDefault();
         const searchInput = document.querySelector(
-          'input[type="text"][placeholder="Search"]'
+          "[data-messages-search]"
         ) as HTMLInputElement;
         if (searchInput) {
           searchInput.focus();
@@ -324,11 +324,12 @@ export function Sidebar({
             }
           }}
           isMobile={isMobileView}
+          iosOverlayScrollbar={isMobileView}
           withVerticalMargins={false}
           bottomMargin="0px"
         >
-          <div className={cn(isMobileView ? "w-full px-3" : "w-[320px] px-2")}>
-            <SearchBar value={searchTerm} onChange={onSearchChange} />
+          <div className={cn(isMobileView ? "w-full px-2" : "w-[320px] px-2")}>
+            <SearchBar value={searchTerm} onChange={onSearchChange} isMobileView={isMobileView} />
             <div className="w-full">
               {filteredConversations.length === 0 && searchTerm ? (
                 <div className="py-2">
@@ -340,7 +341,7 @@ export function Sidebar({
                 <>
                   {/* Pinned Conversations Grid */}
                   {filteredConversations.some((conv) => conv.pinned) && (
-                    <div className="p-2">
+                    <div className={cn(isMobileView ? "py-3" : "p-2")}>
                       <div
                         className={`flex flex-wrap gap-1 ${
                           filteredConversations.filter((c) => c.pinned)
@@ -350,7 +351,7 @@ export function Sidebar({
                         }`}
                         style={{
                           display: "grid",
-                          gap: "1rem",
+                          gap: isMobileView ? "1.25rem" : "1rem",
                           gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
                           ...(filteredConversations.filter((c) => c.pinned)
                             .length <= 2 && {
@@ -374,11 +375,15 @@ export function Sidebar({
                                     onClick={() =>
                                       onSelectConversation(conversation.id)
                                     }
-                                    className={`w-20 aspect-square rounded-lg flex flex-col items-center justify-center p-2 relative ${
+                                    className={cn(
+                                      "flex flex-col items-center justify-center relative",
+                                      isMobileView
+                                        ? "w-[72px]"
+                                        : "w-20 aspect-square rounded-lg p-2",
                                       activeConversation === conversation.id && !isMobileView
                                         ? "bg-accent-blue text-white"
                                         : ""
-                                    }`}
+                                    )}
                                   >
                                     <div className="relative">
                                       {typingStatus?.conversationId ===
@@ -506,7 +511,14 @@ export function Sidebar({
                                           return null;
                                         })()
                                       ) : null}
-                                      <div className="w-16 desktop:w-14 h-16 desktop:h-14 rounded-full overflow-hidden mb-1 shadow-md relative">
+                                      <div
+                                        className={cn(
+                                          "rounded-full overflow-hidden shadow-md relative",
+                                          isMobileView
+                                            ? "w-16 h-16 mb-1"
+                                            : "w-16 desktop:w-14 h-16 desktop:h-14 mb-1"
+                                        )}
+                                      >
                                         {conversation.recipients[0].avatar ? (
                                           <Image
                                             src={
@@ -532,10 +544,18 @@ export function Sidebar({
                                     <div className="w-full text-center">
                                       <div className="relative max-w-full inline-flex justify-center">
                                         {conversation.unreadCount > 0 &&
-                                          activeConversation !== conversation.id && (
+                                          activeConversation !== conversation.id &&
+                                          !isMobileView && (
                                           <div className="absolute right-full mr-1 top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-accent-blue rounded-full" />
                                         )}
-                                        <span className="text-xs truncate max-w-full">
+                                        <span
+                                          className={cn(
+                                            "truncate max-w-full",
+                                            isMobileView
+                                              ? "text-[13px] text-[#8E8E93]"
+                                              : "text-xs"
+                                          )}
+                                        >
                                           {conversation.name ||
                                             conversation.recipients[0].name}
                                         </span>

@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { IosMobileNavTitle } from "@/components/mobile/ios/ios-mobile-nav-title";
 import { WindowNavShell } from "@/components/window-nav-shell";
 import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
@@ -33,8 +34,7 @@ export function Nav({ canGoBack, canGoForward, onBack, onForward, isMobile, isDe
             nav.navLeft
           )
         }
-        center={<span className="text-sm font-medium text-foreground truncate">{title || ""}</span>}
-        centerClassName="px-2 text-center"
+        center={<IosMobileNavTitle>{title || "Settings"}</IosMobileNavTitle>}
         right={<div className="w-[56px] shrink-0" aria-hidden />}
       />
     );

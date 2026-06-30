@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "./icons";
+import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
 import { getDisplayCreatedAt } from "@/lib/notes/display-created-at";
 
 const TIMESTAMP_PLACEHOLDER = "September 30, 2026 at 11:59 PM";
@@ -160,10 +161,14 @@ export default function NoteHeader({
     <>
       {showBackButton && (
         onBack ? (
-          <button onClick={onBack} className="pt-2 flex items-center">
-            <Icons.back />
-            <span className="text-[#e2a727] text-base ml-1">Notes</span>
-          </button>
+          isMobileView ? (
+            <IosWindowNavBack canGoBack onBack={onBack} backTitle="Notes" />
+          ) : (
+            <button onClick={onBack} className="pt-2 flex items-center">
+              <Icons.back />
+              <span className="text-[#e2a727] text-base ml-1">Notes</span>
+            </button>
+          )
         ) : (
           <Link href="/notes">
             <button className="pt-2 flex items-center">

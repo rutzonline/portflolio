@@ -1,21 +1,21 @@
 import { useEffect, useRef } from "react";
 import { Icons } from "./icons";
 import { useWindowFocus } from "@/lib/window-focus-context";
+import { cn } from "@/lib/utils";
+import { IOS_MOBILE_SEARCH_INPUT_CLASS, IOS_MOBILE_SEARCH_WRAPPER_CLASS } from "@/lib/ui-tokens";
 
 interface SearchBarProps {
   value: string;
   onChange: (value: string) => void;
+  isMobileView?: boolean;
 }
 
-export function SearchBar({ value, onChange }: SearchBarProps) {
+export function SearchBar({ value, onChange, isMobileView = false }: SearchBarProps) {
   const justBlurred = useRef(false);
   const windowFocus = useWindowFocus();
 
   useEffect(() => {
     const handleGlobalEscape = (e: KeyboardEvent) => {
-      // Check if this app should handle the shortcut
-      // In desktop mode (windowFocus exists), check if this window is focused
-      // In standalone mode, check if target is within this app
       if (windowFocus) {
         if (!windowFocus.isFocused) return;
       } else {
@@ -25,7 +25,7 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
 
       if (e.key === "Escape") {
         const searchInput = document.querySelector(
-          'input[placeholder="Search"]'
+          "[data-messages-search]"
         );
         if (
           document.activeElement !== searchInput &&
@@ -43,11 +43,17 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
   }, [value, onChange, windowFocus]);
 
   return (
-    <div className="p-2">
+    <div className={cn(isMobileView ? IOS_MOBILE_SEARCH_WRAPPER_CLASS : "p-2")}>
       <div className="relative">
-        <Icons.search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+        <Icons.search
+          className={cn(
+            "absolute left-3 top-1/2 transform -translate-y-1/2",
+            isMobileView ? "text-[#8E8E93]" : "text-muted-foreground"
+          )}
+        />
         <input
           type="text"
+          data-messages-search
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={(e) => {
@@ -62,17 +68,29 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
               }
             }
           }}
-          placeholder="Search"
-          className="w-full pl-8 pr-8 py-0.5 rounded-lg text-base desktop:text-sm placeholder:text-sm placeholder:text-muted-foreground focus:outline-none bg-[#E8E8E7] dark:bg-[#353533]"
+          placeholder={isMobileView ? "search" : "Search"}
+          className={cn(
+            "w-full focus:outline-none",
+            isMobileView
+              ? cn(
+                  IOS_MOBILE_SEARCH_INPUT_CLASS,
+                  "pl-9 pr-9 bg-[#1C1C1E] placeholder:text-[#8E8E93] text-foreground"
+                )
+              : "pl-8 pr-8 py-0.5 rounded-lg text-base desktop:text-sm placeholder:text-sm placeholder:text-muted-foreground bg-[#E8E8E7] dark:bg-[#353533]"
+          )}
         />
-        {value && (
-          <button
-            onClick={() => onChange("")}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            aria-label="Clear search"
-          >
-            <Icons.close className="h-4 w-4" />
-          </button>
+        {isMobileView ? (
+          <Icons.mic className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8E8E93]" />
+        ) : (
+          value && (
+            <button
+              onClick={() => onChange("")}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label="Clear search"
+            >
+              <Icons.close className="h-4 w-4" />
+            </button>
+          )
         )}
       </div>
     </div>

@@ -4,10 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { isAppSupportedOnMobile } from "@/lib/app-availability";
 import { IosAppHost } from "./ios-app-host";
 import { IosHomeScreen } from "./ios-home-screen";
-import { IosIntroSheet } from "./ios-intro-sheet";
 import { IosLockScreen } from "./ios-lock-screen";
 import {
-  markIosIntroDismissed,
   markIosUnlocked,
   resolveIosShellPhase,
   type IosShellPhase,
@@ -29,11 +27,6 @@ export function IosShell({ renderApp, initialApp }: IosShellProps) {
 
   const handleUnlock = useCallback(() => {
     markIosUnlocked();
-    setPhase("intro");
-  }, []);
-
-  const handleIntroContinue = useCallback(() => {
-    markIosIntroDismissed();
     stack.popToHome();
     setPhase("ready");
   }, [stack]);
@@ -50,17 +43,20 @@ export function IosShell({ renderApp, initialApp }: IosShellProps) {
     return <div className="fixed inset-0 z-[100] bg-black" aria-hidden />;
   }
 
-  if (phase === "locked") {
-    return <IosLockScreen onUnlock={handleUnlock} />;
-  }
+  const showHome = (phase === "locked" || phase === "ready") && !stack.isActive;
 
-  if (phase === "intro") {
-    return <IosIntroSheet onContinue={handleIntroContinue} />;
-  }
+  return (
+    <>
+      {showHome ? (
+        <IosHomeScreen
+          onOpenApp={handleOpenApp}
+          enableIntroAutoOpen={phase === "ready"}
+        />
+      ) : null}
 
-  if (stack.isActive) {
-    return <IosAppHost stack={stack} renderApp={renderApp} />;
-  }
+      {stack.isActive ? <IosAppHost stack={stack} renderApp={renderApp} /> : null}
 
-  return <IosHomeScreen onOpenApp={handleOpenApp} />;
+      {phase === "locked" ? <IosLockScreen onUnlock={handleUnlock} /> : null}
+    </>
+  );
 }

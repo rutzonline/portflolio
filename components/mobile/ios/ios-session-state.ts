@@ -2,16 +2,24 @@
 const IOS_UNLOCKED_KEY = "portfolio_ios_unlocked";
 const IOS_INTRO_DISMISSED_KEY = "portfolio_ios_intro_dismissed";
 
-export type IosShellPhase = "loading" | "locked" | "intro" | "ready";
+export type IosShellPhase = "loading" | "locked" | "ready";
 
 export function resolveIosShellPhase(): IosShellPhase {
   if (typeof window === "undefined") return "loading";
   try {
-    if (sessionStorage.getItem(IOS_INTRO_DISMISSED_KEY) === "1") return "ready";
-    if (sessionStorage.getItem(IOS_UNLOCKED_KEY) === "1") return "intro";
+    if (sessionStorage.getItem(IOS_UNLOCKED_KEY) === "1") return "ready";
     return "locked";
   } catch {
     return "ready";
+  }
+}
+
+export function isIosIntroDismissed(): boolean {
+  if (typeof window === "undefined") return true;
+  try {
+    return sessionStorage.getItem(IOS_INTRO_DISMISSED_KEY) === "1";
+  } catch {
+    return true;
   }
 }
 
