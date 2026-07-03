@@ -36,6 +36,9 @@ yarn-error.log*
 .env*
 !.env.example
 
+# build artifact snapshots
+.bundle-snapshot-*/
+
 # vercel
 .vercel
 

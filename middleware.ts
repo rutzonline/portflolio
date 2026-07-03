@@ -1,6 +1,21 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i++) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return mismatch === 0;
+}
+
+function isValidPassword(candidate: string): boolean {
+  const expected = process.env.PORTFOLIO_PASSWORD;
+  if (!expected || !candidate) return false;
+  return constantTimeEqual(candidate, expected);
+}
+
 export function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
 
@@ -18,7 +33,7 @@ export function middleware(request: NextRequest) {
   const pwQuery = searchParams.get('pw');
   const maxAgeSevenDays = 604800;
 
-  if (pwQuery && pwQuery === process.env.PORTFOLIO_PASSWORD) {
+  if (pwQuery && isValidPassword(pwQuery)) {
     const response = NextResponse.redirect(new URL('/', request.url));
     response.cookies.set('portfolio_unlocked', 'true', {
       maxAge: maxAgeSevenDays,

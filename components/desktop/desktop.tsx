@@ -86,7 +86,8 @@ interface DesktopProps {
 async function fetchFileContentFromGitHub(repo: string, path: string): Promise<string | null> {
   try {
     return await fetchGitHubFileContent(repo, path);
-  } catch {
+  } catch (error) {
+    console.warn(`Failed to fetch GitHub file content for ${repo}/${path}:`, error);
     return null;
   }
 }

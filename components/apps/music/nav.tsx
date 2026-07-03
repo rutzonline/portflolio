@@ -3,7 +3,7 @@
 import { WindowNavShell, WindowNavSpacer } from "@/components/window-nav-shell";
 import { WindowControls } from "@/components/window-controls";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
-import { IosMobileNavTitle } from "@/lib/dynamic-ios-nav";
+import { SimpleAppNav } from "@/components/shared/simple-app-nav";
 
 interface NavProps {
   isMobileView: boolean;
@@ -16,13 +16,11 @@ export function Nav({ isMobileView, isScrolled, isDesktop = false, title = "mood
   const nav = useWindowNavBehavior({ isDesktop, isMobile: isMobileView });
 
   return (
-    <WindowNavShell
-      isMobile={isMobileView}
+    <SimpleAppNav
+      isMobileView={isMobileView}
       isScrolled={isScrolled}
-      onMouseDown={nav.onDragStart}
-      left={nav.navLeft}
-      center={isMobileView ? <IosMobileNavTitle>{title}</IosMobileNavTitle> : undefined}
-      right={<WindowNavSpacer isMobile={isMobileView} />}
+      isDesktop={isDesktop}
+      title={title}
     />
   );
 }
