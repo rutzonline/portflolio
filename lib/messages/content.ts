@@ -37,13 +37,12 @@ function walkMessageNode(
 }
 
 export function extractMessageData(htmlContent: string): ExtractedMessageData {
-  const temp = document.createElement("div");
-  temp.innerHTML = htmlContent;
+  const doc = new DOMParser().parseFromString(htmlContent, "text/html");
 
   const fragments: string[] = [];
   const mentions: MessageMention[] = [];
 
-  temp.childNodes.forEach((child) => walkMessageNode(child, fragments, mentions));
+  doc.body.childNodes.forEach((child) => walkMessageNode(child, fragments, mentions));
 
   return {
     text: fragments.join(""),
