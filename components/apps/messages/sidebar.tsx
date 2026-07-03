@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Conversation } from "@/types/messages";
 import { SearchBar } from "./search-bar";
-import { format, isToday, isYesterday, isThisWeek, parseISO } from "date-fns";
+import { formatMessageTime, getInitials } from "@/lib/format-utils";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -53,38 +53,6 @@ export function Sidebar({
   const windowFocus = useWindowFocus();
 
   const [openSwipedConvo, setOpenSwipedConvo] = useState<string | null>(null);
-  const formatTime = (timestamp: string | undefined) => {
-    if (!timestamp) return "";
-
-    try {
-      const date = parseISO(timestamp);
-
-      if (isToday(date)) {
-        return format(date, "HH:mm");
-      }
-
-      if (isYesterday(date)) {
-        return "Yesterday";
-      }
-
-      if (isThisWeek(date)) {
-        return format(date, "EEEE"); // e.g. "Sunday"
-      }
-
-      return format(date, "M/d/yy"); // e.g. "12/21/24"
-    } catch (error) {
-      console.error("Error formatting time:", error, timestamp);
-      return "Just now";
-    }
-  };
-
-  const getInitials = (name: string) => {
-    const names = name.split(" ");
-    if (names.length >= 2) {
-      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
-    }
-    return name[0].toUpperCase();
-  };
 
   const getReactionIconSvg = (reactionType: string) => {
     const variant = effectiveTheme === "dark" ? "dark" : "pinned-light";
@@ -668,7 +636,7 @@ export function Sidebar({
                           onDeleteConversation={onDeleteConversation}
                           onUpdateConversation={onUpdateConversation}
                           conversations={conversations}
-                          formatTime={formatTime}
+                          formatTime={formatMessageTime}
                           getInitials={getInitials}
                           isMobileView={isMobileView}
                           showDivider={

@@ -1,8 +1,7 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { SIDEBAR_ITEM_ACTIVE_CLASS, DESKTOP_NAV_SIDEBAR_WIDTH_CLASS } from "@/lib/ui-tokens";
+import { SidebarItem } from "@/components/shared/sidebar-item";
+import { AppSidebarShell } from "@/components/shared/app-sidebar-shell";
 import { Collection, PhotosView } from "@/types/photos";
 import { Images, Heart, FolderOpen } from "lucide-react";
 
@@ -24,23 +23,11 @@ export function Sidebar({
   onScroll,
 }: SidebarProps) {
   return (
-    <div
-      className={cn(
-        "flex flex-col h-full",
-        isMobileView ? "bg-background" : "bg-muted"
-      )}
-    >
-      {children}
-      <div className="flex-1 min-h-0 overflow-hidden">
-        <ScrollArea
-          className="h-full"
-          bottomMargin="0"
-          onScrollCapture={(e) => {
-            const target = e.target as HTMLElement;
-            onScroll?.(target.scrollTop > 0);
-          }}
-        >
-          <div className={cn("px-2 py-2", isMobileView ? "w-full" : DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)}>
+    <AppSidebarShell
+      isMobileView={isMobileView}
+      onScroll={onScroll}
+      sidebarContent={
+        <>
             {/* Library Section */}
             <div className="mb-4">
               <p className="text-xs text-muted-foreground px-3 py-1 font-semibold uppercase tracking-wide">
@@ -80,39 +67,12 @@ export function Sidebar({
                 ))}
               </div>
             )}
-          </div>
-        </ScrollArea>
-      </div>
-    </div>
+        </>
+      }
+    >
+      {children}
+    </AppSidebarShell>
   );
 }
 
-function SidebarItem({
-  icon,
-  label,
-  isActive,
-  onClick,
-  isMobileView,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  isActive: boolean;
-  onClick: () => void;
-  isMobileView: boolean;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        "w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors text-left",
-        isActive && !isMobileView
-          ? SIDEBAR_ITEM_ACTIVE_CLASS
-          : "text-foreground",
-        isMobileView && "py-3"
-      )}
-    >
-      {icon}
-      <span>{label}</span>
-    </button>
-  );
-}
+
