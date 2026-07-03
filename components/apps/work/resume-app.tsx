@@ -472,7 +472,8 @@ export function ResumeApp({
           } else {
             setFiles([]);
           }
-        } catch {
+        } catch (error) {
+          console.warn("Failed to fetch desktop files:", error);
           setFiles([]);
         }
       } else if (LOCAL_FINDER_FILES[path]) {
@@ -480,7 +481,8 @@ export function ResumeApp({
       } else {
         setFiles([]);
       }
-    } catch {
+    } catch (error) {
+      console.warn("Failed to load resume files:", error);
       setFiles([]);
     }
 
@@ -688,8 +690,8 @@ export function ResumeApp({
 
         searchEngine.addEntries(projectEntries);
         setSearchIndexSize(searchEngine.version);
-      } catch {
-        // Ignore network failures and preserve partial index results.
+      } catch (error) {
+        console.warn("Failed to hydrate resume search index:", error);
       }
     };
 
@@ -787,7 +789,8 @@ export function ResumeApp({
         const filePath = parts.slice(1).join("/");
         try {
           content = await fetchGitHubFileContentOrNull(repo, filePath);
-        } catch {
+        } catch (error) {
+          console.warn(`Failed to fetch file content for ${repo}/${filePath}:`, error);
           content = null;
         }
       } else {

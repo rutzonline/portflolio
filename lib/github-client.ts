@@ -58,7 +58,8 @@ export async function fetchGitHubRepos(): Promise<string[]> {
     cache.repos = data.repos ?? [];
     cache.reposFetchedAt = Date.now();
     return cache.repos;
-  } catch {
+  } catch (error) {
+    console.warn("Failed to fetch GitHub repos, using cache:", error);
     return cache.repos ?? [];
   }
 }
@@ -80,7 +81,8 @@ export async function fetchGitHubRepoTree(repo: string): Promise<GitHubTreeItem[
       const tree = data.tree ?? [];
       cache.repoTrees[repo] = tree;
       return tree;
-    } catch {
+    } catch (error) {
+      console.warn(`Failed to fetch repo tree for ${repo}:`, error);
       return [];
     } finally {
       repoTreeRequests.delete(repo);

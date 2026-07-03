@@ -543,6 +543,12 @@ export function ChatHeader({
           },
           body: JSON.stringify({ name: searchValue.trim() }),
         });
+
+        if (!response.ok) {
+          console.warn(`Contact validation request failed: ${response.status}`);
+          return;
+        }
+
         const data = await response.json();
 
         if (data.validation === false) {
@@ -554,7 +560,8 @@ export function ChatHeader({
           title: "Personal Contact",
         });
         setShowResults(true); // Keep the dropdown open for more selections
-      } catch {
+      } catch (error) {
+        console.warn("Contact validation failed:", error);
       } finally {
         setIsValidating(false);
       }

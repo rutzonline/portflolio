@@ -37,14 +37,18 @@ export function saveTextEditContent(filePath: string, content: string): void {
     const dates = loadFileModifiedDates();
     dates[filePath] = Date.now();
     localStorage.setItem(FILE_MODIFIED_DATES_KEY, JSON.stringify(dates));
-  } catch {}
+  } catch (error) {
+    console.warn("Failed to save TextEdit content:", error);
+  }
 }
 
 export function cacheTextEditContent(filePath: string, content: string): void {
   if (typeof window === "undefined") return;
   try {
     persistContent(filePath, content);
-  } catch {}
+  } catch (error) {
+    console.warn("Failed to cache TextEdit content:", error);
+  }
 }
 
 // =============================================================================
