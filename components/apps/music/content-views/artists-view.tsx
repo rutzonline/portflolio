@@ -13,6 +13,7 @@ import {
 } from "@/lib/beyond-desk-media";
 import {
   BRAND_SUBSECTIONS,
+  getBrandSubsectionLabel,
   resolveBrandSubsection,
   type BrandSubsectionId,
 } from "@/lib/beyond-desk-brands";
@@ -173,14 +174,14 @@ export function ArtistsView({ isMobileView }: BrandsViewProps) {
   return (
       <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
         <p className={SECTION_SUBTEXT_CLASS}>
-          branding done right. click to know more
+          click to see why i probably won&apos;t skip them on my feed
         </p>
         {fetchError && <ContentFetchError message={fetchError} />}
         {loading ? (
           <div>
             {BRAND_SUBSECTIONS.map((subsection, index) => (
               <div key={subsection} className={index === BRAND_SUBSECTIONS.length - 1 ? "pb-10" : undefined}>
-                <BrandSubsectionHeading title={subsection} isFirst={index === 0} />
+                <BrandSubsectionHeading title={getBrandSubsectionLabel(subsection)} isFirst={index === 0} />
                 <div className={cn(gridClass)}>
                     {Array.from({ length: 8 }).map((_, i) => (
                       <div key={i} className="flex flex-col items-center gap-2 min-w-0">
@@ -201,7 +202,7 @@ export function ArtistsView({ isMobileView }: BrandsViewProps) {
 
               return (
                 <section key={subsection} className={isLastSection ? "pb-10" : undefined}>
-                  <BrandSubsectionHeading title={subsection} isFirst={index === 0} />
+                  <BrandSubsectionHeading title={getBrandSubsectionLabel(subsection)} isFirst={index === 0} />
                     {subsectionBrands.length === 0 ? (
                       <p className="text-xs text-muted-foreground px-1 mb-2">
                         No brands in this bucket yet.

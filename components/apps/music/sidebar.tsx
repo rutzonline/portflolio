@@ -61,7 +61,7 @@ export function Sidebar({
               </p>
               <SidebarItem
                 icon={<Compass className="w-4 h-4" />}
-                label="Cool Websites"
+                label="prime internet real estate"
                 isActive={activeView === "browse"}
                 onClick={() => onViewSelect("browse")}
                 isMobileView={isMobileView}
@@ -96,14 +96,14 @@ export function Sidebar({
               />
             </div>
 
-            {/* beyond the desk */}
+            {/* things keeping me sane */}
             <div className="mb-4">
               <p className="text-xs text-muted-foreground px-3 py-1 font-semibold uppercase tracking-wide">
-                beyond the desk
+                things keeping me sane
               </p>
               <SidebarItem
                 icon={<Coffee className="w-4 h-4" />}
-                label="Things Keeping Me Sane"
+                label="interests and all"
                 isActive={activeView === "beyond-desk"}
                 onClick={() => onViewSelect("beyond-desk")}
                 isMobileView={isMobileView}

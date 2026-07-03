@@ -68,7 +68,7 @@ so first up, the dock as it appears:
 
 - **resume**, the main entry point to my work timeline, skills, educations, yada yada.
 
-- what is **misc**? well, it's kinda like a curation of all things marketing that i loveee.
+- what is **moodboard**? well, it's kinda like a curation of all things marketing that i loveee.
 
 - **photos**, here you'll find a video introduction of me, along with a few pictures.
 

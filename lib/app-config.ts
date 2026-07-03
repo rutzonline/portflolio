@@ -41,14 +41,14 @@ export const APPS: AppConfig[] = [
   },
   {
     id: "desk",
-    name: "misc",
+    name: "moodboard",
     icon: "/beyond%20the%20desk.png",
     description: "Brands, campaigns, newsletters, and FAQs",
     accentColor: "#FA2D48",
     defaultPosition: { x: 160, y: 70 },
     defaultSize: { width: 900, height: 650 },
     minSize: { width: 600, height: 450 },
-    menuBarTitle: "misc",
+    menuBarTitle: "moodboard",
   },
   {
     id: "photos",

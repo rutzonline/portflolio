@@ -6,6 +6,7 @@ const APP_LABEL_TO_ID: Record<string, string> = {
   photos: "photos",
   resume: "resume",
   calendar: "calendar",
+  "moodboard": "desk",
   "misc": "desk",
   "beyond the desk": "desk",
   settings: "settings",

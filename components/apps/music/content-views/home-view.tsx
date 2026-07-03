@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { SECTION_SUBTEXT_CLASS } from "@/lib/ui-tokens";
 import { ContentFetchError } from "@/components/shared/content-fetch-error";
 import { createClient } from "@/utils/supabase/client";
 import { getCachedValue, getOrFetch } from "@/lib/mobile-supabase-cache";
@@ -130,6 +131,10 @@ export function HomeView({
     <div className="overflow-x-hidden">
       <div className={cn("p-6", isMobileView && "p-4 pb-20", isWindowExpanded && "p-8")}>
         {fetchError && <ContentFetchError message={fetchError} />}
+
+        {!isMobileView && (
+          <p className={SECTION_SUBTEXT_CLASS}>beyond the desk</p>
+        )}
 
         {isWindowExpanded && !isMobileView ? (
           <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">

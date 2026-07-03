@@ -12,7 +12,7 @@ interface NavProps {
   title?: string;
 }
 
-export function Nav({ isMobileView, isScrolled, isDesktop = false, title = "misc" }: NavProps) {
+export function Nav({ isMobileView, isScrolled, isDesktop = false, title = "moodboard" }: NavProps) {
   const nav = useWindowNavBehavior({ isDesktop, isMobile: isMobileView });
 
   return (
@@ -30,7 +30,7 @@ export function Nav({ isMobileView, isScrolled, isDesktop = false, title = "misc
 /** Finder-style top toolbar: traffic lights, back/forward, centered breadcrumb. */
 export function DeskTopNav({ title, isDesktop }: { title: string; isDesktop: boolean }) {
   const nav = useWindowNavBehavior({ isDesktop, isMobile: false, allowStandaloneClose: false });
-  const breadcrumb = title ? `rutuja rochkari / ${title}` : "rutuja rochkari";
+  const breadcrumb = title;
 
   return (
     <WindowNavShell

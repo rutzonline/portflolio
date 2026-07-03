@@ -455,7 +455,7 @@ export const DEFAULT_TRACK = {
   id: "default",
   name: "There She Goes",
   artist: "The La's",
-  album: "misc",
+  album: "moodboard",
   albumArt: "/now-playing-media/cover.jpg",
   previewUrl: "/now-playing-media/track.mp3",
   duration: 0,

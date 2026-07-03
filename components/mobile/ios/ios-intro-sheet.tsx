@@ -17,7 +17,7 @@ const MOBILE_NAV_SECTION = `
 
 - **Notes** — thoughts and writing
 - **Resume** — work timeline and case studies
-- **misc** — marketing curations I love
+- **moodboard** — marketing curations I love
 - **Photos** — pictures and an intro video
 - **Calendar** — a log of things I've read, watched, and listened to
 - **Messages** — conversations

@@ -82,7 +82,7 @@ a macos sierra 10.12 themed desktop with:
 - non-dock app (appears in dock only while open)
 - shared weather scene renderer and palettes documented in `docs/weather-scenes.md`
 
-**misc (desk)** - marketing curations
+**moodboard (desk)** - marketing curations
 - brands, campaigns, products, newsletters, cool websites, and beyond-the-desk interests
 - route: `/misc` (legacy `/desk` and `/music` redirect here)
 

@@ -101,13 +101,13 @@ export default function App({ isDesktop = false }: AppProps) {
       case "home":
         return "Home";
       case "browse":
-        return "Cool Websites";
+        return "prime internet real estate";
       case "artists":
         return "brands getting it right";
       case "albums":
         return "campaigns & content";
       case "beyond-desk":
-        return "Things keeping me sane";
+        return "interests and all";
       case "songs":
         return "Products & Packaging";
       case "newsletters":
@@ -193,10 +193,10 @@ export default function App({ isDesktop = false }: AppProps) {
                 <IosWindowNavBack
                   canGoBack
                   onBack={handleBackToMiscHome}
-                  backTitle="misc"
+                  backTitle="moodboard"
                 />
               }
-              center={<IosMobileNavTitle>misc</IosMobileNavTitle>}
+              center={<IosMobileNavTitle>moodboard</IosMobileNavTitle>}
               right={<WindowNavSpacer isMobile={true} />}
             />
           )}
@@ -237,7 +237,7 @@ export default function App({ isDesktop = false }: AppProps) {
                   />
                 )
               }
-              center={<IosMobileNavTitle>misc</IosMobileNavTitle>}
+              center={<IosMobileNavTitle>moodboard</IosMobileNavTitle>}
               right={<WindowNavSpacer isMobile={true} />}
             />
           )}

@@ -607,97 +607,19 @@ export function ResumeApp({
   useEffect(() => {
     const entries: EntryInput[] = [];
 
-    for (const items of Object.values(LOCAL_FINDER_FILES)) {
-      for (const item of items) {
-        const section: SidebarItem = item.path.includes("/Desktop")
-          ? "desktop"
-          : item.path.includes("/Documents")
-            ? "documents"
-            : item.path.includes("/Downloads")
-              ? "downloads"
-              : item.path.includes("/Projects")
-                ? "projects"
-                : "desktop";
-        entries.push({ ...item, section });
-      }
-    }
-
-    for (const item of TRASH_FILES) {
-      entries.push({ ...item, section: "trash" });
-    }
-
-    for (const app of finderVisibleApps) {
+    // Index resume app sections instead of finder files
+    for (const item of SIDEBAR_ITEMS) {
       entries.push({
-        name: app.name,
-        type: "app",
-        path: `/${app.id}`,
-        icon: app.icon,
-        section: "applications",
+        name: item.label,
+        type: "dir" as const,
+        path: item.id,
+        section: item.id as SidebarItem,
       });
-    }
-
-    for (const [repo, tree] of Object.entries(getCachedRepoTrees())) {
-      const basePath = `${PROJECTS_DIR}/${repo}`;
-      entries.push({ name: repo, type: "dir", path: basePath, section: "projects" });
-      for (const item of tree) {
-        entries.push({
-          name: item.name,
-          type: item.type,
-          path: `${basePath}/${item.path}`,
-          section: "projects",
-        });
-      }
     }
 
     searchEngine.buildIndex(entries);
     setSearchIndexSize(searchEngine.version);
-  }, [searchEngine, finderVisibleApps]);
-
-  useEffect(() => {
-    if (!searchActive || searchPrefetchStartedRef.current) return;
-    searchPrefetchStartedRef.current = true;
-    let cancelled = false;
-
-    const repoEntry = (repo: string): EntryInput => ({
-      name: repo, type: "dir", path: `${PROJECTS_DIR}/${repo}`, section: "projects",
-    });
-
-    const hydrateProjectsIndex = async () => {
-      try {
-        const repos = await fetchGitHubRepos();
-        if (cancelled) return;
-        searchEngine.addEntries(repos.map(repoEntry));
-        setSearchIndexSize(searchEngine.version);
-
-        await prefetchAllRepoTrees();
-        if (cancelled) return;
-
-        const projectEntries: EntryInput[] = [];
-        for (const [repo, tree] of Object.entries(getCachedRepoTrees())) {
-          const basePath = `${PROJECTS_DIR}/${repo}`;
-          projectEntries.push(repoEntry(repo));
-          for (const item of tree) {
-            projectEntries.push({
-              name: item.name,
-              type: item.type,
-              path: `${basePath}/${item.path}`,
-              section: "projects",
-            });
-          }
-        }
-
-        searchEngine.addEntries(projectEntries);
-        setSearchIndexSize(searchEngine.version);
-      } catch {
-        // Ignore network failures and preserve partial index results.
-      }
-    };
-
-    void hydrateProjectsIndex();
-    return () => {
-      cancelled = true;
-    };
-  }, [searchActive, searchEngine]);
+  }, [searchEngine]);
 
   const computedSearchResults = useMemo(() => {
     void searchIndexSize;
@@ -943,24 +865,24 @@ export function ResumeApp({
 
   const getBreadcrumbs = useCallback(() => {
     if (selectedWorkStint) {
-      return [USERNAME, "Experience", selectedWorkStint.company];
+      return ["Experience", selectedWorkStint.company];
     }
     if (selectedCaseStudy) {
-      return [USERNAME, "Experience", selectedCaseStudy.title];
+      return ["Experience", selectedCaseStudy.title];
     }
     if (currentPath === "recents") return ["Recents"];
     if (currentPath === "applications") return ["Applications"];
     if (currentPath === "trash") return ["Trash"];
     // Static panel breadcrumbs
     const staticLabel = SIDEBAR_ITEMS.find(i => i.id === currentPath)?.label;
-    if (staticLabel) return [USERNAME, staticLabel];
+    if (staticLabel) return [staticLabel];
     // Handle trash subdirectories
     if (currentPath.startsWith("trash/")) {
       const parts = currentPath.split("/");
       parts[0] = "Trash";
       return parts;
     }
-    const parts = currentPath.replace(HOME_DIR, USERNAME).split("/").filter(Boolean);
+    const parts = currentPath.replace(HOME_DIR, "").split("/").filter(Boolean);
     // Rename "Documents" segment to "Experience" for Resume app
     return parts.map(p => p === "Documents" ? "Experience" : p);
   }, [currentPath, selectedCaseStudy, selectedWorkStint]);
