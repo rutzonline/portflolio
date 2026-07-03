@@ -347,7 +347,7 @@ export async function POST(req: NextRequest) {
     return jsonResponse(
       {
         error: "Failed to generate message",
-        details: error instanceof Error ? error.message : String(error),
+        details: "An internal error occurred while generating the message.",
       },
       { status: 500 }
     );

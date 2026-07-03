@@ -350,9 +350,8 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Unexpected error:", error);
-    const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: `Server error: ${message}` },
+      { error: "An internal server error occurred." },
       { status: 500 }
     );
   }

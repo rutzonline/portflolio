@@ -21,8 +21,7 @@ export interface ListenToMeTrack {
 }
 
 export async function GET() {
-  const apiKey =
-    process.env.LASTFM_API_KEY ?? process.env.NEXT_PUBLIC_LASTFM_API_KEY;
+  const apiKey = process.env.LASTFM_API_KEY;
 
   if (!apiKey) {
     return NextResponse.json(

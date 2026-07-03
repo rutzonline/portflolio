@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
     return jsonResponse(
       {
         validation: false,
-        error: String(error),
+        error: "An internal error occurred during validation.",
       },
       { status: 500 }
     );
