@@ -1,13 +1,20 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import Image from "next/image";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { useRecents } from "@/lib/recents-context";
 import { cn } from "@/lib/utils";
 import { SIDEBAR_ITEM_ACTIVE_CLASS, ACCENT_BLUE_CLASS, FILE_LIST_ROW_SELECTED_CLASS, DESKTOP_NAV_SIDEBAR_WIDTH_CLASS } from "@/lib/ui-tokens";
 import { FinderNav, FinderSidebarMobileNav } from "./nav";
-import { APPS } from "@/lib/app-config";
+import { FileIcon } from "./file-icon";
+import { SidebarIcon } from "./sidebar-icon";
+import {
+  type FileItem,
+  isImageFile,
+  isPdfFile,
+  isPreviewFile,
+  TRASH_FILES,
+} from "@/lib/finder-file-utils";
 import {
   HOME_DIR,
   LOCAL_FINDER_FILES,
@@ -34,14 +41,6 @@ import { FinderSearchEngine, type EntryInput } from "./search-engine";
 
 const USERNAME = "rutuja rochkari";
 
-interface FileItem {
-  name: string;
-  type: "file" | "dir" | "app";
-  path: string;
-  icon?: string;
-  displayName?: string;
-}
-
 // Sidebar items
 import type { SidebarItem } from "./sidebar-types";
 export type { SidebarItem } from "./sidebar-types";
@@ -56,15 +55,6 @@ const SIDEBAR_ITEMS: { id: SidebarItem; label: string; icon: string }[] = [
   { id: "trash", label: "Trash", icon: "trash" },
 ];
 
-// Mock deleted files for Trash
-const TRASH_FILES: FileItem[] = [
-  { name: "old-notes.md", type: "file", path: "trash/old-notes.md" },
-  { name: "draft-v1.tsx", type: "file", path: "trash/draft-v1.tsx" },
-  { name: "unused-assets", type: "dir", path: "trash/unused-assets" },
-  { name: "backup-2024", type: "dir", path: "trash/backup-2024" },
-  { name: "config.old.json", type: "file", path: "trash/config.old.json" },
-];
-
 interface FinderAppProps {
   isMobile?: boolean;
   inShell?: boolean;
@@ -73,121 +63,6 @@ interface FinderAppProps {
   onOpenPreviewFile?: (filePath: string, fileUrl: string, fileType: "image" | "pdf") => void;
   initialPath?: string;
   onPathChange?: (path: string) => void;
-}
-
-// Image extensions that should open in Preview
-const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp", "ico"];
-
-function isImageFile(filename: string): boolean {
-  const ext = filename.split(".").pop()?.toLowerCase() || "";
-  return IMAGE_EXTENSIONS.includes(ext);
-}
-
-function isPdfFile(filename: string): boolean {
-  const ext = filename.split(".").pop()?.toLowerCase() || "";
-  return ext === "pdf";
-}
-
-// Preview handles images and PDFs
-function isPreviewFile(filename: string): boolean {
-  return isImageFile(filename) || isPdfFile(filename);
-}
-// Icon component
-function FileIcon({ type, name, icon, className }: { type: "file" | "dir" | "app"; name: string; icon?: string; className?: string }) {
-  // File type icons based on extension
-  const getFileIcon = () => {
-    if (type === "dir") {
-      return (
-        <svg className={cn("text-accent-blue", className)} viewBox="0 0 24 24" fill="currentColor">
-          <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
-        </svg>
-      );
-    }
-    if (type === "app") {
-      const cleanName = name.replace(/\.app$/i, '');
-
-      // Use the passed icon prop if available, otherwise look up by name
-      const appIcon = icon || APPS.find(a => {
-        return a.name === cleanName || a.id === cleanName.toLowerCase();
-      })?.icon;
-      if (appIcon) {
-        return (
-          <Image
-            src={appIcon}
-            alt={name}
-            width={48}
-            height={48}
-            className={className}
-            unoptimized={appIcon.endsWith(".svg")}
-          />
-        );
-      }
-    }
-    // File icon
-    const ext = name.split('.').pop()?.toLowerCase();
-    let color = "text-zinc-400";
-    if (ext === "md") color = "text-blue-400";
-    else if (ext === "ts" || ext === "tsx") color = "text-blue-600";
-    else if (ext === "js" || ext === "jsx") color = "text-yellow-500";
-    else if (ext === "json") color = "text-green-500";
-    else if (ext === "css") color = "text-pink-500";
-
-    return (
-      <svg className={cn(color, className)} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" />
-      </svg>
-    );
-  };
-
-  return getFileIcon();
-}
-
-// Sidebar icon component
-function SidebarIcon({ icon, className }: { icon: string; className?: string }) {
-  const icons: Record<string, JSX.Element> = {
-    clock: (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 6v6l4 2" />
-      </svg>
-    ),
-    grid: (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z" />
-      </svg>
-    ),
-    desktop: (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z" />
-      </svg>
-    ),
-    folder: (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
-      </svg>
-    ),
-    document: (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" />
-      </svg>
-    ),
-    download: (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-      </svg>
-    ),
-    code: (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
-      </svg>
-    ),
-    trash: (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-      </svg>
-    ),
-  };
-  return icons[icon] || null;
 }
 
 export function FinderApp({

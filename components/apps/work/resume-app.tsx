@@ -1,19 +1,26 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import Image from "next/image";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { useRecents } from "@/lib/recents-context";
 import { cn } from "@/lib/utils";
 import { SIDEBAR_ITEM_ACTIVE_CLASS, ACCENT_BLUE_CLASS, FILE_LIST_ROW_SELECTED_CLASS, DESKTOP_NAV_SIDEBAR_WIDTH_CLASS, IOS_MOBILE_LIST_CHEVRON_CLASS, IOS_MOBILE_LIST_ROW_CLASS, IOS_MOBILE_LIST_ROW_SUBTITLE_CLASS, IOS_MOBILE_LIST_ROW_TITLE_CLASS, IOS_MOBILE_LIST_SCREEN_CLASS, IOS_MOBILE_READING_TEXT_CLASS } from "@/lib/ui-tokens";
 import { IosMobileListGroup } from "@/components/mobile/ios/ios-mobile-list";
 import { FinderNav, FinderSidebarMobileNav } from "../finder/nav";
+import { FileIcon } from "../finder/file-icon";
+import { SidebarIcon } from "../finder/sidebar-icon";
 import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
 import { IosMobileNavTitle } from "@/components/mobile/ios/ios-mobile-nav-title";
 import { WindowNavShell, WindowNavSpacer } from "@/components/window-nav-shell";
 import type { SidebarItem } from "../finder/sidebar-types";
 import { getSearchSectionForSidebar, STATIC_SIDEBAR_PANELS } from "../finder/sidebar-types";
-import { APPS } from "@/lib/app-config";
+import {
+  type FileItem,
+  isImageFile,
+  isPdfFile,
+  isPreviewFile,
+  TRASH_FILES,
+} from "@/lib/finder-file-utils";
 import {
   HOME_DIR,
   LOCAL_FINDER_FILES,
@@ -59,16 +66,6 @@ import {
 
 const USERNAME = "rutuja rochkari";
 
-interface FileItem {
-  name: string;
-  type: "file" | "dir" | "app";
-  path: string;
-  icon?: string;
-  displayName?: string;
-}
-
-// Sidebar items
-
 // Sidebar items that show a static info panel instead of files
 const STATIC_PANEL_ITEMS = STATIC_SIDEBAR_PANELS;
 
@@ -90,15 +87,6 @@ const STATIC_PANEL_CONTENT: Record<string, { heading: string; items: string[] }[
   tools: TOOLS_SECTIONS,
 };
 
-// Mock deleted files for Trash
-const TRASH_FILES: FileItem[] = [
-  { name: "old-notes.md", type: "file", path: "trash/old-notes.md" },
-  { name: "draft-v1.tsx", type: "file", path: "trash/draft-v1.tsx" },
-  { name: "unused-assets", type: "dir", path: "trash/unused-assets" },
-  { name: "backup-2024", type: "dir", path: "trash/backup-2024" },
-  { name: "config.old.json", type: "file", path: "trash/config.old.json" },
-];
-
 interface ResumeAppProps {
   isMobile?: boolean;
   inShell?: boolean;
@@ -108,149 +96,6 @@ interface ResumeAppProps {
   onOpenCaseStudy?: (study: CaseStudy) => void;
   initialPath?: string;
   onPathChange?: (path: string) => void;
-}
-
-// Image extensions that should open in Preview
-const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp", "ico"];
-
-function isImageFile(filename: string): boolean {
-  const ext = filename.split(".").pop()?.toLowerCase() || "";
-  return IMAGE_EXTENSIONS.includes(ext);
-}
-
-function isPdfFile(filename: string): boolean {
-  const ext = filename.split(".").pop()?.toLowerCase() || "";
-  return ext === "pdf";
-}
-
-// Preview handles images and PDFs
-function isPreviewFile(filename: string): boolean {
-  return isImageFile(filename) || isPdfFile(filename);
-}
-// Icon component
-function FileIcon({ type, name, icon, className }: { type: "file" | "dir" | "app"; name: string; icon?: string; className?: string }) {
-  // File type icons based on extension
-  const getFileIcon = () => {
-    if (type === "dir") {
-      return (
-        <svg className={cn("text-accent-blue", className)} viewBox="0 0 24 24" fill="currentColor">
-          <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
-        </svg>
-      );
-    }
-    if (type === "app") {
-      const cleanName = name.replace(/\.app$/i, '');
-
-      // Use the passed icon prop if available, otherwise look up by name
-      const appIcon = icon || APPS.find(a => {
-        return a.name === cleanName || a.id === cleanName.toLowerCase();
-      })?.icon;
-      if (appIcon) {
-        return (
-          <Image
-            src={appIcon}
-            alt={name}
-            width={48}
-            height={48}
-            className={className}
-          />
-        );
-      }
-    }
-    // File icon
-    const ext = name.split('.').pop()?.toLowerCase();
-    let color = "text-zinc-400";
-    if (ext === "md") color = "text-blue-400";
-    else if (ext === "ts" || ext === "tsx") color = "text-blue-600";
-    else if (ext === "js" || ext === "jsx") color = "text-yellow-500";
-    else if (ext === "json") color = "text-green-500";
-    else if (ext === "css") color = "text-pink-500";
-
-    return (
-      <svg className={cn(color, className)} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" />
-      </svg>
-    );
-  };
-
-  return getFileIcon();
-}
-
-// Sidebar icon component
-function SidebarIcon({ icon, className }: { icon: string; className?: string }) {
-  const icons: Record<string, JSX.Element> = {
-    clock: (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 6v6l4 2" />
-      </svg>
-    ),
-    grid: (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z" />
-      </svg>
-    ),
-    desktop: (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z" />
-      </svg>
-    ),
-    folder: (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
-      </svg>
-    ),
-    document: (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" />
-      </svg>
-    ),
-    download: (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-      </svg>
-    ),
-    code: (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
-      </svg>
-    ),
-    certification: (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="6" y="4" width="12" height="16" rx="1" />
-        <line x1="8.5" y1="8" x2="14" y2="8" strokeWidth="2.25" />
-      </svg>
-    ),
-    award: (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <path d="M9 3v8l3-2 3 2V3" />
-      </svg>
-    ),
-    heart: (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-      </svg>
-    ),
-    phone: (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-      </svg>
-    ),
-    help: (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-        <path d="M12 17h.01" />
-      </svg>
-    ),
-    trash: (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-      </svg>
-    ),
-  };
-  return icons[icon] || null;
 }
 
 export function ResumeApp({
