@@ -490,7 +490,10 @@ export function NotificationCenter({
             forecastDays: 1,
           })
         );
-        if (!res.ok) return;
+        if (!res.ok) {
+          console.warn(`Weather API returned ${res.status} for notification center`);
+          return;
+        }
         const data = await res.json();
         if (!cancelled) {
           setWeather({
@@ -501,8 +504,8 @@ export function NotificationCenter({
             low: data.daily.temperature_2m_min[0],
           });
         }
-      } catch {
-        // silently fail
+      } catch (error) {
+        console.warn("Failed to fetch weather for notification center:", error);
       } finally {
         if (!cancelled) {
           setWeatherLoading(false);

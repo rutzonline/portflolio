@@ -719,7 +719,8 @@ export function WeatherApp({ isMobile = false, inShell = false }: WeatherAppProp
           ? "Some locations could not refresh right now. Showing the latest available weather."
           : null
       );
-    } catch {
+    } catch (error) {
+      console.warn("Weather fetch failed:", error);
       if (requestId !== latestWeatherRequestIdRef.current) {
         return;
       }
@@ -747,7 +748,8 @@ export function WeatherApp({ isMobile = false, inShell = false }: WeatherAppProp
           if (!cancelled) {
             setSearchResults(results);
           }
-        } catch {
+        } catch (error) {
+          console.warn("Weather city search failed:", error);
           if (!cancelled) {
             setSearchResults([]);
           }

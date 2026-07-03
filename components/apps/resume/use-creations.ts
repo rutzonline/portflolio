@@ -44,7 +44,8 @@ export function useCreations() {
             .filter((r): r is CreationItem => r !== null);
           if (rows.length > 0) setItems(rows);
         }
-      } catch {
+      } catch (error) {
+        console.warn("Failed to load creations from Supabase:", error);
         if (!cancelled) setItems(FALLBACK_CREATIONS);
       } finally {
         if (!cancelled) setLoading(false);

@@ -372,8 +372,8 @@ export async function fetchRecentlyModifiedFiles(): Promise<RecentlyModifiedFile
               });
             }
           }
-        } catch {
-          // Silently skip commits that fail to fetch
+        } catch (error) {
+          console.warn(`Failed to fetch commit ${commitInfo.sha} for ${commitInfo.repo}:`, error);
         }
       })
     );
@@ -387,8 +387,8 @@ export async function fetchRecentlyModifiedFiles(): Promise<RecentlyModifiedFile
         try {
           const tree = await fetchRepoTree(repo);
           repoTrees.set(repo, new Set(tree.map(t => t.path)));
-        } catch {
-          // If we can't fetch tree, assume all files exist
+        } catch (error) {
+          console.warn(`Failed to fetch tree for ${repo}, assuming all files exist:`, error);
           repoTrees.set(repo, new Set());
         }
       })
@@ -412,8 +412,8 @@ export async function fetchRecentlyModifiedFiles(): Promise<RecentlyModifiedFile
 
     setCache(cacheKey, result);
     return result;
-  } catch {
-    // Silently handle errors - return empty array
+  } catch (error) {
+    console.error("Failed to fetch recently modified files:", error);
     return [];
   }
 }

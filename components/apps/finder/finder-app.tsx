@@ -259,7 +259,8 @@ export function FinderApp({
           } else {
             setFiles([]);
           }
-        } catch {
+        } catch (error) {
+          console.warn("Failed to fetch desktop files:", error);
           setFiles([]);
         }
         setLoading(false);
@@ -272,7 +273,8 @@ export function FinderApp({
       } else {
         setFiles([]);
       }
-    } catch {
+    } catch (error) {
+      console.warn("Failed to load Finder files:", error);
       setFiles([]);
     }
 
@@ -480,8 +482,8 @@ export function FinderApp({
 
         searchEngine.addEntries(projectEntries);
         setSearchIndexSize(searchEngine.version);
-      } catch {
-        // Ignore network failures and preserve partial index results.
+      } catch (error) {
+        console.warn("Failed to hydrate Finder search index:", error);
       }
     };
 
@@ -576,7 +578,8 @@ export function FinderApp({
         const filePath = parts.slice(1).join("/");
         try {
           content = await fetchGitHubFileContentOrNull(repo, filePath);
-        } catch {
+        } catch (error) {
+          console.warn(`Failed to fetch file content for ${repo}/${filePath}:`, error);
           content = null;
         }
       } else {
