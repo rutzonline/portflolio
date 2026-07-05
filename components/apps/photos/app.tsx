@@ -245,13 +245,7 @@ export default function App({ isDesktop = false }: AppProps) {
               onViewSelect={handleViewSelect}
               isMobileView={isMobileView}
               onScroll={setIsScrolled}
-            >
-              <Nav
-                isMobileView={isMobileView}
-                isScrolled={isScrolled}
-                isDesktop={isDesktop}
-              />
-            </Sidebar>
+            />
           </div>
 
           {/* Photos Grid - always mounted to preserve scroll */}
