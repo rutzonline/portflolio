@@ -1327,7 +1327,7 @@ export function FinderApp({
         <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {renderNav()}
         {searchActive && searchQuery && !isMobile && renderScopeBar()}
-        <div className="flex-1 min-h-0 overflow-y-auto w-full mt-7" onClick={() => setSelectedFile(null)}>
+        <div className="desk-scroll flex-1 min-h-0 overflow-y-auto w-full mt-7" onClick={() => setSelectedFile(null)}>
         {searchActive && searchQuery ? (
           renderSearchResults()
         ) : loading ? (

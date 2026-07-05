@@ -159,12 +159,9 @@ export const SKILLS_SECTIONS: ResumeListSection[] = [
   {
     heading: "Growth Marketing",
     items: [
-      "SEO",
-      "Content Marketing",
-      "Email Marketing",
-      "Paid Social",
-      "App Store Optimization",
-      "Community Building",
+      "Content & email Marketing",
+      "Copywriting & Storytelling",
+      "Community & Social Media",
     ],
   },
   {
@@ -172,12 +169,12 @@ export const SKILLS_SECTIONS: ResumeListSection[] = [
     items: ["GTM Strategy", "Positioning", "Messaging", "Launch Planning", "Competitive Analysis"],
   },
   {
-    heading: "Analytics",
-    items: ["GA4", "Mixpanel", "Amplitude", "Hotjar"],
+    heading: "Data & Analytics",
+    items: ["GA4", "Mixpanel", "Clay", "Hotjar", "supabase"],
   },
   {
     heading: "Lifecycle",
-    items: ["CRM", "Push Notifications", "Retention Loops"],
+    items: ["CRM", "Push Notifications", "Retention Loops", "customer journeys", "A/B Testing"],
   },
 ];
 
@@ -196,7 +193,7 @@ export const EDUCATION_SECTIONS: ResumeListSection[] = [
   },
   {
     heading: "courses",
-    items: ["data driven marketing", "digital futures"],
+    items: ["data driven marketing", "digital futures", "consumer behavior", "creative strategy", "brand storytelling", "marketing analytics", "growth & CRM", "social media marketing"],
   },
   {
     heading: "clubs",
@@ -207,16 +204,14 @@ export const EDUCATION_SECTIONS: ResumeListSection[] = [
     items: ["handball", "basketball", "football"],
   },
   {
-    heading: "winner",
-    items: ["best report — discover india program"],
+    heading: "achievements",
+    items: ["best report: discover india program"],
   },
 ];
 
 export const TOOLS_SECTIONS: ResumeListSection[] = [
-  { heading: "Marketing", items: ["Notion", "Milanote", "Figma", "Canva"] },
-  { heading: "Growth", items: ["n8n", "Make", "Zapier"] },
-  { heading: "Dev", items: ["VS Code", "Vercel", "Supabase", "Next.js"] },
-  { heading: "AI", items: ["Claude", "ChatGPT", "Cursor", "Wispr Flow"] },
+  { heading: "Marketing", items: ["Notion", "Meta ads manager", "hubspot", "Mailchimp", "GSC", "webflow", "shopify", "interakt", "Figma", "Canva", "zapier", "framer", "airtable"] },
+  { heading: "AI workflows", items: ["NotebookLM", "Perplexity", "ChatGPT", "Lovable", "Cursor", "ElevenLabs", "Gemini", "Claude", "Chronicle", "Replit"] },
 ];
 
 export type LearningItemIcon =

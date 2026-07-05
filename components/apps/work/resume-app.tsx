@@ -1279,24 +1279,24 @@ export function ResumeApp({
         </div>
       ) : null;
 
-    // Items laid out horizontally as columns within a single filled card
-    // that hugs its content rather than stretching the full row width.
-    const renderRowItems = (items: string[]) => (
-      <div className={cn(RESUME_PANEL_CARD_OVERFLOW_CLASS, "inline-flex flex-wrap w-fit max-w-full")}>
-        {items.map((item, idx) => (
-          <div
-            key={item}
-            className={cn(
-              "px-4 py-2 text-zinc-800 dark:text-zinc-100",
-              isMobile ? IOS_MOBILE_READING_TEXT_CLASS : "text-sm",
-              idx < items.length - 1 && RESUME_PANEL_COL_DIVIDER
-            )}
-          >
-            {item}
-          </div>
-        ))}
-      </div>
-    );
+    // Items as individual pills that wrap onto new rows with real gaps.
+const renderRowItems = (items: string[]) => (
+  <div className="flex flex-wrap gap-2">
+    {items.map((item) => (
+      <span
+        key={item}
+        className={cn(
+          "rounded-lg border border-zinc-200 bg-zinc-100/70 px-3 py-1.5 text-zinc-800",
+          "dark:border-white/[0.08] dark:bg-black/20 dark:text-zinc-200",
+          isMobile ? IOS_MOBILE_READING_TEXT_CLASS : "text-sm"
+        )}
+      >
+        {item}
+      </span>
+    ))}
+  </div>
+);
+
 
     if (currentPath === "skills") {
       const sections = STATIC_PANEL_CONTENT.skills ?? [];
@@ -1506,7 +1506,7 @@ export function ResumeApp({
         {renderNav()}
         {searchActive && searchQuery && !isMobile && renderScopeBar()}
         <div
-          className="flex-1 min-h-0 overflow-y-auto p-6"
+          className="desk-scroll flex-1 w-full min-h-0 overflow-y-auto p-6"
           onClick={() => {
             setSelectedFile(null);
             setSelectedWorkFolderSlug(null);

@@ -74,9 +74,9 @@ export function Sidebar({
 
   // Desktop sidebar with traffic lights in top-left (matches Finder pattern)
   return (
-    <div className={cn("flex flex-col border-r border-zinc-200 dark:border-zinc-700 bg-zinc-100/80 dark:bg-zinc-800/80 backdrop-blur-xl", DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)}>
+    <div className={cn("h-full flex flex-col border-r border-zinc-200 dark:border-zinc-700 bg-zinc-100/80 dark:bg-zinc-800/80 backdrop-blur-xl", DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)}>
       {/* Top region with traffic lights and drag handle */}
-      <div className="h-[52px] flex items-center px-5 shrink-0" onMouseDown={nav.onDragStart}>
+      <div className="h-[52px] flex items-center px-5 shrink-0 bg-transparent" onMouseDown={nav.onDragStart}>
         <WindowControls
           inShell={nav.inShell}
           showWhenNotInShell={true}
@@ -130,8 +130,3 @@ export function Sidebar({
     </div>
   );
 }
-
-
-
-
-

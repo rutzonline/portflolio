@@ -480,49 +480,15 @@ html, body {
   }
 }
 
-/* Thin macOS-style scrollbar for Consumption Log + desk app */
-.consumption-scrollbar,
-.desk-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--muted-foreground) / 0.35) transparent;
-}
+/* Thin macOS-style scrollbar for Consumption Log + desk app */ .consumption-scrollbar, .desk-scroll { scrollbar-width: thin; scrollbar-color: hsl(var(--muted-foreground) / 0.35) transparent; }
 
-.desk-scroll::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
+.consumption-scrollbar::-webkit-scrollbar, .desk-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
 
-.desk-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
+.consumption-scrollbar::-webkit-scrollbar-track, .desk-scroll::-webkit-scrollbar-track { background: transparent; }
 
-.desk-scroll::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--muted-foreground) / 0.35);
-  border: 3px solid transparent;
-  background-clip: padding-box;
-  border-radius: 999px;
-}
+.consumption-scrollbar::-webkit-scrollbar-thumb, .desk-scroll::-webkit-scrollbar-thumb { background-color: hsl(var(--muted-foreground) / 0.35); border: 3px solid transparent; background-clip: padding-box; border-radius: 999px; }
 
-.desk-scroll::-webkit-scrollbar-thumb:hover {
-  background-color: hsl(var(--muted-foreground) / 0.55);
-}
-
-.consumption-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.consumption-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.consumption-scrollbar::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--muted-foreground) / 0.35);
-  border-radius: 999px;
-}
-
-.consumption-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: hsl(var(--muted-foreground) / 0.5);
+.consumption-scrollbar::-webkit-scrollbar-thumb:hover, .desk-scroll::-webkit-scrollbar-thumb:hover { background-color: hsl(var(--muted-foreground) / 0.5);
 }
 
 @keyframes consumptionDayHighlight {

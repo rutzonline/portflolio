@@ -3,7 +3,6 @@
 import { cn } from "@/lib/utils";
 import { IOS_MOBILE_READING_TEXT_CLASS } from "@/lib/ui-tokens";
 import { WORK_LOGOS } from "@/lib/work-logos";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { STATE_PLATE_BODY } from "./case-studies/fallback-data";
 import { WorkMarkdown } from "./work-markdown";
 import { WorkStintHeader } from "./work-stint-header";
@@ -25,7 +24,7 @@ export interface WorkStint {
 }
 
 export const WORK_PAGE_INTRO =
-  "marketing & growth associate with 2+ years building multi-channel 0-1 engines across D2C, Fintech, and SaaS in India. AI-native marketer who thrives on learning, experimenting, and scaling across channels.";
+  "marketing & growth associate with 2+ years building multi-channel 0-1 engines across D2C, Fintech & SaaS in India. AI-native marketer who thrives on learning, experimenting, and scaling across channels.";
 
 /** Stint detail pages stay off until long-form write-ups are ready; cards render as static summaries. */
 export const WORK_STINT_DETAILS_ENABLED = false;
@@ -56,7 +55,7 @@ export const ALL_WORK_STINTS: WorkStint[] = [
     highlights: [
       "Scaled app downloads from ~150 to 7K in 5 months with zero paid budget; ~20% of daily orders",
       "Drove email open rates from 8–10% to 35.8% across 75K subscribers in 5 months",
-      "Redesigned web and app UX — 30% AOV lift (₹808 → ₹1,047) and 8% app conversion",
+      "Redesigned web and app UX resulting in 30% AOV lift (₹808 → ₹1,047) and 8% app conversion",
       "Grew Instagram to 45K followers (5M+ views) and WhatsApp community to 1,000 members",
     ],
     details: STATE_PLATE_BODY,
@@ -168,13 +167,15 @@ function StintCard({
 
   if (navigable) {
     return (
-      <div className="mb-4">
+      <div className="mb-7">
         <button
           type="button"
           onClick={() => onSelect!(stint)}
           className={cn(
-            resumePanelCardClass(isMobileView),
-            "p-4 group w-full text-left transition-colors can-hover:hover:border-zinc-300 dark:can-hover:hover:border-zinc-600"
+            "rounded-xl border border-zinc-200 bg-zinc-100/70 dark:border-white/[0.06] dark:bg-black/20",
+
+            "p-4 group w-full text-left transition-colors can-hover:hover:border-zinc-300 dark:can-hover:hover:border-white/[0.12] dark:can-hover:hover:bg-black/30"
+
           )}
         >
           {content}
@@ -184,9 +185,7 @@ function StintCard({
   }
 
   return (
-    <div className="mb-4">
-      <div className={cn(resumePanelCardClass(isMobileView), "p-4")}>{content}</div>
-    </div>
+    <div className={cn("rounded-xl border border-zinc-200 bg-zinc-100/70 dark:border-white/[0.06] dark:bg-black/20 p-4")}>{content}</div>
   );
 }
 
@@ -211,7 +210,7 @@ function TimelineSection({
       >
         {title}
       </h3>
-      <div>
+      <div className="space-y-4">
         {stints.map((stint) => (
           <StintCard
             key={stint.id}
@@ -237,8 +236,8 @@ export function WorkStintDetail({
   const { media, loading, hasMedia } = useWorkStintMedia(stint.id);
 
   return (
-    <ScrollArea className="h-full" bottomMargin="0">
-      <div className="max-w-2xl p-6">
+    <div className="h-full overflow-y-auto desk-scroll">
+  <div className="max-w-2xl p-6">
         <WorkStintHeader stint={stint} />
 
         {hasHighlights && (
@@ -288,7 +287,7 @@ export function WorkStintDetail({
           </div>
         )}
       </div>
-    </ScrollArea>
+    </div>
   );
 }
 
@@ -299,8 +298,8 @@ interface WorkTimelineProps {
 
 export function WorkTimeline({ isMobileView = false, onSelect }: WorkTimelineProps) {
   return (
-    <ScrollArea className="h-full" bottomMargin="0">
-      <div className={cn("p-6", isMobileView && "p-4 pb-20")}>
+    <div className="h-full">
+      <div className={cn("p-1", isMobileView && "p-4 pb-20")}>
         <div className="mb-8">
           <h3
             className={cn(
@@ -323,6 +322,6 @@ export function WorkTimeline({ isMobileView = false, onSelect }: WorkTimelinePro
         <TimelineSection title="Volunteering & Community" stints={VOLUNTEERING} isMobileView={isMobileView} />
         <TimelineSection title="Projects" stints={PROJECTS} isMobileView={isMobileView} />
       </div>
-    </ScrollArea>
+    </div>
   );
 }

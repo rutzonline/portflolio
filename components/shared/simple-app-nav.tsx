@@ -28,7 +28,7 @@ export function SimpleAppNav({
         isMobile={isMobileView}
         isScrolled={isScrolled}
         onMouseDown={nav.onDragStart}
-        left={showWindowControls ? nav.navLeft : undefined}
+        left={isMobileView || showWindowControls ? nav.navLeft : undefined}
         center={
           isMobileView ? (
             <IosMobileNavTitle>{title}</IosMobileNavTitle>

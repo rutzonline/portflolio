@@ -63,7 +63,7 @@ export function WindowNavShell({
     >
       <div className="shrink-0">{left}</div>
       {center ? (
-        <div className={cn("flex-1 min-w-0", centerClassName)}>{center}</div>
+        <div className={cn("flex-1 min-w-0 font-semibold", centerClassName)}>{center}</div>
       ) : (
         <div className="flex-1" />
       )}

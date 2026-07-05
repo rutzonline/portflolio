@@ -101,7 +101,7 @@ export default function App({ isDesktop = false }: AppProps) {
       case "home":
         return "Home";
       case "browse":
-        return "prime internet real estate";
+        return "internet prime 11";
       case "artists":
         return "brands getting it right";
       case "albums":
@@ -178,7 +178,7 @@ export default function App({ isDesktop = false }: AppProps) {
           showSidebar
             ? isMobileView
               ? "block w-full"
-              : cn("block border-r dark:border-foreground/20", DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)
+              : cn("block", DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)
             : "hidden"
         )}
       >

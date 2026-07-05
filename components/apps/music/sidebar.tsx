@@ -33,9 +33,14 @@ export function Sidebar({
   });
 
   return (
-    <AppSidebarShell
+        <AppSidebarShell
       isMobileView={isMobileView}
       onScroll={onScroll}
+      className={
+        isMobileView
+          ? undefined
+          : "bg-zinc-100/80 dark:bg-zinc-800/80 backdrop-blur-xl border-r border-zinc-200 dark:border-zinc-700"
+      }
       sidebarContent={
         <>
             {/* Desktop: traffic lights in top region */}
@@ -70,7 +75,7 @@ export function Sidebar({
               </p>
               <SidebarItem
                 icon={<Compass className="w-4 h-4" />}
-                label="prime internet real estate"
+                label="internet prime 11"
                 isActive={activeView === "browse"}
                 onClick={() => onViewSelect("browse")}
                 isMobileView={isMobileView}
