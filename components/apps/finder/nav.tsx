@@ -1,7 +1,6 @@
 "use client";
 
 import type { MouseEventHandler, RefObject } from "react";
-import { WindowControls } from "@/components/window-controls";
 import { WindowNavShell, WindowNavSpacer } from "@/components/window-nav-shell";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
 import { cn } from "@/lib/utils";
@@ -72,23 +71,13 @@ export function FinderNav({
   });
 
   return (
-    <WindowNavShell
-      isMobile={false}
-      className="min-w-0 gap-2 bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700"
-      onMouseDown={nav.onDragStart}
-      left={
-        <div className="flex items-center gap-2 shrink-0">
-          <WindowControls
-            inShell={nav.inShell}
-            showWhenNotInShell={true}
-            className="p-2"
-            onClose={nav.onClose}
-            onMinimize={nav.onMinimize}
-            onToggleMaximize={nav.onToggleMaximize}
-            isMaximized={nav.isMaximized}
-            closeLabel={nav.closeLabel}
-          />
-          <div className="flex shrink-0 items-center gap-1" onMouseDown={stopDragPropagation}>
+    <div className="mx-3 mt-3">
+      <WindowNavShell
+        isMobile={false}
+        className="min-w-0 gap-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg shadow-sm"
+        onMouseDown={nav.onDragStart}
+        left={
+        <div className="flex shrink-0 items-center gap-1" onMouseDown={stopDragPropagation}>
             <button
               onClick={onBack}
               disabled={!canGoBack}
@@ -118,7 +107,6 @@ export function FinderNav({
               </svg>
             </button>
           </div>
-        </div>
       }
       center={
         <div
@@ -128,7 +116,6 @@ export function FinderNav({
           {breadcrumbs.join(" / ")}
         </div>
       }
-      centerClassName="flex items-center justify-center px-2"
       right={
         <div
           className={cn(
@@ -240,5 +227,6 @@ export function FinderNav({
         </div>
       }
     />
+    </div>
   );
 }

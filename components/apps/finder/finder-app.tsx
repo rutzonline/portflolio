@@ -8,6 +8,9 @@ import { SIDEBAR_ITEM_ACTIVE_CLASS, ACCENT_BLUE_CLASS, FILE_LIST_ROW_SELECTED_CL
 import { FinderNav, FinderSidebarMobileNav } from "./nav";
 import { FileIcon } from "./file-icon";
 import { SidebarIcon } from "./sidebar-icon";
+import { WindowControls } from "@/components/window-controls";
+import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
+import { SidebarItem as SharedSidebarItem } from "@/components/shared/sidebar-item";
 import {
   type FileItem,
   isImageFile,
@@ -175,7 +178,7 @@ export function FinderApp({
     try {
       // Special handling for Recents - handled separately via useEffect
       if (path === "recents") {
-        setLoading(false);
+        // Don't set loading to false immediately - let the GitHub fetch useEffect handle it
         return;
       }
 
@@ -804,30 +807,38 @@ export function FinderApp({
       );
     }
 
-    // Desktop sidebar
+    // Desktop sidebar with traffic lights in top-left
+    const nav = useWindowNavBehavior({
+      isDesktop: inDesktopShell,
+      isMobile: false,
+      allowStandaloneClose: false,
+    });
+
     return (
       <div className={cn("flex flex-col border-r border-zinc-200 dark:border-zinc-700 bg-zinc-100/80 dark:bg-zinc-800/80 backdrop-blur-xl", DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)}>
-        <div className="flex-1 overflow-y-auto py-2">
+        {/* Top region with traffic lights and drag handle */}
+        <div className="h-[52px] flex items-center px-5 shrink-0" onMouseDown={nav.onDragStart}>
+          <WindowControls
+            inShell={nav.inShell}
+            showWhenNotInShell={true}
+            onClose={nav.onClose}
+            onMinimize={nav.onMinimize}
+            onToggleMaximize={nav.onToggleMaximize}
+            isMaximized={nav.isMaximized}
+            closeLabel={nav.closeLabel}
+          />
+        </div>
+        {/* Sidebar list */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden py-2">
           {SIDEBAR_ITEMS.map(item => (
-            <button
+            <SharedSidebarItem
               key={item.id}
+              icon={<SidebarIcon icon={item.icon} className="w-4 h-4" />}
+              label={item.label}
+              isActive={selectedSidebar === item.id}
               onClick={() => handleSidebarSelect(item.id)}
-              className={cn(
-                "w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left rounded-md",
-                selectedSidebar === item.id
-                  ? SIDEBAR_ITEM_ACTIVE_CLASS
-                  : "text-zinc-900 dark:text-zinc-100"
-              )}
-            >
-              <SidebarIcon
-                icon={item.icon}
-                className={cn(
-                  "w-4 h-4",
-                  selectedSidebar === item.id ? ACCENT_BLUE_CLASS : "text-zinc-900 dark:text-zinc-100"
-                )}
-              />
-              <span>{item.label}</span>
-            </button>
+              isMobileView={false}
+            />
           ))}
         </div>
       </div>
@@ -930,12 +941,6 @@ export function FinderApp({
   // Skeleton loading for desktop list view
   const renderDesktopListSkeleton = () => (
     <div className="flex flex-col animate-pulse">
-      {/* Column headers */}
-      <div className="flex items-center px-4 py-1 border-b border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500 dark:text-zinc-400">
-        <div className="flex-1 min-w-0">Name</div>
-        <div className="w-32 text-left">Kind</div>
-        <div className="w-52 text-left">Date Modified</div>
-      </div>
       {/* Skeleton rows */}
       <div className="flex-1">
         {Array.from({ length: 8 }).map((_, i) => (
@@ -943,12 +948,6 @@ export function FinderApp({
             <div className="flex-1 min-w-0 flex items-center gap-2">
               <div className="w-4 h-4 rounded bg-zinc-200 dark:bg-zinc-700 flex-shrink-0" />
               <div className="h-4 rounded bg-zinc-200 dark:bg-zinc-700" style={{ width: `${120 + (i * 17) % 80}px` }} />
-            </div>
-            <div className="w-32">
-              <div className="h-4 w-16 rounded bg-zinc-200 dark:bg-zinc-700" />
-            </div>
-            <div className="w-52">
-              <div className="h-4 w-32 rounded bg-zinc-200 dark:bg-zinc-700" />
             </div>
           </div>
         ))}
@@ -993,7 +992,7 @@ export function FinderApp({
 
   // Render file grid (desktop icons view)
   const renderFileGrid = () => (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] gap-2 p-4">
+    <div className="w-full grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] gap-2 p-4">
       {files.map(file => (
         <button
           key={file.path}
@@ -1025,13 +1024,7 @@ export function FinderApp({
 
   // Render desktop list view
   const renderDesktopListView = () => (
-    <div className="flex flex-col">
-      {/* Column headers */}
-      <div className="flex items-center px-4 py-1 border-b border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500 dark:text-zinc-400">
-        <div className="flex-1 min-w-0">Name</div>
-        <div className="w-32 text-left">Kind</div>
-        <div className="w-52 text-left">Date Modified</div>
-      </div>
+    <div className="flex flex-col w-full">
       {/* File rows */}
       <div className="flex-1">
         {files.map(file => (
@@ -1326,43 +1319,43 @@ export function FinderApp({
   return (
     <div
       ref={containerRef}
-      className="flex flex-col h-full bg-white dark:bg-zinc-900"
+      className="flex-1 h-full w-full bg-white dark:bg-zinc-900"
       data-app="finder"
     >
-      {renderNav()}
-      <div className="flex flex-1 min-h-0">
+      <div className="flex h-full">
         {renderSidebar()}
-        <div className="flex-1 flex flex-col min-w-0">
-          {searchActive && searchQuery && !isMobile && renderScopeBar()}
-          <div className="flex-1 overflow-y-auto" onClick={() => setSelectedFile(null)}>
-          {searchActive && searchQuery ? (
-            renderSearchResults()
-          ) : loading ? (
-            viewMode === "list" ? renderDesktopListSkeleton() : renderIconsGridSkeleton()
-          ) : previewContent !== null ? (
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-zinc-900 dark:text-white">
-                  {selectedFile?.split("/").pop()}
-                </h3>
-                <button
-                  onClick={() => { setPreviewContent(null); setSelectedFile(null); }}
-                  className="text-sm text-accent-blue hover:text-accent-blue"
-                >
-                  Close Preview
-                </button>
-              </div>
-              <pre className="text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap font-mono bg-zinc-50 dark:bg-zinc-800 p-4 rounded-lg overflow-auto max-h-[60vh]">
-                {previewContent}
-              </pre>
+        <div className="flex-1 flex flex-col min-w-0 min-h-0">
+        {renderNav()}
+        {searchActive && searchQuery && !isMobile && renderScopeBar()}
+        <div className="flex-1 min-h-0 overflow-y-auto w-full mt-7" onClick={() => setSelectedFile(null)}>
+        {searchActive && searchQuery ? (
+          renderSearchResults()
+        ) : loading ? (
+          viewMode === "list" ? renderDesktopListSkeleton() : renderIconsGridSkeleton()
+        ) : previewContent !== null ? (
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium text-zinc-900 dark:text-white">
+                {selectedFile?.split("/").pop()}
+              </h3>
+              <button
+                onClick={() => { setPreviewContent(null); setSelectedFile(null); }}
+                className="text-sm text-accent-blue hover:text-accent-blue"
+              >
+                Close Preview
+              </button>
             </div>
-          ) : viewMode === "list" ? (
-            renderDesktopListView()
-          ) : (
-            renderFileGrid()
-          )}
+            <pre className="text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap font-mono bg-zinc-50 dark:bg-zinc-800 p-4 rounded-lg overflow-auto max-h-[60vh]">
+              {previewContent}
+            </pre>
           </div>
+        ) : viewMode === "list" ? (
+          renderDesktopListView()
+        ) : (
+          renderFileGrid()
+        )}
         </div>
+      </div>
       </div>
     </div>
   );

@@ -169,84 +169,83 @@ export default function App({ isDesktop = false }: AppProps) {
       data-app="desk"
       tabIndex={-1}
       onMouseDown={() => containerRef.current?.focus()}
-      className="music-app h-full flex flex-col bg-background text-foreground outline-none overflow-hidden"
+      className="music-app flex-1 h-full w-full flex bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 outline-none overflow-hidden"
     >
-      {!isMobileView && <DeskTopNav title={sectionTitle} isDesktop={isDesktop} />}
-
-      <main className="flex-1 flex min-h-0 overflow-hidden">
-        <div
-          className={cn(
-            "h-full flex-shrink-0 overflow-hidden",
-            showSidebar
-              ? isMobileView
-                ? "block w-full"
-                : cn("block border-r dark:border-foreground/20", DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)
-              : "hidden"
-          )}
+      {/* Sidebar */}
+      <div
+        className={cn(
+          "h-full flex-shrink-0 overflow-hidden",
+          showSidebar
+            ? isMobileView
+              ? "block w-full"
+              : cn("block border-r dark:border-foreground/20", DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)
+            : "hidden"
+        )}
+      >
+        {isMobileView && !showContent && (
+          <WindowNavShell
+            isMobile={true}
+            isScrolled={isScrolled}
+            className="shrink-0 bg-background"
+            left={
+              <IosWindowNavBack
+                canGoBack
+                onBack={handleBackToMiscHome}
+                backTitle="moodboard"
+              />
+            }
+            center={<IosMobileNavTitle>moodboard</IosMobileNavTitle>}
+            right={<WindowNavSpacer isMobile={true} />}
+          />
+        )}
+        <Sidebar
+          playlists={playlists}
+          activeView={activeView}
+          selectedPlaylistId={selectedPlaylistId}
+          onViewSelect={handleViewSelect}
+          isMobileView={isMobileView}
+          onScroll={setIsScrolled}
         >
-          {isMobileView && !showContent && (
-            <WindowNavShell
-              isMobile={true}
-              isScrolled={isScrolled}
-              className="shrink-0 bg-background"
-              left={
+          {null}
+        </Sidebar>
+      </div>
+
+      {/* Content column */}
+      <div
+        className={cn(
+          "flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden w-full",
+          showMainContent ? "flex" : "hidden"
+        )}
+      >
+        {!isMobileView && <DeskTopNav title={sectionTitle} isDesktop={isDesktop} />}
+        {isMobileView && (
+          <WindowNavShell
+            isMobile={true}
+            className="shrink-0 bg-background"
+            left={
+              activeView === "home" ? (
                 <IosWindowNavBack
                   canGoBack
-                  onBack={handleBackToMiscHome}
-                  backTitle="moodboard"
+                  onBack={() => mobileStack?.popToHome()}
+                  backTitle="home"
                 />
-              }
-              center={<IosMobileNavTitle>moodboard</IosMobileNavTitle>}
-              right={<WindowNavSpacer isMobile={true} />}
-            />
-          )}
-          <Sidebar
-            playlists={playlists}
-            activeView={activeView}
-            selectedPlaylistId={selectedPlaylistId}
-            onViewSelect={handleViewSelect}
-            isMobileView={isMobileView}
-            onScroll={setIsScrolled}
-          >
-            {null}
-          </Sidebar>
-        </div>
+              ) : (
+                <IosWindowNavBack
+                  canGoBack
+                  onBack={handleBack}
+                  backTitle="home"
+                />
+              )
+            }
+            center={<IosMobileNavTitle>moodboard</IosMobileNavTitle>}
+            right={<WindowNavSpacer isMobile={true} />}
+          />
+        )}
 
-        <div
-          className={cn(
-            "flex-1 flex-col min-h-0 min-w-0 overflow-hidden",
-            showMainContent ? "flex" : "hidden"
-          )}
-        >
-          {isMobileView && (
-            <WindowNavShell
-              isMobile={true}
-              className="shrink-0 bg-background"
-              left={
-                activeView === "home" ? (
-                  <IosWindowNavBack
-                    canGoBack
-                    onBack={() => mobileStack?.popToHome()}
-                    backTitle="home"
-                  />
-                ) : (
-                  <IosWindowNavBack
-                    canGoBack
-                    onBack={handleBack}
-                    backTitle="home"
-                  />
-                )
-              }
-              center={<IosMobileNavTitle>moodboard</IosMobileNavTitle>}
-              right={<WindowNavSpacer isMobile={true} />}
-            />
-          )}
-
-          <div className="desk-scroll flex-1 min-h-0 overflow-y-auto">
-            {renderContent()}
-          </div>
+        <div className="desk-scroll flex-1 min-h-0 overflow-y-auto">
+          {renderContent()}
         </div>
-      </main>
+      </div>
     </div>
   );
 

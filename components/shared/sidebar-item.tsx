@@ -18,11 +18,11 @@ export function SidebarItem({
     <button
       onClick={onClick}
       className={cn(
-        "w-full flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors text-left",
+        "flex items-center gap-2 py-1.5 rounded-lg transition-colors text-left",
         isActive && !isMobileView
-          ? SIDEBAR_ITEM_ACTIVE_CLASS
-          : "text-foreground",
-        isMobileView ? "py-3 text-base" : "text-sm"
+          ? "bg-[var(--sidebar-active-bg)] text-accent-blue font-semibold mx-2"
+          : "text-foreground mx-2",
+        isMobileView ? "px-3 py-3 text-base" : "px-3 text-sm"
       )}
     >
       {icon}

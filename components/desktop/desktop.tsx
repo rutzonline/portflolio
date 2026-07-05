@@ -909,7 +909,7 @@ function DesktopContent({
             <SettingsApp inShell={true} initialPanel={settingsPanel} initialCategory={settingsCategory} />
           </Window>
 
-          <Window appId="photos">
+          <Window appId="photos" sidebarLayout={true}>
             <PhotosApp inShell={true} />
           </Window>
 
@@ -921,7 +921,7 @@ function DesktopContent({
             <WeatherApp inShell={true} />
           </Window>
 
-          <Window appId="desk">
+          <Window appId="desk" sidebarLayout={true}>
             <MusicApp />
           </Window>
 
@@ -929,7 +929,7 @@ function DesktopContent({
             <NowPlayingWindow />
           </Window>
 
-          <Window appId="resume">
+          <Window appId="resume" sidebarLayout={true}>
             <ResumeApp
               inShell={true}
               onOpenApp={handleOpenApp}
@@ -945,6 +945,7 @@ function DesktopContent({
                 <Window
                   key={windowState.id}
                   appId="finder"
+                  sidebarLayout={true}
                   keepMountedWhenMinimized={true}
                   windowStateOverride={windowState}
                   controlledHandlers={{

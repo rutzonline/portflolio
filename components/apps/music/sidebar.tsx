@@ -4,6 +4,8 @@ import { SidebarItem } from "@/components/shared/sidebar-item";
 import { AppSidebarShell } from "@/components/shared/app-sidebar-shell";
 import { MusicView, Playlist } from "./types";
 import { Home, Compass, User, Disc3, Music, ListMusic, BookOpen, Coffee } from "lucide-react";
+import { WindowControls } from "@/components/window-controls";
+import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -24,12 +26,32 @@ export function Sidebar({
   isMobileView,
   onScroll,
 }: SidebarProps) {
+  const nav = useWindowNavBehavior({
+    isDesktop: !isMobileView,
+    isMobile: isMobileView,
+    allowStandaloneClose: false,
+  });
+
   return (
     <AppSidebarShell
       isMobileView={isMobileView}
       onScroll={onScroll}
       sidebarContent={
         <>
+            {/* Desktop: traffic lights in top region */}
+            {!isMobileView && (
+              <div className="h-[52px] flex items-center px-5 shrink-0" onMouseDown={nav.onDragStart}>
+                <WindowControls
+                  inShell={nav.inShell}
+                  showWhenNotInShell={true}
+                  onClose={nav.onClose}
+                  onMinimize={nav.onMinimize}
+                  onToggleMaximize={nav.onToggleMaximize}
+                  isMaximized={nav.isMaximized}
+                  closeLabel={nav.closeLabel}
+                />
+              </div>
+            )}
             {/* Main */}
             <div className="mb-4">
               <SidebarItem

@@ -28,7 +28,7 @@ export function AppSidebarShell({
       )}
     >
       {children}
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-hidden overflow-x-hidden">
         <ScrollArea
           className="h-full"
           bottomMargin="0"

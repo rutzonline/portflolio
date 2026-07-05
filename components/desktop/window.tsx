@@ -25,6 +25,7 @@ interface WindowProps {
   keepMountedWhenMinimized?: boolean;
   windowStateOverride?: WindowState;
   controlledHandlers?: ControlledWindowHandlers;
+  sidebarLayout?: boolean;
 }
 
 export function Window({
@@ -35,6 +36,7 @@ export function Window({
   keepMountedWhenMinimized = false,
   windowStateOverride,
   controlledHandlers,
+  sidebarLayout = false,
 }: WindowProps) {
   const {
     getWindow,
@@ -224,28 +226,27 @@ const size = rawSize ?? { width: 800, height: 550 };
       <div
         ref={innerWrapperRef}
         className={cn(
-          "absolute inset-0 overflow-hidden shadow-2xl flex flex-col",
+          "absolute inset-0 overflow-hidden shadow-2xl",
           isBorderlessWindow
             ? "bg-transparent border-0"
             : "bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10",
           isMaximized ? "rounded-none" : "rounded-xl",
-          !isFocused && "[&_*]:!cursor-default"
+          !isFocused && "[&_*]:!cursor-default",
+          sidebarLayout ? "flex flex-row" : "flex flex-col"
         )}
       >
-        <div className="flex-1 min-h-0">
-          <WindowFocusProvider
-            isFocused={isHiddenMinimized ? false : isFocused}
-            appId={appId}
-            closeWindow={controlledHandlers ? controlledHandlers.closeWindow : () => closeWindow(appId)}
-            minimizeWindow={controlledHandlers ? controlledHandlers.minimizeWindow : () => minimizeWindow(appId)}
-            toggleMaximize={controlledHandlers ? controlledHandlers.toggleMaximize : () => toggleMaximize(appId)}
-            isMaximized={isMaximized}
-            onDragStart={handleDragStart}
-            dialogContainerRef={innerWrapperRef}
-          >
-            {children}
-          </WindowFocusProvider>
-        </div>
+        <WindowFocusProvider
+          isFocused={isHiddenMinimized ? false : isFocused}
+          appId={appId}
+          closeWindow={controlledHandlers ? controlledHandlers.closeWindow : () => closeWindow(appId)}
+          minimizeWindow={controlledHandlers ? controlledHandlers.minimizeWindow : () => minimizeWindow(appId)}
+          toggleMaximize={controlledHandlers ? controlledHandlers.toggleMaximize : () => toggleMaximize(appId)}
+          isMaximized={isMaximized}
+          onDragStart={handleDragStart}
+          dialogContainerRef={innerWrapperRef}
+        >
+          {children}
+        </WindowFocusProvider>
       </div>
 
       {/* Resize handles */}

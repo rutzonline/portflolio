@@ -2,16 +2,16 @@ export const DESKTOP_FINDER_PATH = "/Users/rutujarochkari/Desktop";
 
 /** One-word URL slugs for desktop PDFs (override auto-generated slugs). */
 export const DESKTOP_PDF_FILENAME_TO_SLUG: Record<string, string> = {
-  "FamPay - Copy Intern Assignment.pdf": "fampay",
-  "Assignment - wisprflow.pdf": "wisprflow",
-  "Content and SM  Pitch deck.pdf": "pitchdeck",
+  "FamPay - Copy": "fampay",
+  "Assignment - wisprflow": "wisprflow",
+  "Content and SM  Pitch deck": "pitchdeck",
 };
 
 /** Default iframe PDF zoom per desktop file (fit-to-window tuning). */
 export const DESKTOP_PDF_FILENAME_TO_ZOOM: Record<string, number> = {
-  "FamPay - Copy Intern Assignment.pdf": 40,
-  "Assignment - wisprflow.pdf": 50,
-  "Content and SM  Pitch deck.pdf": 40,
+  "FamPay - Copy Intern": 40,
+  "Assignment - wisprflow": 50,
+  "Content and SM  Pitch deck": 40,
 };
 
 export const DEFAULT_DESKTOP_PDF_ZOOM = 40;

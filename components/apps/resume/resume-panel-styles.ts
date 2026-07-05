@@ -46,7 +46,7 @@ export const RESUME_SECTION_HEADING_CLASS =
 export const RESUME_SECTION_LEAD_CLASS =
   "text-sm text-zinc-800 dark:text-zinc-100 px-3";
 
-/** Scrollable resume panel root — adds mobile bottom inset when needed. */
+/** Scrollable resume panel root — adds mobile bottom inset when needed. Desktop: no scroll, let parent handle it. */
 export function resumePanelScrollClass(isMobileView = false, extra?: string) {
-  return cn("flex-1 overflow-y-auto p-6", isMobileView && "pb-20", extra);
+  return cn(isMobileView ? "flex-1 overflow-y-auto p-6 pb-20" : "p-6", extra);
 }

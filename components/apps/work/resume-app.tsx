@@ -12,6 +12,9 @@ import { SidebarIcon } from "../finder/sidebar-icon";
 import { IosWindowNavBack } from "@/components/mobile/ios/ios-window-nav-back";
 import { IosMobileNavTitle } from "@/components/mobile/ios/ios-mobile-nav-title";
 import { WindowNavShell, WindowNavSpacer } from "@/components/window-nav-shell";
+import { WindowControls } from "@/components/window-controls";
+import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
+import { SidebarItem as SharedSidebarItem } from "@/components/shared/sidebar-item";
 import type { SidebarItem } from "../finder/sidebar-types";
 import { getSearchSectionForSidebar, STATIC_SIDEBAR_PANELS } from "../finder/sidebar-types";
 import {
@@ -816,30 +819,38 @@ export function ResumeApp({
       );
     }
 
-    // Desktop sidebar
+    // Desktop sidebar with traffic lights in top-left
+    const nav = useWindowNavBehavior({
+      isDesktop: inDesktopShell,
+      isMobile: false,
+      allowStandaloneClose: false,
+    });
+
     return (
       <div className={cn("flex flex-col border-r border-zinc-200 dark:border-zinc-700 bg-zinc-100/80 dark:bg-zinc-800/80 backdrop-blur-xl", DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)}>
-        <div className="flex-1 overflow-y-auto py-2">
+        {/* Top region with traffic lights and drag handle */}
+        <div className="h-[52px] flex items-center px-5 shrink-0" onMouseDown={nav.onDragStart}>
+          <WindowControls
+            inShell={nav.inShell}
+            showWhenNotInShell={true}
+            onClose={nav.onClose}
+            onMinimize={nav.onMinimize}
+            onToggleMaximize={nav.onToggleMaximize}
+            isMaximized={nav.isMaximized}
+            closeLabel={nav.closeLabel}
+          />
+        </div>
+        {/* Sidebar list */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden py-2">
           {SIDEBAR_ITEMS.map(item => (
-            <button
+            <SharedSidebarItem
               key={item.id}
+              icon={<SidebarIcon icon={item.icon} className="w-4 h-4" />}
+              label={item.label}
+              isActive={selectedSidebar === item.id}
               onClick={() => handleSidebarSelect(item.id)}
-              className={cn(
-                "w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left rounded-md",
-                selectedSidebar === item.id
-                  ? SIDEBAR_ITEM_ACTIVE_CLASS
-                  : "text-zinc-900 dark:text-zinc-100"
-              )}
-            >
-              <SidebarIcon
-                icon={item.icon}
-                className={cn(
-                  "w-4 h-4",
-                  selectedSidebar === item.id ? ACCENT_BLUE_CLASS : "text-zinc-900 dark:text-zinc-100"
-                )}
-              />
-              <span>{item.label}</span>
-            </button>
+              isMobileView={false}
+            />
           ))}
         </div>
       </div>
@@ -1486,70 +1497,70 @@ export function ResumeApp({
   return (
     <div
       ref={containerRef}
-      className="flex flex-col h-full bg-white dark:bg-zinc-900"
+      className="flex-1 h-full w-full bg-white dark:bg-zinc-900"
       data-app="resume"
     >
-      {renderNav()}
-      <div className="flex flex-1 min-h-0">
+      <div className="flex h-full">
         {renderSidebar()}
-        <div className="flex-1 flex flex-col min-w-0">
-          {searchActive && searchQuery && !isMobile && renderScopeBar()}
-          <div
-            className="flex-1 overflow-y-auto"
-            onClick={() => {
-              setSelectedFile(null);
-              setSelectedWorkFolderSlug(null);
-            }}
-          >
-          {searchActive && searchQuery ? (
-            renderSearchResults()
-          ) : STATIC_PANEL_ITEMS.has(selectedSidebar) ? (
-            renderStaticPanel()
-          ) : isSelectedWorkView ? (
-            <SelectedWorkFolders
-              selectedSlug={selectedWorkFolderSlug}
-              onSelect={(study) =>
-                setSelectedWorkFolderSlug((current) =>
-                  current === study.slug ? null : study.slug
-                )
-              }
-              onOpenStudy={handleOpenCaseStudyFolder}
-            />
-          ) : loading ? (
-            viewMode === "list" ? renderDesktopListSkeleton() : renderIconsGridSkeleton()
-          ) : isWorkDocumentsView && WORK_STINT_DETAILS_ENABLED && selectedWorkStint ? (
-            <WorkStintDetail stint={selectedWorkStint} />
-          ) : isWorkDocumentsView && selectedCaseStudy ? (
-            <CaseStudyDetail study={selectedCaseStudy} />
-          ) : isWorkDocumentsView ? (
-            <WorkTimeline
-              isMobileView={false}
-              onSelect={WORK_STINT_DETAILS_ENABLED ? setSelectedWorkStint : undefined}
-            />
-          ) : previewContent !== null ? (
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-zinc-900 dark:text-white">
-                  {selectedFile?.split("/").pop()}
-                </h3>
-                <button
-                  onClick={() => { setPreviewContent(null); setSelectedFile(null); }}
-                  className="text-sm text-accent-blue hover:text-accent-blue"
-                >
-                  Close Preview
-                </button>
-              </div>
-              <pre className="text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap font-mono bg-zinc-50 dark:bg-zinc-800 p-4 rounded-lg overflow-auto max-h-[60vh]">
-                {previewContent}
-              </pre>
+        <div className="flex-1 flex flex-col min-w-0 min-h-0">
+        {renderNav()}
+        {searchActive && searchQuery && !isMobile && renderScopeBar()}
+        <div
+          className="flex-1 min-h-0 overflow-y-auto p-6"
+          onClick={() => {
+            setSelectedFile(null);
+            setSelectedWorkFolderSlug(null);
+          }}
+        >
+        {searchActive && searchQuery ? (
+          renderSearchResults()
+        ) : STATIC_PANEL_ITEMS.has(selectedSidebar) ? (
+          renderStaticPanel()
+        ) : isSelectedWorkView ? (
+          <SelectedWorkFolders
+            selectedSlug={selectedWorkFolderSlug}
+            onSelect={(study) =>
+              setSelectedWorkFolderSlug((current) =>
+                current === study.slug ? null : study.slug
+              )
+            }
+            onOpenStudy={handleOpenCaseStudyFolder}
+          />
+        ) : loading ? (
+          viewMode === "list" ? renderDesktopListSkeleton() : renderIconsGridSkeleton()
+        ) : isWorkDocumentsView && WORK_STINT_DETAILS_ENABLED && selectedWorkStint ? (
+          <WorkStintDetail stint={selectedWorkStint} />
+        ) : isWorkDocumentsView && selectedCaseStudy ? (
+          <CaseStudyDetail study={selectedCaseStudy} />
+        ) : isWorkDocumentsView ? (
+          <WorkTimeline
+            isMobileView={false}
+            onSelect={WORK_STINT_DETAILS_ENABLED ? setSelectedWorkStint : undefined}
+          />
+        ) : previewContent !== null ? (
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium text-zinc-900 dark:text-white">
+                {selectedFile?.split("/").pop()}
+              </h3>
+              <button
+                onClick={() => { setPreviewContent(null); setSelectedFile(null); }}
+                className="text-sm text-accent-blue hover:text-accent-blue"
+              >
+                Close Preview
+              </button>
             </div>
-          ) : viewMode === "list" ? (
-            renderDesktopListView()
-          ) : (
-            renderFileGrid()
-          )}
+            <pre className="text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap font-mono bg-zinc-50 dark:bg-zinc-800 p-4 rounded-lg overflow-auto max-h-[60vh]">
+              {previewContent}
+            </pre>
           </div>
+        ) : viewMode === "list" ? (
+          renderDesktopListView()
+        ) : (
+          renderFileGrid()
+        )}
         </div>
+      </div>
       </div>
     </div>
   );
