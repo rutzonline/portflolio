@@ -169,7 +169,7 @@ export default function App({ isDesktop = false }: AppProps) {
       data-app="desk"
       tabIndex={-1}
       onMouseDown={() => containerRef.current?.focus()}
-      className="music-app flex-1 h-full w-full flex bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 outline-none overflow-hidden"
+      className="music-app flex-1 h-full w-full flex bg-background text-zinc-900 dark:text-zinc-100 outline-none overflow-hidden"
     >
       {/* Sidebar */}
       <div
