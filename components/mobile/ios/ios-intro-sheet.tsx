@@ -13,15 +13,7 @@ const MOBILE_NAV_SECTION = `
 - use the **back chevron** (← Home) in the top left to return to the springboard.
 - inside apps like Notes, Messages, or Photos, tap **back** again to return to the list.
 
-**what you can explore**
 
-- **Notes** — thoughts and writing
-- **Resume** — work timeline and case studies
-- **moodboard** — marketing curations I love
-- **Photos** — pictures and an intro video
-- **Calendar** — a log of things I've read, watched, and listened to
-- **Messages** — conversations
-- **Settings** — appearance and preferences
 `;
 
 /** Body markdown with the "hi, i'm rutuja" heading stripped (now in the pinned header). */

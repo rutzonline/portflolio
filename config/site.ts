@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "Rutuja Rochkari",
   title: "Rutuja Rochkari",
-  url: "https://rutujarochkari.com",
+  url: "https://rutzonline.com",
   introDocPath: "/Users/rutujarochkari/Documents/intro.txt",
   calBookingUrl: "https://cal.com/rutujarochkari/hi?duration=25",
   /** Set to `false` to restore normal title/menu casing site-wide. */

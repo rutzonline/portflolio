@@ -81,7 +81,7 @@ export function PersonalInfoPanel() {
           </a>
           <div className="flex items-center justify-between px-4 py-3">
             <span className="text-xs">Birthday</span>
-            <span className="text-xs text-muted-foreground">hey now, that's too personal</span>
+            <span className="text-xs text-muted-foreground">tsk, too personal</span>
           </div>
         </div>
       </div>

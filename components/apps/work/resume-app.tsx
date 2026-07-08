@@ -1279,16 +1279,22 @@ export function ResumeApp({
         </div>
       ) : null;
 
-    // Items as individual pills that wrap onto new rows with real gaps.
+// Items as individual pills that wrap onto new rows with real gaps.
 const renderRowItems = (items: string[]) => (
   <div className="flex flex-wrap gap-2">
     {items.map((item) => (
       <span
         key={item}
         className={cn(
-          "rounded-lg border border-zinc-200 bg-zinc-100/70 px-3 py-1.5 text-zinc-800",
-          "dark:border-white/[0.08] dark:bg-black/20 dark:text-zinc-200",
-          isMobile ? IOS_MOBILE_READING_TEXT_CLASS : "text-sm"
+          "rounded-lg border px-3 py-1.5",
+          "border-zinc-200 bg-zinc-100/70 text-zinc-800",
+          isMobile
+            ? cn(
+                "dark:border-white/[0.1] dark:bg-white/[0.04] dark:text-zinc-200",
+                IOS_MOBILE_READING_TEXT_CLASS,
+                "text-zinc-800 dark:text-zinc-200"
+              )
+            : "text-sm dark:border-white/[0.06] dark:bg-black/20 dark:text-zinc-200"
         )}
       >
         {item}
@@ -1296,7 +1302,6 @@ const renderRowItems = (items: string[]) => (
     ))}
   </div>
 );
-
 
     if (currentPath === "skills") {
       const sections = STATIC_PANEL_CONTENT.skills ?? [];
@@ -1309,7 +1314,7 @@ const renderRowItems = (items: string[]) => (
                 {renderRowItems(section.items)}
               </div>
             ))}
-            <LanguagesResumePanel embedded />
+            <LanguagesResumePanel embedded isMobile={isMobile} />
           </div>
         </div>
       );

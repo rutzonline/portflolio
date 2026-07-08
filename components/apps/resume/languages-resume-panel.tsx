@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { IOS_MOBILE_READING_TEXT_CLASS } from "@/lib/ui-tokens";
 import {
   RESUME_PANEL_CARD_OVERFLOW_CLASS,
   RESUME_PANEL_ROW_DIVIDER,
@@ -15,7 +16,13 @@ interface Language {
   level: string;
 }
 
-export function LanguagesResumePanel({ embedded = false }: { embedded?: boolean }) {
+export function LanguagesResumePanel({
+  embedded = false,
+  isMobile = false,
+}: {
+  embedded?: boolean;
+  isMobile?: boolean;
+}) {
   const [languages, setLanguages] = useState<Language[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -41,13 +48,21 @@ export function LanguagesResumePanel({ embedded = false }: { embedded?: boolean 
     fetchLanguages();
   }, []);
 
+  // Same pill bg/border as renderRowItems: recessed black/20 on desktop,
+  // lifted white/[0.04] on mobile so it stays visible on the near-black canvas.
+  const cardClass = isMobile
+    ? "rounded-lg border border-zinc-200 bg-zinc-100/70 dark:border-white/[0.1] dark:bg-white/[0.04] overflow-hidden"
+    : "rounded-lg border border-zinc-200 bg-zinc-100/70 dark:border-white/[0.06] dark:bg-black/20 overflow-hidden";
+
+  const textSizeClass = isMobile ? IOS_MOBILE_READING_TEXT_CLASS : "text-sm";
+
   const content = (
     <div className={embedded ? "" : "max-w-lg"}>
       <div className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2 px-1">
         languages
       </div>
       {fetchError && <ContentFetchError message={fetchError} />}
-      <div className={RESUME_PANEL_CARD_OVERFLOW_CLASS}>
+      <div className={cardClass}>
         {loading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <div
@@ -68,7 +83,8 @@ export function LanguagesResumePanel({ embedded = false }: { embedded?: boolean 
             <div
               key={lang.id}
               className={cn(
-                "px-4 py-2 text-sm flex items-center justify-between gap-4 text-zinc-800 dark:text-zinc-100",
+                "px-4 py-2 flex items-center justify-between gap-4 text-zinc-800 dark:text-zinc-200",
+                textSizeClass,
                 idx < languages.length - 1 && RESUME_PANEL_ROW_DIVIDER
               )}
             >

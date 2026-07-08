@@ -117,7 +117,7 @@ export function Sidebar({
               </p>
               <SidebarItem
                 icon={<Coffee className="w-4 h-4" />}
-                label="time being passed"
+                label="passing time 101"
                 isActive={activeView === "beyond-desk"}
                 onClick={() => onViewSelect("beyond-desk")}
                 isMobileView={isMobileView}
