@@ -61,7 +61,7 @@ export function SongsView({ isMobileView, isWindowExpanded = false }: ProductsVi
   return (
     <div className={cn("p-6", isMobileView && "p-4 pb-20", isWindowExpanded && "p-8")}>
         <p className={SECTION_SUBTEXT_CLASS}>
-          welp! the ads got me
+          welp! the ads got me. ok not yet, but these look cute.
         </p>
         {fetchError && <ContentFetchError message={fetchError} />}
         {loading ? (

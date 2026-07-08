@@ -107,7 +107,7 @@ export default function App({ isDesktop = false }: AppProps) {
       case "albums":
         return "campaigns & content";
       case "beyond-desk":
-        return "interests and all";
+        return "passing time 101";
       case "songs":
         return "Products & Packaging";
       case "newsletters":

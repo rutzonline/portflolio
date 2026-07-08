@@ -83,7 +83,7 @@ export function BrowseView({ isMobileView, isWindowExpanded = false }: BrowseVie
   return (
     <div className={cn("p-6", isMobileView && "p-4 pb-20", isWindowExpanded && "p-8")}>
         <p className={SECTION_SUBTEXT_CLASS}>
-          just a bunch of cool websites
+          cool websites on the internet
         </p>
         {fetchError && <ContentFetchError message={fetchError} />}
         {loading ? (

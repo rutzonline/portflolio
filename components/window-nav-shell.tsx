@@ -55,7 +55,7 @@ export function WindowNavShell({
   return (
     <div
       className={cn(
-        "px-4 py-2 flex items-center sticky top-0 z-[1] select-none bg-muted",
+        "px-4 py-1 flex items-center sticky top-0 z-[1] select-none bg-zinc-900/80 dark:bg-zinc-900/80 backdrop-blur-sm",
         isScrolled && "border-b shadow-[0_2px_4px_-1px_rgba(0,0,0,0.15)]",
         className
       )}

@@ -33,7 +33,7 @@ interface BrandsViewProps {
   isMobileView: boolean;
 }
 
-const GRID_CLASS = "grid gap-4 grid-cols-4 sm:grid-cols-5 lg:grid-cols-7";
+const GRID_CLASS = "grid gap-x-8 gap-y-6 grid-cols-4 sm:grid-cols-5 lg:grid-cols-6";
 const MOBILE_GRID_CLASS = "grid gap-4 grid-cols-4";
 
 const BRAND_SUBSECTION_HEADING_CLASS =

@@ -113,11 +113,11 @@ export function Sidebar({
             {/* things keeping me sane */}
             <div className="mb-4">
               <p className="text-xs text-muted-foreground px-3 py-1 font-semibold uppercase tracking-wide">
-                things keeping me sane
+                interests and all
               </p>
               <SidebarItem
                 icon={<Coffee className="w-4 h-4" />}
-                label="interests and all"
+                label="time being passed"
                 isActive={activeView === "beyond-desk"}
                 onClick={() => onViewSelect("beyond-desk")}
                 isMobileView={isMobileView}
