@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
   if (password === SITE_PASSWORD) {
     const res = NextResponse.json({ ok: true });
-    res.cookies.set("site_access", "granted", {
+    res.cookies.set("site_access_v2", "granted", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
-  const isUnlocked = req.cookies.get("site_access")?.value === "granted";
+  const isUnlocked = req.cookies.get("site_access_v2")?.value === "granted";
   const { pathname } = req.nextUrl;
 
   const isPublicPath =
