@@ -1,54 +1,23 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from "next/server";
 
-function constantTimeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let mismatch = 0;
-  for (let i = 0; i < a.length; i++) {
-    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+export function middleware(req: NextRequest) {
+  const isUnlocked = req.cookies.get("site_access")?.value === "granted";
+  const { pathname } = req.nextUrl;
+
+  const isPublicPath =
+    pathname.startsWith("/unlock") ||
+    pathname.startsWith("/api/unlock") ||
+    pathname.startsWith("/_next") ||
+    pathname.includes("favicon");
+
+  if (!isUnlocked && !isPublicPath) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/unlock";
+    return NextResponse.redirect(url);
   }
-  return mismatch === 0;
-}
-
-function isValidPassword(candidate: string): boolean {
-  const expected = process.env.PORTFOLIO_PASSWORD;
-  if (!expected || !candidate) return false;
-  return constantTimeEqual(candidate, expected);
-}
-
-export function middleware(request: NextRequest) {
-  const { pathname, searchParams } = request.nextUrl;
-
-  if (
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/api') ||
-    pathname.includes('.')
-  ) {
-    return NextResponse.next();
-  }
-
-  const isUnlocked =
-    request.cookies.get('portfolio_unlocked')?.value === 'true';
-
-  const pwQuery = searchParams.get('pw');
-  const maxAgeSevenDays = 604800;
-
-  if (pwQuery && isValidPassword(pwQuery)) {
-    const response = NextResponse.redirect(new URL('/', request.url));
-    response.cookies.set('portfolio_unlocked', 'true', {
-      maxAge: maxAgeSevenDays,
-      httpOnly: true,
-      sameSite: 'lax',
-    });
-    return response;
-  }
-
-  if (!isUnlocked) {
-    return new NextResponse(
-      '<html><head><title>Maintenance</title></head><body style="font-family:sans-serif;background:#0A0A0A;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;"><h2 style="font-weight:600;">portfolio under maintenance</h2><p style="opacity:0.6;font-size:14px;">check back soon</p></body></html>',
-      { status: 401, headers: { 'content-type': 'text/html' } }
-    );
-  }
-
   return NextResponse.next();
 }
+
+export const config = {
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+};
