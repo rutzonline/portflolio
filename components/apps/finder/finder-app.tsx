@@ -815,7 +815,7 @@ export function FinderApp({
     });
 
     return (
-      <div className={cn("flex flex-col border-r border-zinc-200 dark:border-zinc-800 bg-zinc-100/80 dark:bg-zinc-800/80 backdrop-blur-xl", DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)}>
+      <div className={cn("flex flex-col border-r border-zinc-200 dark:border-zinc-600 bg-zinc-100/80 dark:bg-zinc-800/80 backdrop-blur-xl", DESKTOP_NAV_SIDEBAR_WIDTH_CLASS)}>
         {/* Top region with traffic lights and drag handle */}
         <div className="h-[52px] flex items-center px-5 shrink-0" onMouseDown={nav.onDragStart}>
           <WindowControls

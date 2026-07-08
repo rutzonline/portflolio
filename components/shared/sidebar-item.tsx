@@ -20,9 +20,8 @@ export function SidebarItem({
       className={cn(
         "flex items-center gap-2 py-1.5 rounded-lg transition-colors text-left",
         isActive && !isMobileView
-          ?"bg-white/[0.05] text-[#0047AB] font-semibold mx-2"
-  : "text-foreground mx-2",
-  
+          ? "bg-[var(--sidebar-active-bg)] text-[#2253f2] font-semibold mx-2"
+          : "text-foreground mx-2",
         isMobileView ? "px-3 py-3 text-base" : "px-3 text-sm"
       )}
     >
