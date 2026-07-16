@@ -111,10 +111,3 @@ export default function UnlockPage() {
     </div>
   );
 }
-
-export const metadata = {
-  robots: {
-    index: false,
-    follow: false,
-  },
-};

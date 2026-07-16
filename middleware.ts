@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
-  const isUnlocked = req.cookies.get("site_access_v2")?.value === "granted";
+  const isUnlocked = req.cookies.get("site_access")?.value === "granted";
   const { pathname } = req.nextUrl;
 
   const isPublicPath =
@@ -10,12 +10,21 @@ export function middleware(req: NextRequest) {
     pathname.startsWith("/_next") ||
     pathname.includes("favicon");
 
+  // Create the response
+  let response = NextResponse.next();
+
   if (!isUnlocked && !isPublicPath) {
     const url = req.nextUrl.clone();
     url.pathname = "/unlock";
-    return NextResponse.redirect(url);
+    response = NextResponse.redirect(url);
   }
-  return NextResponse.next();
+
+  // If they are on the unlock page, tell search engines not to index it
+  if (pathname === "/unlock") {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  }
+
+  return response;
 }
 
 export const config = {
