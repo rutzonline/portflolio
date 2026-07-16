@@ -10,21 +10,25 @@ export function middleware(req: NextRequest) {
     pathname.startsWith("/_next") ||
     pathname.includes("favicon");
 
-  // Create the response
-  let response = NextResponse.next();
+  // 1. If unlocked and trying to go to /unlock, send them home
+  if (isUnlocked && pathname === "/unlock") {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
 
+  // 2. If NOT unlocked and NOT on a public path, send to /unlock
   if (!isUnlocked && !isPublicPath) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/unlock";
-    response = NextResponse.redirect(url);
+    return NextResponse.redirect(new URL("/unlock", req.url));
   }
 
-  // If they are on the unlock page, tell search engines not to index it
+  // 3. Apply the SEO protection ONLY to the unlock page
   if (pathname === "/unlock") {
+    const response = NextResponse.next();
     response.headers.set("X-Robots-Tag", "noindex, nofollow");
+    return response;
   }
 
-  return response;
+  // 4. Otherwise, proceed as normal
+  return NextResponse.next();
 }
 
 export const config = {
