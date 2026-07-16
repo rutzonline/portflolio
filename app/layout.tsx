@@ -14,8 +14,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
-  title: siteConfig.title,
-  description: "close personal website of rutuja rochkari",
+  title: "rutuja rochkari",
+  description: "product marketing, growth, and content strategy",
   icons: {
     icon: [{ url: "/favicon.png", type: "image/png" }],
     shortcut: "/favicon.png",
@@ -24,9 +24,17 @@ export const metadata: Metadata = {
 
 
   openGraph: {
-    title: siteConfig.title,
-    siteName: siteConfig.title,
+    title: "rutuja rochkari",
+    description: "product marketing, growth, and content strategy",
+    siteName: "rutuja rochkari",
     url: siteConfig.url,
+    images: [
+      {
+        url: "/og-image.png", 
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
 };
 
