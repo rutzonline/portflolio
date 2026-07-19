@@ -1,6 +1,5 @@
-# [rutujarochkari.com](https://rutujarochkari.com)
+# [rutzonline.com](https://rutzonline.com)
 
-i'm obsessed with re-creating apple products. this is a macos-inspired personal website featuring a full desktop environment with multiple apps.
 
 ## features
 
