@@ -23,7 +23,7 @@ const CONTACT_LINKS = [
   },
   {
     label: "resume",
-    href: "https://drive.google.com/file/d/1ZZXKFaZv_sprKq0GHl6761upY9KIZfyF/view?pli=1",
+    href: "https://drive.google.com/file/d/1o7Xgiv3690524TcdgMFXlJz-r6CZPl-Z/view?usp=sharing",
     external: true,
   },
   {
