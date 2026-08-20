@@ -31,7 +31,7 @@ export const INTRO_README_TABS: IntroReadmeTab[] = [
 >>
 **hi, i'm rutuja**
 
-ever since i was a little girl i knew i wanted to have a website of my own to attract pre-pmf fable (rip) 5-coded b2b disruptive ai saas stanford dropout startup founders in the valley in order to revenuemaxx so they can continue posting about some 'day 4752831 of building [highkey another llm wrapper].ai' on x. 
+ever since i was a little girl i knew i wanted to have a website of my own to attract pre-pmf fable 5-coded b2b disruptive ai saas stanford dropout startup founders in the valley in order to revenuemaxx so they can continue posting about some 'day 4752831 of building [highkey another llm wrapper].ai' on x. 
 
 ok, that's a stretch. but you might look around and go, "what the fork does this person actually do?"
 

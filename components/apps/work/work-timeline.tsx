@@ -24,7 +24,7 @@ export interface WorkStint {
 }
 
 export const WORK_PAGE_INTRO =
-  "Product Marketing & Growth Associate focused on Content & Brand with 2+ years building multi-channel 0-1 playbooks across D2C, Fintech & B2B SaaS. Uses AI to move faster and accelerate the workflow. Voice, judgment, and final calls stay human, always.";
+  "Product Marketing & Growth Associate focused on Content & Brand with 2+ years building multi-channel 0-1 playbooks across D2C, Fintech & B2B SaaS.";
 
 /** Stint detail pages stay off until long-form write-ups are ready; cards render as static summaries. */
 export const WORK_STINT_DETAILS_ENABLED = false;
@@ -37,11 +37,9 @@ export const ALL_WORK_STINTS: WorkStint[] = [
     role: "Freelance Marketer",
     timeline: "Apr 2025 – Present",
     summary:
-      "Using the time to strengthen core marketing skills, study growth experimentation frameworks, dive into personal interests, learn new tools, and take on a handful of projects that kept me engaged. Building content strategies, landing pages, and AI-assisted workflows",
+      "Using the time to strengthen core marketing skills, study growth frameworks, dive into personal interests, learn new tools, and take on a handful of projects that keep me engaged. Working with startups on content strategies, landing pages, copywriting, Meta Ads and Marketing Ops",
     type: "work",
-    highlights: [
-      "Independent projects across F&B, brand strategy, and content",
-    ],
+    
     logo: WORK_LOGOS.freelance,
   },
   {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import posthog from "posthog-js";
 
 export function UnlockClient() {
   const [password, setPassword] = useState("");
@@ -24,6 +25,8 @@ export function UnlockClient() {
       });
 
       if (res.ok) {
+        posthog.capture("site_unlocked");
+
         // Small delay to ensure the httpOnly cookie is committed
         // before the browser navigates and middleware checks it.
         // replace() prevents the back button returning to /unlock.

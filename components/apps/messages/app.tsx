@@ -22,6 +22,7 @@ import {
 import { MessagesAppSkeleton } from "./messages-app-skeleton";
 import type { MessagesNotificationPayload } from "@/types/messages/notification";
 import type { MessagesConversationSelectRequest } from "@/types/messages/selection";
+import posthog from "posthog-js";
 
 interface AppProps {
   isDesktop?: boolean;
@@ -682,6 +683,11 @@ export default function App({
         return updatedConversations;
       });
 
+      posthog.capture("message_sent", {
+        conversation_type: "new",
+        recipient_count: recipients.length,
+        mention_count: mentions.length,
+      });
       setJustSentMessageId(message.id);
       updateUrl(`?id=${newConversation.id}`);
       // Use enqueueUserMessage - the queue will handle group vs 1-on-1 logic
@@ -726,6 +732,10 @@ export default function App({
       )
     );
 
+    posthog.capture("message_sent", {
+      conversation_type: "existing",
+      mention_count: mentions.length,
+    });
     setJustSentMessageId(message.id);
     setActiveConversation(conversationId);
     setIsNewConversation(false);

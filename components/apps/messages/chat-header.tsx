@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getUserContacts, addUserContact } from "@/lib/messages/contacts";
 import { ContactDrawer } from "./contact-drawer";
+import posthog from "posthog-js";
 
 // Helper to check if we can add more recipients
 const hasReachedMaxRecipients = (recipients: string) => {
@@ -559,6 +560,7 @@ export function ChatHeader({
           name: searchValue.trim(),
           title: "Personal Contact",
         });
+        posthog.capture("contact_validation_succeeded");
         setShowResults(true); // Keep the dropdown open for more selections
       } catch (error) {
         console.warn("Contact validation failed:", error);

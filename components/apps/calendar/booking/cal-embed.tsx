@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { useWindowExpanded } from "@/lib/use-window-expanded";
+import posthog from "posthog-js";
 
 export function CalEmbed() {
   const isExpanded = useWindowExpanded();
@@ -36,6 +37,7 @@ export function CalEmbed() {
           href={siteConfig.calBookingUrl}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => posthog.capture("calendar_booking_opened")}
           className="can-hover:hover:text-accent-blue underline"
         >
           Open in Cal.com if the embed does not load

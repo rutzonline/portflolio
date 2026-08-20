@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { createClient } from "@/utils/supabase/client";
 import { Note } from "@/lib/notes/types";
+import posthog from "posthog-js";
 
 interface NotesRouter {
   push: (href: string) => void;
@@ -36,6 +37,10 @@ export async function createNote(
     const { error } = await supabase.from("notes").insert(note);
 
     if (error) throw error;
+
+    posthog.capture("note_created", {
+      navigation_mode: useCallbackNavigation ? "callback" : "route",
+    });
 
     if (useCallbackNavigation) {
       // Use callbacks instead of router navigation
