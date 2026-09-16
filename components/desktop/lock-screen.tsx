@@ -75,6 +75,15 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
         <div className="text-[120px] font-medium text-white leading-none tracking-tight">
           {currentTime}
         </div>
+        <Image
+          src="/lockscreentext.png"
+          alt="Messages notification: click to start"
+          width={500}
+          height={100}
+          className="animate-lock-screen-banner mt-8 h-auto w-[min(380px,90vw)] drop-shadow-lg"
+          priority
+          unoptimized
+        />
       </div>
 
       {/* Spacer to push user section to bottom */}
@@ -97,11 +106,6 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
         {/* Name */}
         <div className="mt-2 text-sm font-medium text-white drop-shadow-md">
           rutuja rochkari
-        </div>
-
-        {/* Touch ID prompt */}
-        <div className="mt-1 text-xs text-white/70 drop-shadow-sm">
-          Touch ID or Enter Password
         </div>
       </div>
     </div>
