@@ -37,7 +37,7 @@ export const ALL_WORK_STINTS: WorkStint[] = [
     role: "Freelance Marketer",
     timeline: "Apr 2025 – Present",
     summary:
-      "Using the time to strengthen core marketing skills, study growth frameworks, dive into personal interests, learn new tools, and take on a handful of projects that keep me engaged. Working with startups on content strategies, landing pages, copywriting, Meta Ads and Marketing Ops",
+      "content strategy, SEO, social media, email marketing, and growth marketing",
     type: "work",
     
     logo: WORK_LOGOS.freelance,
@@ -52,7 +52,7 @@ export const ALL_WORK_STINTS: WorkStint[] = [
     type: "work",
     highlights: [
       "Scaled app downloads from ~150 to 7K in 5 months with zero paid budget; ~20% of daily orders",
-      "Drove email open rates from 8–10% to 35.8% across 75K subscribers in 5 months",
+      "Drove email open rates from 8–10% to 35.8% and 4.1% CTR across 75K subscribers in 5 months",
       "Redesigned web and app UX resulting in 30% AOV lift (₹808 → ₹1,047) and 8% app conversion",
       "Grew Instagram to 45K followers (5M+ views) and WhatsApp community to 1,000 members",
     ],
