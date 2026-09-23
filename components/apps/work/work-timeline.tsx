@@ -52,8 +52,8 @@ export const ALL_WORK_STINTS: WorkStint[] = [
     type: "work",
     highlights: [
       "Scaled app downloads from ~150 to 7K in 5 months with zero paid budget; ~20% of daily orders",
-      "Drove email open rates from 8–10% to 35.8% and 4.1% CTR across 75K subscribers in 5 months",
-      "Redesigned web and app UX resulting in 30% AOV lift (₹808 → ₹1,047) and 8% app conversion",
+      "Drove email open rates from 8–10% to 35% and 4.1% CTR across 75K subscribers in 5 months",
+      "Redesigned the web and app flow UX resulting in 30% AOV lift (₹808 → ₹1,047) and 8% app conversion",
       "Grew Instagram to 45K followers (5M+ views) and WhatsApp community to 1,000 members",
     ],
     details: STATE_PLATE_BODY,
@@ -82,7 +82,7 @@ export const ALL_WORK_STINTS: WorkStint[] = [
       "Fintech startup · Bangalore. Zero-to-one influencer launch and multi-format content for a SEBI-registered investing app.",
     type: "work",
     highlights: [
-      "Managed LiMo feature launch with 50+ LinkedIn influencers leading to 100K+ impressions and app download lift",
+      "Managed LiMo feature launch with 50+ LinkedIn influencers leading to 1M+ impressions and app download lift",
       "Scripts, website copy, emailers, and push notifications; scaled Instagram from 0 to 12K followers",
     ],
     logo: WORK_LOGOS.liquide,
